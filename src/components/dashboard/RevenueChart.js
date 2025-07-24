@@ -4,8 +4,18 @@ import React from 'react';
 
 const RevenueChart = () => {
   return (
-    <div className="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm">
-      <div className="flex justify-between items-center mb-4">
+    <div
+      className="bg-white shadow-sm"
+      style={{
+        width: '662px',
+        height: '318px',
+        minWidth: '662px',
+        padding: '24px',
+        borderRadius: '16px',
+        opacity: 1,
+      }}
+    >
+      <div className="flex justify-between items-center mb-4" style={{ gap: '16px' }}>
         <h3 className="text-lg font-semibold text-gray-900">Revenue</h3>
         <div className="flex items-center space-x-4 text-sm">
           <div className="flex items-center">
@@ -18,17 +28,19 @@ const RevenueChart = () => {
           </div>
         </div>
       </div>
-      <div className="h-48 relative">
-        <svg className="w-full h-full" viewBox="0 0 400 150">
+      <div className="relative w-full h-[218px]"> {/* 318 - 24*2 (padding) = 270px available; ~218 for chart after header */}
+        <svg className="w-full h-full" viewBox="0 0 662 218">
+          {/* Light Blue Line: Current Week */}
           <path
-            d="M 0 100 Q 100 80 200 90 T 400 70"
+            d="M 0 130 Q 165.5 100 331 140 T 662 90"
             stroke="#60A5FA"
             strokeWidth="3"
             fill="none"
             className="opacity-60"
           />
+          {/* Black Line: Previous Week */}
           <path
-            d="M 0 120 Q 100 110 200 100 T 400 90"
+            d="M 0 170 Q 165.5 160 331 120 T 662 140"
             stroke="#1F2937"
             strokeWidth="3"
             fill="none"

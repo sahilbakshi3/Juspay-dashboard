@@ -1,32 +1,79 @@
+import React from 'react';
+import { PieChart } from '@mui/x-charts/PieChart';
+import { Card, CardContent, Typography } from '@mui/material';
 
-import { totalSalesData } from '../../data/mockData';
+const COLORS = ['#1F2937', '#BBF7D0', '#BAE6FD', '#A5B4FC'];
 
-const TotalSales = () => {
+const pieData = [
+  { type: 'Direct', amount: 300.56 },
+  { type: 'Affiliate', amount: 135.18 },
+  { type: 'Sponsored', amount: 154.02 },
+  { type: 'E-mail', amount: 48.96 }
+];
+
+export default function TotalSales() {
   return (
-    <div className="lg:col-span-1 bg-white p-6 rounded-xl shadow-sm">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">Total Sales</h3>
-      <div className="h-48 flex items-end justify-between space-x-2">
-        {/* Render your total sales data here */}
-        <div className="mt-6 bg-gray-50 p-4 rounded-lg">
-        <h4 className="text-sm font-medium text-gray-900 mb-3">Total Sales</h4>
-        <div className="space-y-2">
-          {totalSalesData.map((item, index) => (
-            <div key={index} className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <div className={`w-3 h-3 rounded-full ${item.color}`}></div>
-                <span className="text-sm text-gray-600">{item.type}</span>
-              </div>
-              <span className="text-sm font-medium">{item.amount}</span>
+    <div className="absolute bottom-4 right-4">
+      <Card
+        className="shadow-lg"
+        style={{
+          width: 154,
+          height: 124,
+          borderRadius: 16,
+          padding: 12,
+          opacity: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 12,
+        }}
+      >
+        <CardContent className="p-0 flex flex-col h-full">
+          <Typography 
+            variant="h6" 
+            style={{
+              fontFamily: 'Inter',
+              fontWeight: 600,
+              fontSize: '14px',
+              lineHeight: '20px',
+              letterSpacing: '0%',
+              color: '#1F2937'
+            }}
+          >
+            Total Sales
+          </Typography>
+
+          <div className="flex items-center justify-between">
+            <div style={{ width: 120, height: 120 }}>
+              <PieChart
+                series={[
+                  {
+                    data: pieData.map((item, index) => ({
+                      id: item.type,
+                      value: item.amount,
+                      label: '',
+                      itemStyle: { color: COLORS[index] }
+                    })),
+                    innerRadius: 30,
+                    outerRadius: 50,
+                    paddingAngle: 2,
+                    cornerRadius: 4
+                  }
+                ]}
+                width={120}
+                height={120}
+                colors={COLORS}
+                slotProps={{
+                  legend: { hidden: true }
+                }}
+                sx={{
+                  '& .MuiChartsLegend-root': { display: 'none' },
+                  '& .MuiChartsLegend-mark': { display: 'none' }
+                }}
+              />
             </div>
-          ))}
-        </div>
-      </div>
-      </div>
-      <div className="flex justify-center mt-4">
-        <span className="text-sm text-gray-600">30M</span>
-      </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
-};
-
-export default TotalSales;
+}

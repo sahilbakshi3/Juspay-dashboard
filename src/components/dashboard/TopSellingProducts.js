@@ -5,10 +5,25 @@ import { topSellingProducts } from '../../data/mockData';
 
 const TopSellingProducts = () => {
   return (
-    <div className="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">Top Selling Products</h3>
-      <div className="overflow-x-auto">
-        <table className="w-full">
+    <div
+      className="bg-white p-6 rounded-xl shadow-sm"
+      style={{ width: '614px', height: '264px' }}
+    >
+      {/* Updated header styling */}
+      <div
+        className="bg-white text-gray-900 font-semibold text-sm flex items-center px-2"
+        style={{
+          width: '614px',
+          height: '20px',
+          borderRadius: '8px',
+        }}
+      >
+        Top Selling Products
+      </div>
+
+      {/* Table content */}
+      <div className="overflow-auto h-[220px] mt-4">
+        <table className="w-full table-auto">
           <thead>
             <tr className="text-left text-sm text-gray-500 border-b">
               <th className="pb-3 font-medium">Name</th>

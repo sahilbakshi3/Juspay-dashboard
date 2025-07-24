@@ -6,25 +6,22 @@ const ProjectionsChart = () => {
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
 
   return (
-    <div className="lg:col-span-1 bg-white p-6 rounded-xl shadow-sm">
+    <div className="h-full">
       <h3 className="text-lg font-semibold text-gray-900 mb-4">Projections vs Actuals</h3>
-      <div className="h-48 flex items-end justify-between space-x-2">
+      <div className="h-48 flex items-end justify-between space-x-6">
         {months.map((month, index) => (
           <div key={month} className="flex flex-col items-center flex-1">
             <div 
-              className="w-full bg-blue-200 rounded-t" 
-              style={{height: `${60 + index * 15}px`}}
+              className="w-full bg-slate-300 rounded-t" 
+              style={{height: `${20 + index * 15}px`}}
             ></div>
             <div 
-              className="w-full bg-blue-400 rounded-b" 
-              style={{height: `${40 + index * 10}px`}}
+              className="w-full bg-blue-400" 
+              style={{height: `${20 + index * 10}px`}}
             ></div>
             <span className="text-xs text-gray-500 mt-2">{month}</span>
           </div>
         ))}
-      </div>
-      <div className="flex justify-center mt-4">
-        <span className="text-sm text-gray-600">30M</span>
       </div>
     </div>
   );

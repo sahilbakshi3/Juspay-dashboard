@@ -28,25 +28,35 @@ const RevenueChart = () => {
           </div>
         </div>
       </div>
-      <div className="relative w-full h-[218px]"> {/* 318 - 24*2 (padding) = 270px available; ~218 for chart after header */}
-        <svg className="w-full h-full" viewBox="0 0 662 218">
-          {/* Light Blue Line: Current Week */}
-          <path
-            d="M 0 130 Q 165.5 100 331 140 T 662 90"
-            stroke="#60A5FA"
-            strokeWidth="3"
-            fill="none"
-            className="opacity-60"
-          />
-          {/* Black Line: Previous Week */}
-          <path
-            d="M 0 170 Q 165.5 160 331 120 T 662 140"
-            stroke="#1F2937"
-            strokeWidth="3"
-            fill="none"
-          />
-        </svg>
-      </div>
+      <div className="relative w-full h-[218px]">
+      <svg className="w-full h-full" viewBox="0 0 662 218">
+        
+        <path
+          d="M 0 130 Q 165.5 100 331 140 T 662 90"
+          stroke="#60A5FA"      /* blue */
+          strokeWidth="3"
+          fill="none"
+          className="opacity-100"  /* make it fully visible */
+        />
+        
+        {/* Black Line: Solid portion */}
+        <path
+          d="M 0 170 Q 165.5 160 331 120 Q 365.5 118 400 125"
+          stroke="#1F2937"
+          strokeWidth="3"
+          fill="none"
+        />
+        {/* Black Line: Dashed portion */}
+        <path
+          d="M 400 125 Q 531 132 662 140"
+          stroke="#1F2937"
+          strokeWidth="3"
+          fill="none"
+          strokeDasharray="12 6"
+        />
+      </svg>
+    </div>
+
     </div>
   );
 };

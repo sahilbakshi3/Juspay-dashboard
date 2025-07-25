@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { activities, contacts } from '../../data/mockData';
+import { Bug, User, Radio } from 'lucide-react';
 
 const RightSidebar = () => {
   return (
@@ -11,21 +12,28 @@ const RightSidebar = () => {
         <h3 className="text-sm font-medium text-gray-900 mb-4">Notifications</h3>
         <div className="space-y-3">
           <div className="flex items-start space-x-3">
-            <div className="w-2 h-2 bg-red-500 rounded-full mt-2"></div>
+            <Bug className="w-5 h-5 text-gray-400" />
             <div className="text-sm">
               <p className="text-gray-900">You have a bug that needs...</p>
               <p className="text-gray-500 text-xs">12 hours ago</p>
             </div>
           </div>
           <div className="flex items-start space-x-3">
-            <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+            <User className="w-5 h-5 text-gray-400" />
             <div className="text-sm">
               <p className="text-gray-900">New user registered</p>
               <p className="text-gray-500 text-xs">59 minutes ago</p>
             </div>
           </div>
           <div className="flex items-start space-x-3">
-            <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+            <Bug className="w-5 h-5 text-gray-400" />
+            <div className="text-sm">
+              <p className="text-gray-900">You have a bug that needs...</p>
+              <p className="text-gray-500 text-xs">12 hours ago</p>
+            </div>
+          </div>
+          <div className="flex items-start space-x-3">
+            <Radio className="w-5 h-5 text-gray-400" />
             <div className="text-sm">
               <p className="text-gray-900">Andi Lane subscribed to you</p>
               <p className="text-gray-500 text-xs">Today, 11:59 AM</p>

@@ -2,7 +2,6 @@ import React from 'react';
 import { revenueByLocation } from '../../data/mockData';
 
 const RevenueByLocation = () => {
-  const percentage = 38.6; // Static percentage for now
 
   return (
     <div
@@ -18,56 +17,62 @@ const RevenueByLocation = () => {
         opacity: 1,
       }}
     >
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">
+      <h3
+        className="text-[14px] font-semibold leading-[20px] text-gray-900 mb-4"
+        style={{
+          fontFamily: 'Inter',
+          fontWeight: 600,
+          fontStyle: 'normal',
+          letterSpacing: '0%',
+        }}
+      >
         Revenue by Location
       </h3>
 
-      {/* Circular Progress */}
-      <div className="relative w-28 h-28 mx-auto mb-4">
-        <svg
-          className="w-full h-full transform -rotate-90"
-          viewBox="0 0 36 36"
-        >
-          <circle
-            cx="18"
-            cy="18"
-            r="15.9155"
-            fill="none"
-            stroke="#E5E7EB"
-            strokeWidth="3"
-          />
-          <circle
-            cx="18"
-            cy="18"
-            r="15.9155"
-            fill="none"
-            stroke="#6366F1"
-            strokeWidth="3"
-            strokeDasharray={`${percentage}, 100`}
-            strokeLinecap="round"
-          />
-        </svg>
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-xl font-bold text-gray-800">
-            {percentage}%
-          </span>
-        </div>
-      </div>
+      
+      
 
       {/* Location Breakdown */}
       <div className="space-y-2 overflow-y-auto">
-        {revenueByLocation.map((location) => (
-          <div
-            key={location.city}
-            className="flex justify-between items-center text-sm"
-          >
-            <span className="text-gray-600">{location.city}</span>
-            <span className="font-medium text-gray-900">
-              {location.amount}
-            </span>
-          </div>
-        ))}
+        {revenueByLocation.map((location) => {
+          const maxRevenue = Math.max(...revenueByLocation.map(loc => loc.amount));
+          const percentage = (location.amount / maxRevenue) * 100;
+          
+          return (
+            <div key={location.city} style={{ paddingRight: '40px', gap: '8px' }} className="flex flex-col">
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-gray-600">{location.city}</span>
+                <span className="font-medium text-gray-900">
+                  {location.amount}
+                </span>
+              </div>
+              
+              {/* Custom Progress Bar with your specifications */}
+              <div 
+                style={{
+                  width: '154px',
+                  height: '2px',
+                  backgroundColor: '#e5e7eb', // Gray background
+                  borderRadius: '80px',
+                  opacity: 1,
+                  transform: 'rotate(0deg)'
+                }}
+              >
+                <div 
+                  style={{
+                    width: `${percentage}%`,
+                    height: '2px',
+                    backgroundColor: '#3b82f6', // Blue progress fill
+                    borderRadius: '80px',
+                    transition: 'width 0.3s ease-in-out'
+                  }}
+                />
+              </div>
+            </div>
+          );
+        })}
       </div>
+
     </div>
   );
 };

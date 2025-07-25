@@ -11,18 +11,22 @@ const TopSellingProducts = () => {
     >
       {/* Updated header styling */}
       <div
-        className="bg-white text-gray-900 font-semibold text-sm flex items-center px-2"
+        className="h-1.25 w-38.375 bg-white text-gray-900 font-semibold text-sm flex items-center px-2"
         style={{
-          width: '614px',
           height: '20px',
+          width: '153px',
           borderRadius: '8px',
+          fontFamily: 'Inter',
+          fontWeight: 600,
+          style: 'semi-bold',
+
         }}
       >
         Top Selling Products
       </div>
 
       {/* Table content */}
-      <div className="overflow-auto h-[220px] mt-4">
+      <div className="overflow-auto h-[264px] w-[614px] mt-4">
         <table className="w-full table-auto">
           <thead>
             <tr className="text-left text-sm text-gray-500 border-b">

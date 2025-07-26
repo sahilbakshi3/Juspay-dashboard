@@ -1,101 +1,54 @@
-// src/App.js
-
-import React from 'react';
+import React, { useContext } from 'react';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 
 // Layout Components
 import Sidebar from './components/layout/Sidebar';
 import Header from './components/layout/Header';
 import RightSidebar from './components/layout/RightSidebar';
-import ThemeContextProvider from "./context/ThemeContextProvider";
 
-// Dashboard Components
-import StatsCards from './components/dashboard/StatsCards';
-import ProjectionsChart from './components/dashboard/ProjectionsChart';
-import RevenueChart from './components/dashboard/RevenueChart';
-import RevenueByLocation from './components/dashboard/RevenueByLocation';
-import TopSellingProducts from './components/dashboard/TopSellingProducts';
-import TotalSales from './components/dashboard/TotalSales';
+// Theme Context
+import ThemeContextProvider, { ThemeContext } from "./context/ThemeContextProvider";
 
-const App = () => {
+// Pages
+import DashboardPage from './pages/DashboardPage';
+import OrdersPage from './pages/OrdersPage';
+
+const AppContent = () => {
+  const { darkMode } = useContext(ThemeContext); // Access the theme state
+
   return (
-    <ThemeContextProvider>
-      <div className="min-h-screen bg-gray-50 flex">
-        {/* Left Sidebar */}
+    <div className={`${darkMode ? 'dark' : ''}`}>
+      <div className="min-h-screen flex transition-colors duration-300 bg-gray-50 dark:bg-gray-900 text-black dark:text-white">
+        {/* Sidebar */}
         <Sidebar />
 
-        {/* Main Content Area */}
+        {/* Main Content */}
         <div className="flex-1 flex flex-col">
           {/* Header */}
           <Header />
 
-          {/* Dashboard Content */}
-          <main className="flex-1 p-6 relative">
-            {/* Page Title */}
-            <div className="flex justify-between items-center mb-6">
-              <h1
-                  className="text-[14px] font-semibold leading-[20px] text-gray-900"
-                  style={{
-                    fontFamily: 'Inter',
-                    fontWeight: 600,
-                    fontStyle: 'normal',
-                    letterSpacing: '0%',
-                  }}
-                >
-                  eCommerce
-                </h1>
-
-            </div>
-
-            {/* Stats Cards and Projections Chart - Side by side */}
-            <div className="flex gap-7">
-              <div className="flex-1">
-                <StatsCards />
-              </div>
-              
-              {/* Projections Chart - 28px gap from StatsCards */}
-              <div 
-                className="bg-white rounded-[16px] p-[24px] shadow-sm"
-                style={{
-                  width: '432px',
-                  height: '252px',
-                }}
-              >
-                <ProjectionsChart />
-              </div>
-            </div>
-
-            {/* Revenue Chart and Revenue by Location - Side by side */}
-            <div className="mt-8 flex gap-7">
-              <div className="flex-1">
-                <RevenueChart />
-              </div>
-              
-              {/* Revenue by Location - 28px gap from RevenueChart */}
-              <div>
-                <RevenueByLocation />
-              </div>
-            </div>
-
-            {/* Top Selling Products - Positioned in normal flow */}
-            <div className="mt-8 flex gap-7">
-              <div
-                className="bg-white rounded-2xl p-6 shadow-sm"
-                style={{ width: '662px', minWidth: '662px', height: '336px' }}
-              >
-                <TopSellingProducts />
-              </div>
-              
-              {/* TotalSales Component - 28px gap from TopSellingProducts */}
-              <div>
-                <TotalSales />
-              </div>
-            </div>
+          {/* Page Routes */}
+          <main className="flex-1 p-6">
+            <Switch>
+              <Route exact path="/" component={DashboardPage} />
+              <Route path="/overview" component={OrdersPage} />
+            </Switch>
           </main>
         </div>
 
         {/* Right Sidebar */}
         <RightSidebar />
       </div>
+    </div>
+  );
+};
+
+const App = () => {
+  return (
+    <ThemeContextProvider>
+      <Router>
+        <AppContent />
+      </Router>
     </ThemeContextProvider>
   );
 };

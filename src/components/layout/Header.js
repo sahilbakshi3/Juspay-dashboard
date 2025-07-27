@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Bell, Search, Notebook, SunMedium, Moon, RotateCcw, Star } from 'lucide-react';
+import { Bell, Search, Notebook, SunMedium, History, Star } from 'lucide-react';
 import { ThemeContext } from "../../context/ThemeContextProvider";
 
 const Header = () => {
@@ -50,12 +50,19 @@ const Header = () => {
             <input 
               type="text" 
               placeholder="Search" 
-              className={`pl-9 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
+              className={`pl-9 pr-12 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${
                 isDarkMode 
                   ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
                   : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
               }`}
             />
+            {/* Command shortcut indicator */}
+            <div className={`absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center space-x-0.5 ${
+              isDarkMode ? 'text-gray-500' : 'text-gray-400'
+            }`}>
+              <span className="text-xs font-medium">⌘</span>
+              <span className="text-xs">/</span>
+            </div>
           </div>
           
           {/* Theme Toggle Button */}
@@ -80,7 +87,7 @@ const Header = () => {
               ? 'text-gray-400 hover:text-gray-200' 
               : 'text-gray-500 hover:text-gray-700'
           } transition-colors`}>
-            <RotateCcw className="w-5 h-5" />
+            <History className="w-5 h-5" />
           </button>
           <button className={`p-2 ${
             isDarkMode 

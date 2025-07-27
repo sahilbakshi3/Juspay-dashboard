@@ -8,21 +8,32 @@ const ProjectionsChart = () => {
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
   
   // Y-axis values (adjust these based on your data range)
-  const yAxisValues = ['0', '10M', '20M', '30M'];
+  const yAxisValues = ['30M', '20M', '10M', '0']; // Keep in order for display
   const maxValue = 30; // Maximum value for scaling
+
+  // Randomized data for more realistic chart appearance
+  const chartData = [
+    { month: 'Jan', projection: 25, actual: 18 },
+    { month: 'Feb', projection: 22, actual: 26 },
+    { month: 'Mar', projection: 28, actual: 24 },
+    { month: 'Apr', projection: 30, actual: 20 },
+    { month: 'May', projection: 15, actual: 28 },
+    { month: 'Jun', projection: 20, actual: 22 }
+  ];
 
   return (
     <div className="h-full w-full">
-      <h3 className={`text-lg font-semibold mb-6 ${
+      <h3 className={`text-lg font-semibold mb-4 ${
         darkMode ? 'text-white' : 'text-gray-900'
       }`}>
         Projections vs Actuals
       </h3>
       
-      <div className="flex h-40">
+      {/* Main chart container with reserved space for labels */}
+      <div className="flex" style={{ height: '180px' }}>
         {/* Y-axis */}
-        <div className="flex flex-col justify-between items-end pr-3 h-full">
-          {yAxisValues.reverse().map((value, index) => (
+        <div className="flex flex-col justify-between items-end pr-3 h-full py-2" style={{ height: '140px' }}>
+          {yAxisValues.map((value, index) => (
             <span 
               key={value} 
               className={`text-xs ${
@@ -34,50 +45,67 @@ const ProjectionsChart = () => {
           ))}
         </div>
         
-        {/* Chart area */}
-        <div className="flex items-end justify-between space-x-4 h-full flex-1 border-l border-b border-gray-300 relative">
-          {months.map((month, index) => {
-            // Calculate heights as percentages of the chart area
-            const projectionHeight = ((20 + index * 15) / maxValue) * 100;
-            const actualHeight = ((20 + index * 10) / maxValue) * 100;
-            
-            return (
-              <div key={month} className="flex flex-col items-center flex-1 relative">
-                {/* Bar container - positioned at bottom */}
-                <div className="absolute bottom-0 flex flex-col items-center">
-                  {/* Projection bar (gray) - stacked on top */}
-                  <div 
-                    className={`w-8 rounded-t-md ${
-                      darkMode ? 'bg-gray-600' : 'bg-slate-300'
-                    }`}
-                    style={{height: `${(projectionHeight / 100) * 30}px`}} // 120px = chart height minus space for labels
-                  ></div>
-                  
-                  {/* Actual bar (blue) - at bottom */}
-                  <div 
-                    className={`w-8 rounded-b-md ${
-                      darkMode ? 'bg-blue-500' : 'bg-blue-400'
-                    }`}
-                    style={{height: `${(actualHeight / 100) * 30}px`}}
-                  ></div>
+        {/* Chart area with labels contained inside */}
+        <div className="flex flex-col flex-1">
+          {/* Bars section */}
+          <div className="flex items-end justify-between space-x-4 border-l border-b border-gray-300 relative" 
+               style={{ height: '140px' }}>
+            {chartData.map((data, index) => {
+              // Calculate heights as pixels with strict maximum
+              const availableHeight = 120; // Available height for bars
+              const projectionHeight = Math.min((data.projection / maxValue) * availableHeight, availableHeight);
+              const actualHeight = Math.min((data.actual / maxValue) * availableHeight, availableHeight);
+              
+              return (
+                <div key={data.month} className="flex flex-col items-center flex-1 h-full justify-end">
+                  {/* Bars container with height constraint */}
+                  <div className="flex flex-col items-center" style={{ maxHeight: `${availableHeight}px` }}>
+                    {/* Projection bar (gray) - top part */}
+                    <div 
+                      className={`w-8 rounded-t-md ${
+                        darkMode ? 'bg-gray-600' : 'bg-slate-300'
+                      }`}
+                      style={{
+                        height: `${projectionHeight}px`,
+                        maxHeight: `${availableHeight}px`
+                      }}
+                    ></div>
+                    
+                    {/* Actual bar (blue) - bottom part */}
+                    <div 
+                      className={`w-8 rounded-b-md ${
+                        darkMode ? 'bg-blue-500' : 'bg-blue-400'
+                      }`}
+                      style={{
+                        height: `${actualHeight}px`,
+                        maxHeight: `${availableHeight}px`
+                      }}
+                    ></div>
+                  </div>
                 </div>
-                
-                {/* Month label - positioned below chart area */}
-                <span className={`absolute -bottom-8 text-xs ${
+              );
+            })}
+          </div>
+          
+          {/* X-axis labels section - contained within main container */}
+          <div className="flex justify-between space-x-4 mt-2 px-4">
+            {months.map((month, index) => (
+              <span 
+                key={month}
+                className={`text-xs text-center flex-1 ${
                   darkMode ? 'text-gray-400' : 'text-gray-500'
-                }`}>
-                  {month}
-                </span>
-              </div>
-            );
-          })}
+                }`}
+              >
+                {month}
+              </span>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* Add bottom margin to accommodate month labels */}
-      <div className="mt-8">
-        {/* Legend */}
-        {/* <div className="flex items-center justify-center space-x-6">
+      {/* Legend */}
+      {/* <div className="mt-4">
+        <div className="flex items-center justify-center space-x-6">
           <div className="flex items-center space-x-2">
             <div className={`w-3 h-3 rounded ${
               darkMode ? 'bg-gray-600' : 'bg-slate-300'
@@ -98,8 +126,8 @@ const ProjectionsChart = () => {
               Actuals
             </span>
           </div>
-        </div> */}
-      </div>
+        </div>
+      </div> */}
     </div>
   );
 };

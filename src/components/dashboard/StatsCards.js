@@ -13,8 +13,8 @@ const StatCard = ({ title, value, trend, change }) => {
     `}>
       {/* Title */}
       <p 
-        className={`text-sm font-medium ${
-          darkMode ? 'text-gray-400' : 'text-gray-500'
+        className={`text-base font-medium ${
+          darkMode ? 'text-black-500' : 'text-gray-500'
         }`}
         style={{ 
           fontFamily: 'Inter', 

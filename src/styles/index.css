@@ -1,3 +1,19 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+  .juspay-dashboard {
+    zoom: 0.85;
+    width: 100%;
+    min-height: 100vh;
+    padding: 1rem;
+  }
+  
+  @media screen and (max-width: 1200px) {
+    .juspay-dashboard {
+      zoom: 1;
+      padding: 0.5rem;
+    }
+  }
+}

@@ -14,25 +14,21 @@ const TopSellingProducts = () => {
       }`}
       style={{ width: '614px', height: '264px' }}
     >
-      {/* Updated header styling with dark mode support */}
-      <div
-        className={`h-1.25 w-38.375 font-semibold text-sm flex items-center px-2 transition-colors duration-200 ${
-          darkMode ? 'bg-gray-800 text-gray-100' : 'bg-white text-gray-900'
+      {/* Cleaned up header styling */}
+      <h3
+        className={`font-semibold text-base mb-4 transition-colors duration-200 ${
+          darkMode ? 'text-gray-100' : 'text-gray-900'
         }`}
         style={{
-          height: '20px',
-          width: '153px',
-          borderRadius: '8px',
           fontFamily: 'Inter',
           fontWeight: 600,
-          style: 'semi-bold',
         }}
       >
         Top Selling Products
-      </div>
+      </h3>
 
       {/* Table content with dark mode support */}
-      <div className="overflow-auto h-[264px] w-[614px] mt-4">
+      <div className="overflow-auto mt-4">
         <table className="w-full table-auto">
           <thead>
             <tr className={`text-left text-sm border-b transition-colors duration-200 ${

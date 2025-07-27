@@ -32,8 +32,34 @@ const OrdersPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
   
-  const theme = useTheme(); // Get current theme
+  const theme = useTheme();
   const isDarkMode = theme.palette.mode === 'dark';
+
+  // Dashboard theme colors - matching your dashboard design
+  const dashboardColors = {
+    light: {
+      background: '#fafafa', // Light gray background
+      cardBackground: '#ffffff',
+      border: '#e5e7eb',
+      text: {
+        primary: '#111827',
+        secondary: '#6b7280'
+      },
+      hover: '#f9fafb'
+    },
+    dark: {
+      background: '#0f172a', // Dark slate background
+      cardBackground: '#1e293b', // Slate 800
+      border: '#334155', // Slate 600
+      text: {
+        primary: '#f8fafc',
+        secondary: '#cbd5e1'
+      },
+      hover: '#334155'
+    }
+  };
+
+  const colors = isDarkMode ? dashboardColors.dark : dashboardColors.light;
 
   // Extended sample order data (20+ entries)
   const orders = [
@@ -247,33 +273,33 @@ const OrdersPage = () => {
     setSelectedRows([]);
   };
 
-  // Dark mode aware status colors
+  // Dashboard consistent status colors
   const getStatusColor = (status) => {
-    const baseColors = {
+    const statusColors = {
       'Complete': { 
-        light: { color: 'success', bgcolor: '#e8f5e8' },
-        dark: { color: 'success', bgcolor: '#1b4332' }
+        light: { color: '#059669', bgcolor: '#d1fae5', border: '#a7f3d0' },
+        dark: { color: '#6ee7b7', bgcolor: '#064e3b', border: '#065f46' }
       },
       'In Progress': { 
-        light: { color: 'primary', bgcolor: '#e3f2fd' },
-        dark: { color: 'primary', bgcolor: '#1e3a8a' }
+        light: { color: '#2563eb', bgcolor: '#dbeafe', border: '#93c5fd' },
+        dark: { color: '#60a5fa', bgcolor: '#1e3a8a', border: '#1d4ed8' }
       },
       'Pending': { 
-        light: { color: 'warning', bgcolor: '#fff8e1' },
-        dark: { color: 'warning', bgcolor: '#451a03' }
+        light: { color: '#d97706', bgcolor: '#fef3c7', border: '#fcd34d' },
+        dark: { color: '#fbbf24', bgcolor: '#451a03', border: '#92400e' }
       },
       'Approved': { 
-        light: { color: 'secondary', bgcolor: '#f3e5f5' },
-        dark: { color: 'secondary', bgcolor: '#4c1d95' }
+        light: { color: '#7c3aed', bgcolor: '#ede9fe', border: '#c4b5fd' },
+        dark: { color: '#a78bfa', bgcolor: '#4c1d95', border: '#5b21b6' }
       },
       'Rejected': { 
-        light: { color: 'error', bgcolor: '#ffebee' },
-        dark: { color: 'error', bgcolor: '#7f1d1d' }
+        light: { color: '#dc2626', bgcolor: '#fee2e2', border: '#fca5a5' },
+        dark: { color: '#f87171', bgcolor: '#7f1d1d', border: '#991b1b' }
       }
     };
     
-    return baseColors[status]?.[isDarkMode ? 'dark' : 'light'] || 
-           { color: 'default', bgcolor: isDarkMode ? '#374151' : '#f5f5f5' };
+    return statusColors[status]?.[isDarkMode ? 'dark' : 'light'] || 
+           { color: colors.text.secondary, bgcolor: colors.background, border: colors.border };
   };
 
   const handleSelectAll = (event) => {
@@ -299,34 +325,35 @@ const OrdersPage = () => {
   return (
     <Box sx={{ 
       p: 3,
-      bgcolor: isDarkMode ? 'background.default' : 'transparent',
+      bgcolor: colors.background,
       minHeight: '100vh'
     }}>
       {/* Page Title and Actions */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Typography
-          component="h1"
-          sx={{
-            fontFamily: 'Inter',
-            fontWeight: 600,
-            fontStyle: 'normal',
-            fontSize: '20px',
-            lineHeight: '20px',
-            letterSpacing: '0%',
-            color: isDarkMode ? 'text.secondary' : 'black.600', // Use theme-aware color instead of hardcoded
-          }}
-        >
-          Order List
-        </Typography>
+            component="h1"
+            sx={{
+              fontFamily: 'Inter',
+              fontWeight: 600,
+              fontStyle: 'normal',
+              fontSize: '20px',
+              lineHeight: '20px',
+              letterSpacing: '0%',
+              color: colors.text.primary,
+            }}
+          >
+            Order List
+          </Typography>
 
           {/* Search Results Counter */}
           {searchTerm && (
             <Typography
               variant="body2"
               sx={{
-                color: isDarkMode ? 'text.secondary' : 'grey.600',
-                bgcolor: isDarkMode ? 'grey.800' : 'grey.100',
+                color: colors.text.secondary,
+                bgcolor: colors.cardBackground,
+                border: `1px solid ${colors.border}`,
                 px: 1.5,
                 py: 0.5,
                 borderRadius: 1,
@@ -339,16 +366,16 @@ const OrdersPage = () => {
         </Box>
         
         <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-          {/* Enhanced Icon Buttons for Dark Mode */}
+          {/* Dashboard-themed Icon Buttons */}
           <IconButton 
             sx={{ 
-              border: 1, 
-              borderColor: isDarkMode ? 'grey.600' : 'grey.300',
-              color: isDarkMode ? 'text.primary' : 'grey.700',
-              bgcolor: isDarkMode ? 'grey.800' : 'transparent',
+              border: `1px solid ${colors.border}`,
+              color: colors.text.secondary,
+              bgcolor: colors.cardBackground,
               '&:hover': {
-                bgcolor: isDarkMode ? 'grey.700' : 'grey.50',
-                borderColor: isDarkMode ? 'grey.500' : 'grey.400'
+                bgcolor: colors.hover,
+                borderColor: theme.palette.primary.main,
+                color: colors.text.primary
               }
             }}
           >
@@ -356,13 +383,13 @@ const OrdersPage = () => {
           </IconButton>
           <IconButton 
             sx={{ 
-              border: 1, 
-              borderColor: isDarkMode ? 'grey.600' : 'grey.300',
-              color: isDarkMode ? 'text.primary' : 'grey.700',
-              bgcolor: isDarkMode ? 'grey.800' : 'transparent',
+              border: `1px solid ${colors.border}`,
+              color: colors.text.secondary,
+              bgcolor: colors.cardBackground,
               '&:hover': {
-                bgcolor: isDarkMode ? 'grey.700' : 'grey.50',
-                borderColor: isDarkMode ? 'grey.500' : 'grey.400'
+                bgcolor: colors.hover,
+                borderColor: theme.palette.primary.main,
+                color: colors.text.primary
               }
             }}
           >
@@ -370,20 +397,20 @@ const OrdersPage = () => {
           </IconButton>
           <IconButton 
             sx={{ 
-              border: 1, 
-              borderColor: isDarkMode ? 'grey.600' : 'grey.300',
-              color: isDarkMode ? 'text.primary' : 'grey.700',
-              bgcolor: isDarkMode ? 'grey.800' : 'transparent',
+              border: `1px solid ${colors.border}`,
+              color: colors.text.secondary,
+              bgcolor: colors.cardBackground,
               '&:hover': {
-                bgcolor: isDarkMode ? 'grey.700' : 'grey.50',
-                borderColor: isDarkMode ? 'grey.500' : 'grey.400'
+                bgcolor: colors.hover,
+                borderColor: theme.palette.primary.main,
+                color: colors.text.primary
               }
             }}
           >
             <Sort />
           </IconButton>
           
-          {/* Enhanced Search Field for Dark Mode */}
+          {/* Dashboard-themed Search Field */}
           <TextField
             placeholder="Search orders..."
             size="small"
@@ -391,28 +418,28 @@ const OrdersPage = () => {
             onChange={handleSearchChange}
             sx={{ 
               width: 250, 
-              bgcolor: isDarkMode ? 'grey.800' : '#f5f5f5',
+              bgcolor: colors.cardBackground,
               '& .MuiOutlinedInput-root': {
-                color: isDarkMode ? 'text.primary' : 'inherit',
+                color: colors.text.primary,
                 '& fieldset': {
-                  borderColor: isDarkMode ? 'grey.600' : 'grey.300',
+                  borderColor: colors.border,
                 },
                 '&:hover fieldset': {
-                  borderColor: isDarkMode ? 'primary.light' : 'primary.main',
+                  borderColor: theme.palette.primary.main,
                 },
                 '&.Mui-focused fieldset': {
-                  borderColor: 'primary.main',
+                  borderColor: theme.palette.primary.main,
                 },
               },
               '& .MuiInputBase-input::placeholder': {
-                color: isDarkMode ? 'grey.400' : 'grey.500',
+                color: colors.text.secondary,
                 opacity: 1,
               }
             }}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <Search sx={{ color: isDarkMode ? 'grey.400' : 'grey.500' }} />
+                  <Search sx={{ color: colors.text.secondary }} />
                 </InputAdornment>
               ),
               endAdornment: searchTerm && (
@@ -421,10 +448,10 @@ const OrdersPage = () => {
                     size="small"
                     onClick={handleClearSearch}
                     sx={{ 
-                      color: isDarkMode ? 'grey.400' : 'grey.500',
+                      color: colors.text.secondary,
                       '&:hover': { 
-                        color: isDarkMode ? 'grey.200' : 'grey.700',
-                        bgcolor: isDarkMode ? 'grey.700' : 'grey.100'
+                        color: colors.text.primary,
+                        bgcolor: colors.hover
                       }
                     }}
                   >
@@ -444,45 +471,42 @@ const OrdersPage = () => {
             textAlign: 'center', 
             py: 2, 
             mb: 2,
-            bgcolor: isDarkMode ? 'grey.900' : 'grey.50',
+            bgcolor: colors.cardBackground,
             borderRadius: 1,
-            border: '1px solid',
-            borderColor: isDarkMode ? 'grey.700' : 'grey.200'
+            border: `1px solid ${colors.border}`
           }}
         >
-          <Typography variant="body2" sx={{ color: isDarkMode ? 'text.secondary' : 'grey.600' }}>
+          <Typography variant="body2" sx={{ color: colors.text.secondary }}>
             No orders found for "<strong>{searchTerm}</strong>"
           </Typography>
-          <Typography variant="caption" sx={{ color: isDarkMode ? 'grey.500' : 'grey.500', mt: 0.5, display: 'block' }}>
+          <Typography variant="caption" sx={{ color: colors.text.secondary, mt: 0.5, display: 'block' }}>
             Try adjusting your search terms or clear the search to see all orders
           </Typography>
         </Box>
       )}
 
-      {/* Orders Table - Dark Mode Enhanced */}
+      {/* Orders Table - Dashboard Theme */}
       <TableContainer 
         component={Paper} 
         sx={{ 
-          width: '892px', 
+          width: '100%',
           minHeight: '400px',
           maxHeight: '400px',
-          boxShadow: isDarkMode ? '0 4px 6px rgba(0, 0, 0, 0.3)' : '0 1px 3px rgba(0,0,0,0.1)',
+          boxShadow: isDarkMode ? '0 4px 6px rgba(0, 0, 0, 0.3)' : '0 1px 3px rgba(0,0,0,0.08)',
           borderRadius: 2,
           overflow: 'hidden',
-          bgcolor: isDarkMode ? 'grey.900' : 'background.paper',
-          border: isDarkMode ? '1px solid' : 'none',
-          borderColor: isDarkMode ? 'grey.700' : 'transparent'
+          bgcolor: colors.cardBackground,
+          border: `1px solid ${colors.border}`
         }}
       >
         <Table stickyHeader>
           <TableHead>
-            <TableRow sx={{ bgcolor: isDarkMode ? 'grey.800' : 'inherit' }}>
+            <TableRow>
               <TableCell 
                 padding="checkbox"
                 sx={{ 
-                  bgcolor: isDarkMode ? 'grey.800' : 'inherit',
-                  borderBottom: isDarkMode ? '1px solid' : 'inherit',
-                  borderColor: isDarkMode ? 'grey.700' : 'inherit'
+                  bgcolor: colors.cardBackground,
+                  borderBottom: `1px solid ${colors.border}`
                 }}
               >
                 <Checkbox
@@ -491,23 +515,22 @@ const OrdersPage = () => {
                   onChange={handleSelectAll}
                   disabled={paginatedOrders.length === 0}
                   sx={{
-                    color: isDarkMode ? 'grey.400' : 'inherit',
+                    color: colors.text.secondary,
                     '&.Mui-checked': {
-                      color: 'primary.main',
+                      color: theme.palette.primary.main,
                     }
                   }}
                 />
               </TableCell>
-              {['Order ID', 'User', 'Project', 'Address', 'Date', 'Status', ''].map((header, index) => (
+              {['Order ID', 'User', 'Project', 'Address', 'Date', 'Status', ''].map((header) => (
                 <TableCell 
                   key={header}
                   sx={{ 
                     fontWeight: 600, 
                     fontSize: '0.875rem', 
-                    color: isDarkMode ? 'text.secondary' : 'grey.600',
-                    bgcolor: isDarkMode ? 'grey.800' : 'inherit',
-                    borderBottom: isDarkMode ? '1px solid' : 'inherit',
-                    borderColor: isDarkMode ? 'grey.700' : 'inherit'
+                    color: colors.text.secondary,
+                    bgcolor: colors.cardBackground,
+                    borderBottom: `1px solid ${colors.border}`
                   }}
                 >
                   {header}
@@ -517,7 +540,7 @@ const OrdersPage = () => {
           </TableHead>
           <TableBody>
             {paginatedOrders.map((order, index) => {
-              // Enhanced highlight for dark mode
+              // Dashboard-themed highlight
               const highlightText = (text, searchTerm) => {
                 if (!searchTerm.trim()) return text;
                 
@@ -529,9 +552,11 @@ const OrdersPage = () => {
                     <span 
                       key={i} 
                       style={{ 
-                        backgroundColor: isDarkMode ? '#fbbf24' : '#fff59d', 
-                        color: isDarkMode ? '#000' : 'inherit',
-                        fontWeight: 600 
+                        backgroundColor: isDarkMode ? '#fbbf24' : '#fef3c7', 
+                        color: isDarkMode ? '#000' : '#92400e',
+                        fontWeight: 600,
+                        borderRadius: '2px',
+                        padding: '1px 2px'
                       }}
                     >
                       {part}
@@ -547,19 +572,18 @@ const OrdersPage = () => {
                   selected={isSelected(index)}
                   sx={{ 
                     height: '64px',
-                    bgcolor: isDarkMode ? 'grey.900' : 'inherit',
+                    bgcolor: colors.cardBackground,
                     '&:hover': {
-                      bgcolor: isDarkMode ? 'grey.800' : 'grey.50'
+                      bgcolor: colors.hover
                     },
                     '&.Mui-selected': { 
-                      backgroundColor: isDarkMode ? 'primary.dark' : '#e3f2fd !important',
+                      backgroundColor: isDarkMode ? `${theme.palette.primary.dark}40` : `${theme.palette.primary.light}30`,
                       '&:hover': {
-                        backgroundColor: isDarkMode ? 'primary.dark' : '#bbdefb !important'
+                        backgroundColor: isDarkMode ? `${theme.palette.primary.dark}60` : `${theme.palette.primary.light}50`
                       }
                     },
                     '& .MuiTableCell-root': {
-                      borderBottom: isDarkMode ? '1px solid' : 'inherit',
-                      borderColor: isDarkMode ? 'grey.700' : 'inherit'
+                      borderBottom: `1px solid ${colors.border}`
                     }
                   }}
                 >
@@ -568,9 +592,9 @@ const OrdersPage = () => {
                       checked={isSelected(index)}
                       onChange={handleSelectRow(index)}
                       sx={{
-                        color: isDarkMode ? 'grey.400' : 'inherit',
+                        color: colors.text.secondary,
                         '&.Mui-checked': {
-                          color: 'primary.main',
+                          color: theme.palette.primary.main,
                         }
                       }}
                     />
@@ -580,7 +604,7 @@ const OrdersPage = () => {
                       variant="body2" 
                       sx={{ 
                         fontWeight: 600, 
-                        color: isDarkMode ? 'text.primary' : '#1a1a1a' 
+                        color: colors.text.primary
                       }}
                     >
                       {highlightText(order.id, searchTerm)}
@@ -593,7 +617,7 @@ const OrdersPage = () => {
                         variant="body2" 
                         sx={{ 
                           fontWeight: 600, 
-                          color: isDarkMode ? 'text.primary' : '#1a1a1a' 
+                          color: colors.text.primary
                         }}
                       >
                         {highlightText(order.user.name, searchTerm)}
@@ -603,7 +627,7 @@ const OrdersPage = () => {
                   <TableCell>
                     <Typography 
                       variant="body2" 
-                      sx={{ color: isDarkMode ? 'text.secondary' : 'grey.600' }}
+                      sx={{ color: colors.text.secondary }}
                     >
                       {highlightText(order.project, searchTerm)}
                     </Typography>
@@ -611,7 +635,7 @@ const OrdersPage = () => {
                   <TableCell>
                     <Typography 
                       variant="body2" 
-                      sx={{ color: isDarkMode ? 'text.secondary' : 'grey.600' }}
+                      sx={{ color: colors.text.secondary }}
                     >
                       {highlightText(order.address, searchTerm)}
                     </Typography>
@@ -619,7 +643,7 @@ const OrdersPage = () => {
                   <TableCell>
                     <Typography 
                       variant="body2" 
-                      sx={{ color: isDarkMode ? 'text.secondary' : 'grey.600' }}
+                      sx={{ color: colors.text.secondary }}
                     >
                       {highlightText(order.date, searchTerm)}
                     </Typography>
@@ -633,11 +657,7 @@ const OrdersPage = () => {
                               width: 8,
                               height: 8,
                               borderRadius: '50%',
-                              bgcolor: order.status === 'Complete' ? '#10b981' :
-                                      order.status === 'In Progress' ? '#3b82f6' :
-                                      order.status === 'Pending' ? '#f59e0b' :
-                                      order.status === 'Approved' ? '#8b5cf6' :
-                                      order.status === 'Rejected' ? '#ef4444' : '#6b7280'
+                              bgcolor: getStatusColor(order.status).color
                             }}
                           />
                           {highlightText(order.status, searchTerm)}
@@ -649,8 +669,8 @@ const OrdersPage = () => {
                         fontSize: '0.75rem',
                         fontWeight: 500,
                         bgcolor: getStatusColor(order.status).bgcolor,
-                        borderColor: 'transparent',
-                        color: isDarkMode ? 'text.primary' : 'inherit',
+                        borderColor: getStatusColor(order.status).border,
+                        color: getStatusColor(order.status).color,
                         '& .MuiChip-label': {
                           px: 1
                         }
@@ -661,10 +681,10 @@ const OrdersPage = () => {
                     <IconButton 
                       size="small"
                       sx={{
-                        color: isDarkMode ? 'grey.400' : 'grey.400',
+                        color: colors.text.secondary,
                         '&:hover': {
-                          bgcolor: isDarkMode ? 'grey.700' : 'grey.100',
-                          color: isDarkMode ? 'grey.200' : 'grey.600'
+                          bgcolor: colors.hover,
+                          color: colors.text.primary
                         }
                       }}
                     >
@@ -680,10 +700,9 @@ const OrdersPage = () => {
                 key={`empty-${index}`} 
                 sx={{ 
                   height: '64px',
-                  bgcolor: isDarkMode ? 'grey.900' : 'inherit',
+                  bgcolor: colors.cardBackground,
                   '& .MuiTableCell-root': {
-                    borderBottom: isDarkMode ? '1px solid' : 'inherit',
-                    borderColor: isDarkMode ? 'grey.700' : 'inherit'
+                    borderBottom: `1px solid ${colors.border}`
                   }
                 }}
               >
@@ -694,13 +713,13 @@ const OrdersPage = () => {
         </Table>
       </TableContainer>
 
-      {/* Enhanced Pagination and Info for Dark Mode */}
+      {/* Dashboard-themed Pagination */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
         {/* Results Info */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Typography 
             variant="body2" 
-            sx={{ color: isDarkMode ? 'text.secondary' : 'grey.600' }}
+            sx={{ color: colors.text.secondary }}
           >
             Showing {paginatedOrders.length > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0} to{' '}
             {Math.min(currentPage * itemsPerPage, filteredOrders.length)} of {filteredOrders.length} entries
@@ -708,14 +727,14 @@ const OrdersPage = () => {
           {searchTerm && (
             <Typography 
               variant="body2" 
-              sx={{ color: isDarkMode ? 'grey.500' : 'grey.500' }}
+              sx={{ color: colors.text.secondary }}
             >
               (filtered from {orders.length} total entries)
             </Typography>
           )}
         </Box>
         
-        {/* Enhanced Pagination for Dark Mode */}
+        {/* Dashboard-themed Pagination */}
         <Pagination 
           count={totalPages} 
           page={currentPage}
@@ -725,30 +744,30 @@ const OrdersPage = () => {
           sx={{
             '& .MuiPaginationItem-root': {
               fontWeight: 500,
-              color: isDarkMode ? 'text.primary' : 'inherit',
-              bgcolor: isDarkMode ? 'grey.800' : 'transparent',
-              border: isDarkMode ? '1px solid' : 'none',
-              borderColor: isDarkMode ? 'grey.600' : 'transparent',
+              color: colors.text.primary,
+              bgcolor: colors.cardBackground,
+              border: `1px solid ${colors.border}`,
               '&:hover': {
-                bgcolor: isDarkMode ? 'grey.700' : 'grey.100',
-                borderColor: isDarkMode ? 'grey.500' : 'transparent'
+                bgcolor: colors.hover,
+                borderColor: theme.palette.primary.main
               },
               '&.Mui-disabled': {
-                color: isDarkMode ? 'grey.600' : 'grey.400',
-                bgcolor: isDarkMode ? 'grey.900' : 'transparent',
-                borderColor: isDarkMode ? 'grey.700' : 'transparent'
+                color: colors.text.secondary,
+                bgcolor: colors.cardBackground,
+                borderColor: colors.border,
+                opacity: 0.5
               }
             },
             '& .Mui-selected': {
-              bgcolor: 'primary.main !important',
+              bgcolor: `${theme.palette.primary.main} !important`,
               color: 'white !important',
-              borderColor: 'primary.main !important',
+              borderColor: `${theme.palette.primary.main} !important`,
               '&:hover': {
-                bgcolor: 'primary.dark !important'
+                bgcolor: `${theme.palette.primary.dark} !important`
               }
             },
             '& .MuiPaginationItem-ellipsis': {
-              color: isDarkMode ? 'text.secondary' : 'inherit'
+              color: colors.text.secondary
             }
           }}
         />

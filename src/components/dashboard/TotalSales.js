@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { PieChart } from '@mui/x-charts/PieChart';
 import { Card, CardContent, Typography } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
+import { ThemeContext } from '../../context/ThemeContextProvider';
 
 const COLORS = ['#1F2937', '#BBF7D0', '#BAE6FD', '#A5B4FC'];
 
@@ -12,31 +14,35 @@ const pieData = [
 ];
 
 export default function TotalSales() {
+  const theme = useTheme();
+  const { darkMode } = useContext(ThemeContext);
+
   return (
     <Card
       className="shadow-lg"
-      style={{
+      sx={{
         width: 202,
         height: 344,
-        borderRadius: 16,
-        padding: 24,
-        opacity: 1,
+        borderRadius: 2,
+        p: 3,
         display: 'flex',
         flexDirection: 'column',
-        gap: 16,
+        gap: 2,
+        backgroundColor: darkMode ? '#374151' : '#ffffff',
+        color: darkMode ? '#ffffff' : '#000000',
+        boxShadow: darkMode ? '0 4px 6px -1px rgba(0, 0, 0, 0.3)' : '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
       }}
     >
-      <CardContent className="p-0 flex flex-col h-full">
+      <CardContent className="p-0 flex flex-col h-full" sx={{ p: '0 !important' }}>
         <Typography 
           variant="h6" 
-          style={{
+          sx={{
             fontFamily: 'Inter',
             fontWeight: 600,
             fontSize: '14px',
             lineHeight: '20px',
-            letterSpacing: '0%',
-            color: '#1F2937',
-            marginBottom: '16px'
+            color: darkMode ? '#ffffff' : '#1F2937',
+            mb: 2
           }}
         >
           Total Sales
@@ -52,7 +58,6 @@ export default function TotalSales() {
                     id: item.type,
                     value: item.amount,
                     label: '',
-                    itemStyle: { color: COLORS[index] }
                   })),
                   innerRadius: 30,
                   outerRadius: 50,
@@ -83,26 +88,28 @@ export default function TotalSales() {
                   className="w-2 h-2 rounded-full" 
                   style={{ backgroundColor: COLORS[index] }}
                 ></div>
-                <span 
-                  style={{
+                <Typography
+                  component="span"
+                  sx={{
                     fontFamily: 'Inter',
                     fontSize: '12px',
-                    color: '#6B7280'
+                    color: darkMode ? '#D1D5DB' : '#6B7280'
                   }}
                 >
                   {item.type}
-                </span>
+                </Typography>
               </div>
-              <span 
-                style={{
+              <Typography
+                component="span"
+                sx={{
                   fontFamily: 'Inter',
                   fontSize: '12px',
                   fontWeight: 600,
-                  color: '#1F2937'
+                  color: darkMode ? '#ffffff' : '#1F2937'
                 }}
               >
                 ${item.amount}
-              </span>
+              </Typography>
             </div>
           ))}
         </div>

@@ -99,30 +99,6 @@ const RightSidebar = () => {
           ))}
         </div>
       </div>
-
-      {/* Total Sales Section */}
-      {/* <div className={`mt-6 p-4 rounded-lg ${
-        darkMode ? 'bg-gray-700' : 'bg-gray-50'
-      }`}>
-        <h4 className={`text-sm font-medium mb-3 ${
-          darkMode ? 'text-white' : 'text-gray-900'
-        }`}>Total Sales</h4>
-        <div className="space-y-2">
-          {totalSalesData.map((item, index) => (
-            <div key={index} className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <div className={`w-3 h-3 rounded-full ${item.color}`}></div>
-                <span className={`text-sm ${
-                  darkMode ? 'text-gray-300' : 'text-gray-600'
-                }`}>{item.type}</span>
-              </div>
-              <span className={`text-sm font-medium ${
-                darkMode ? 'text-white' : 'text-gray-900'
-              }`}>{item.amount}</span>
-            </div>
-          ))}
-        </div>
-      </div> */}
     </div>
   );
 };

@@ -1,13 +1,21 @@
-
-import React from 'react';
+import React, { useContext } from 'react';
 import { TrendingUp, TrendingDown } from 'lucide-react';
+import { ThemeContext } from '../../context/ThemeContextProvider';
 
 const StatCard = ({ title, value, trend, change }) => {
+  const { darkMode } = useContext(ThemeContext);
+  
   return (
-    <div className="min-w-[200px] w-[202px] h-[112px] p-6 rounded-[16px] bg-white shadow-sm flex flex-col justify-between">
+    <div className={`
+      min-w-[240px] w-[242px] h-[112px] p-6 rounded-2xl shadow-sm 
+      flex flex-col justify-between transition-colors
+      ${darkMode ? 'bg-gray-800' : 'bg-white'}
+    `}>
       {/* Title */}
       <p 
-        className="text-sm text-gray-500 font-medium"
+        className={`text-sm font-medium ${
+          darkMode ? 'text-gray-400' : 'text-gray-500'
+        }`}
         style={{ 
           fontFamily: 'Inter', 
           fontWeight: 600, 
@@ -19,7 +27,11 @@ const StatCard = ({ title, value, trend, change }) => {
       
       {/* Value and Trend Section - Inline */}
       <div className="flex justify-between items-center">
-        <h3 className="text-xl font-semibold text-gray-900">{value}</h3>
+        <h3 className={`text-xl font-semibold ${
+          darkMode ? 'text-white' : 'text-gray-900'
+        }`}>
+          {value}
+        </h3>
         
         {/* Trending Arrow with Percentage - Inline on absolute right */}
         {trend && change && (
@@ -41,7 +53,7 @@ const StatCard = ({ title, value, trend, change }) => {
 
 const StatCards = () => {
   return (
-    <div className="w-[432px] h-[252px] flex flex-wrap gap-[28px] bg-transparent">
+    <div className="w-[524px] h-[252px] flex flex-wrap gap-[28px] bg-transparent">
       <StatCard 
         title="Customers" 
         value="3,781" 

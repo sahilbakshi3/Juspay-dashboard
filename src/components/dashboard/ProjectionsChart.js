@@ -57,28 +57,26 @@ const ProjectionsChart = () => {
               const actualHeight = Math.min((data.actual / maxValue) * availableHeight, availableHeight);
               
               return (
-                <div key={data.month} className="flex flex-col items-center flex-1 h-full justify-end">
-                  {/* Bars container with height constraint */}
-                  <div className="flex flex-col items-center" style={{ maxHeight: `${availableHeight}px` }}>
+                <div key={data.month} className="flex items-end h-full flex-1">
+                  {/* Single stacked bar container */}
+                  <div className="flex flex-col w-8 mx-auto">
                     {/* Projection bar (gray) - top part */}
                     <div 
-                      className={`w-8 rounded-t-md ${
+                      className={`w-full ${
                         darkMode ? 'bg-gray-600' : 'bg-slate-300'
                       }`}
                       style={{
-                        height: `${projectionHeight}px`,
-                        maxHeight: `${availableHeight}px`
+                        height: `${Math.max(projectionHeight - actualHeight, 0)}px`
                       }}
                     ></div>
                     
                     {/* Actual bar (blue) - bottom part */}
                     <div 
-                      className={`w-8 rounded-b-md ${
+                      className={`w-full ${
                         darkMode ? 'bg-blue-500' : 'bg-blue-400'
                       }`}
                       style={{
-                        height: `${actualHeight}px`,
-                        maxHeight: `${availableHeight}px`
+                        height: `${actualHeight}px`
                       }}
                     ></div>
                   </div>
@@ -102,32 +100,6 @@ const ProjectionsChart = () => {
           </div>
         </div>
       </div>
-
-      {/* Legend */}
-      {/* <div className="mt-4">
-        <div className="flex items-center justify-center space-x-6">
-          <div className="flex items-center space-x-2">
-            <div className={`w-3 h-3 rounded ${
-              darkMode ? 'bg-gray-600' : 'bg-slate-300'
-            }`}></div>
-            <span className={`text-xs ${
-              darkMode ? 'text-gray-400' : 'text-gray-500'
-            }`}>
-              Projections
-            </span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <div className={`w-3 h-3 rounded ${
-              darkMode ? 'bg-blue-500' : 'bg-blue-400'
-            }`}></div>
-            <span className={`text-xs ${
-              darkMode ? 'text-gray-400' : 'text-gray-500'
-            }`}>
-              Actuals
-            </span>
-          </div>
-        </div>
-      </div> */}
     </div>
   );
 };

@@ -1,23 +1,49 @@
 import React, { useContext } from 'react';
 import { Bell, Search, Notebook, SunMedium, History, Star } from 'lucide-react';
 import { ThemeContext } from "../../context/ThemeContextProvider";
+import { useToast } from '../../context/ToastContext';
 
-const Header = ({ leftSidebarVisible, rightSidebarVisible, toggleLeftSidebar, toggleRightSidebar }) => {
+const Header = ({ 
+  leftSidebarVisible, 
+  rightSidebarVisible, 
+  toggleLeftSidebar, 
+  toggleRightSidebar,
+  onRefreshDashboard
+}) => {
   const { isDarkMode, toggleTheme } = useContext(ThemeContext);
+  const { showRefreshToast } = useToast();
 
+  const handleRefresh = () => {
+    if (onRefreshDashboard) {
+      // Add rotation animation to refresh icon
+      const refreshIcon = document.querySelector('.refresh-icon');
+      if (refreshIcon) {
+        refreshIcon.style.transform = 'rotate(360deg)';
+        setTimeout(() => {
+          refreshIcon.style.transform = 'rotate(0deg)';
+        }, 300);
+      }
+      
+      onRefreshDashboard();
+      showRefreshToast(); // Show MUI toast notification at top center
+    }
+  };
+
+  // Rest of your existing Header component code remains the same...
   return (
     <header className={`${
       isDarkMode 
         ? 'bg-gray-800 border-gray-700 text-white' 
         : 'bg-white border-gray-200 text-gray-900'
     } border-b px-6 py-4 transition-colors duration-200`}>
+      {/* Your existing header content */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <div className="flex items-center space-x-2">
             {/* Left Sidebar Toggle */}
             <button 
               onClick={toggleLeftSidebar}
-              className={`p-2 rounded-lg transition-all duration-200 ${
+              className={`p-2 rounded-lg transition-all duration-200 relative group ${
                 leftSidebarVisible
                   ? (isDarkMode 
                       ? 'text-blue-400 bg-gray-700 hover:text-blue-300' 
@@ -26,17 +52,57 @@ const Header = ({ leftSidebarVisible, rightSidebarVisible, toggleLeftSidebar, to
                       ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-700' 
                       : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100')
               }`}
-              title={`${leftSidebarVisible ? 'Hide' : 'Show'} left sidebar`}
             >
               <Notebook className="w-5 h-5" />
+              
+              {/* Bottom Tooltip */}
+              <div className={`
+                absolute top-full left-1/2 transform -translate-x-1/2 mt-2
+                px-2 py-1 text-xs font-medium rounded-md
+                opacity-0 group-hover:opacity-100 transition-opacity duration-200
+                pointer-events-none whitespace-nowrap z-50
+                ${isDarkMode 
+                  ? 'bg-gray-900 text-white border border-gray-700' 
+                  : 'bg-gray-800 text-white'
+                }
+              `}>
+                {leftSidebarVisible ? 'Hide' : 'Show'} left sidebar
+                <div className={`
+                  absolute bottom-full left-1/2 transform -translate-x-1/2
+                  border-4 border-transparent
+                  ${isDarkMode ? 'border-b-gray-900' : 'border-b-gray-800'}
+                `}></div>
+              </div>
             </button>
-            <button className={`p-2 ${
+
+            {/* Star Button */}
+            <button className={`p-2 transition-colors relative group ${
               isDarkMode 
                 ? 'text-gray-400 hover:text-gray-200' 
                 : 'text-gray-500 hover:text-gray-700'
-            } transition-colors`}>
+            }`}>
               <Star className="w-5 h-5" />
+              
+              {/* Bottom Tooltip */}
+              <div className={`
+                absolute top-full left-1/2 transform -translate-x-1/2 mt-2
+                px-2 py-1 text-xs font-medium rounded-md
+                opacity-0 group-hover:opacity-100 transition-opacity duration-200
+                pointer-events-none whitespace-nowrap z-50
+                ${isDarkMode 
+                  ? 'bg-gray-900 text-white border border-gray-700' 
+                  : 'bg-gray-800 text-white'
+                }
+              `}>
+                Favorites
+                <div className={`
+                  absolute bottom-full left-1/2 transform -translate-x-1/2
+                  border-4 border-transparent
+                  ${isDarkMode ? 'border-b-gray-900' : 'border-b-gray-800'}
+                `}></div>
+              </div>
             </button>
+
             <span className={isDarkMode ? 'text-gray-400' : 'text-gray-500'}>
               Dashboards
             </span>
@@ -77,34 +143,100 @@ const Header = ({ leftSidebarVisible, rightSidebarVisible, toggleLeftSidebar, to
           {/* Theme Toggle Button */}
           <button 
             onClick={toggleTheme}
-            className={`p-2 rounded-lg transition-all duration-200 ${
+            className={`p-2 rounded-lg transition-all duration-200 relative group ${
               isDarkMode 
                 ? 'text-yellow-400 hover:text-yellow-300 hover:bg-gray-700' 
                 : 'text-gray-500 hover:text-orange-500 hover:bg-gray-100'
             }`}
-            title={`Switch to ${isDarkMode ? 'light' : 'dark'} mode`}
           >
             <SunMedium className="w-6 h-6" />
+            
+            {/* Bottom Tooltip */}
+            <div className={`
+              absolute top-full left-1/2 transform -translate-x-1/2 mt-2
+              px-2 py-1 text-xs font-medium rounded-md
+              opacity-0 group-hover:opacity-100 transition-opacity duration-200
+              pointer-events-none whitespace-nowrap z-50
+              ${isDarkMode 
+                ? 'bg-gray-900 text-white border border-gray-700' 
+                : 'bg-gray-800 text-white'
+              }
+            `}>
+              Switch to {isDarkMode ? 'light' : 'dark'} mode
+              <div className={`
+                absolute bottom-full left-1/2 transform -translate-x-1/2
+                border-4 border-transparent
+                ${isDarkMode ? 'border-b-gray-900' : 'border-b-gray-800'}
+              `}></div>
+            </div>
           </button>
           
-          <button className={`p-2 ${
-            isDarkMode 
-              ? 'text-gray-400 hover:text-gray-200' 
-              : 'text-gray-500 hover:text-gray-700'
-          } transition-colors`}>
-            <History className="w-5 h-5" />
+          {/* History/Refresh Button with Animation */}
+          <button 
+            onClick={handleRefresh}
+            className={`p-2 rounded-lg transition-all duration-200 relative group ${
+              isDarkMode 
+                ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-700' 
+                : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'
+            }`}
+          >
+            <History 
+              className="w-5 h-5 refresh-icon transition-transform duration-300" 
+              style={{ transformOrigin: 'center' }}
+            />
+            
+            {/* Bottom Tooltip */}
+            <div className={`
+              absolute top-full left-1/2 transform -translate-x-1/2 mt-2
+              px-2 py-1 text-xs font-medium rounded-md
+              opacity-0 group-hover:opacity-100 transition-opacity duration-200
+              pointer-events-none whitespace-nowrap z-50
+              ${isDarkMode 
+                ? 'bg-gray-900 text-white border border-gray-700' 
+                : 'bg-gray-800 text-white'
+              }
+            `}>
+              Refresh Dashboard
+              <div className={`
+                absolute bottom-full left-1/2 transform -translate-x-1/2
+                border-4 border-transparent
+                ${isDarkMode ? 'border-b-gray-900' : 'border-b-gray-800'}
+              `}></div>
+            </div>
           </button>
-          <button className={`p-2 ${
+          
+          {/* Notification Bell Button */}
+          <button className={`p-2 transition-colors relative group ${
             isDarkMode 
               ? 'text-gray-400 hover:text-gray-200' 
               : 'text-gray-500 hover:text-gray-700'
-          } transition-colors`}>
+          }`}>
             <Bell className="w-5 h-5" />
+            
+            {/* Bottom Tooltip */}
+            <div className={`
+              absolute top-full left-1/2 transform -translate-x-1/2 mt-2
+              px-2 py-1 text-xs font-medium rounded-md
+              opacity-0 group-hover:opacity-100 transition-opacity duration-200
+              pointer-events-none whitespace-nowrap z-50
+              ${isDarkMode 
+                ? 'bg-gray-900 text-white border border-gray-700' 
+                : 'bg-gray-800 text-white'
+              }
+            `}>
+              Notifications
+              <div className={`
+                absolute bottom-full left-1/2 transform -translate-x-1/2
+                border-4 border-transparent
+                ${isDarkMode ? 'border-b-gray-900' : 'border-b-gray-800'}
+              `}></div>
+            </div>
           </button>
+
           {/* Right Sidebar Toggle */}
           <button 
             onClick={toggleRightSidebar}
-            className={`p-2 rounded-lg transition-all duration-200 ${
+            className={`p-2 rounded-lg transition-all duration-200 relative group ${
               rightSidebarVisible
                 ? (isDarkMode 
                     ? 'text-blue-400 bg-gray-700 hover:text-blue-300' 
@@ -113,9 +245,27 @@ const Header = ({ leftSidebarVisible, rightSidebarVisible, toggleLeftSidebar, to
                     ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-700' 
                     : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100')
             }`}
-            title={`${rightSidebarVisible ? 'Hide' : 'Show'} right sidebar`}
           >
             <Notebook className="w-5 h-5" />
+            
+            {/* Bottom Tooltip */}
+            <div className={`
+              absolute top-full left-1/2 transform -translate-x-1/2 mt-2
+              px-2 py-1 text-xs font-medium rounded-md
+              opacity-0 group-hover:opacity-100 transition-opacity duration-200
+              pointer-events-none whitespace-nowrap z-50
+              ${isDarkMode 
+                ? 'bg-gray-900 text-white border border-gray-700' 
+                : 'bg-gray-800 text-white'
+              }
+            `}>
+              {rightSidebarVisible ? 'Hide' : 'Show'} right sidebar
+              <div className={`
+                absolute bottom-full left-1/2 transform -translate-x-1/2
+                border-4 border-transparent
+                ${isDarkMode ? 'border-b-gray-900' : 'border-b-gray-800'}
+              `}></div>
+            </div>
           </button>
         </div>
       </div>

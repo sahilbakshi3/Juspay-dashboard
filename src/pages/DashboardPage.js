@@ -11,11 +11,11 @@ import TopSellingProducts from '../components/dashboard/TopSellingProducts';
 import TotalSales from '../components/dashboard/TotalSales';
 import { ThemeContext } from '../context/ThemeContextProvider';
 
-const DashboardPage = () => {
+const DashboardPage = ({ refreshKey = 0 }) => {
   const { darkMode } = useContext(ThemeContext);
 
   return (
-    <div className="w-full max-w-none">
+    <div className="w-full max-w-none" key={refreshKey}>
       {/* Page Title - Responsive to dark mode */}
       <div className="flex justify-between items-center mb-6">
         <h1 className={`text-xl font-semibold ${
@@ -29,7 +29,7 @@ const DashboardPage = () => {
       <div className="grid grid-cols-1 2xl:grid-cols-2 gap-7 mb-8">
         {/* Stats Cards Container */}
         <div className="w-full">
-          <StatsCards />
+          <StatsCards key={`stats-${refreshKey}`} />
         </div>
         
         {/* Projections Chart Container */}
@@ -38,7 +38,7 @@ const DashboardPage = () => {
           ${darkMode ? 'bg-gray-800' : 'bg-white'}
           min-h-[252px]
         `}>
-          <ProjectionsChart />
+          <ProjectionsChart key={`projections-${refreshKey}`} />
         </div>
       </div>
 
@@ -46,12 +46,12 @@ const DashboardPage = () => {
       <div className="grid grid-cols-1 2xl:grid-cols-[1fr_auto] gap-7 mb-8">
         {/* Revenue Chart Container */}
         <div className="w-full min-w-0">
-          <RevenueChart />
+          <RevenueChart key={`revenue-chart-${refreshKey}`} />
         </div>
         
         {/* Revenue by Location Container */}
         <div className="flex justify-center 2xl:justify-start">
-          <RevenueByLocation />
+          <RevenueByLocation key={`revenue-location-${refreshKey}`} />
         </div>
       </div>
 
@@ -63,12 +63,12 @@ const DashboardPage = () => {
           ${darkMode ? 'bg-gray-800' : 'bg-white'}
           min-h-[264px]
         `}>
-          <TopSellingProducts />
+          <TopSellingProducts key={`top-products-${refreshKey}`} />
         </div>
         
         {/* TotalSales Container */}
         <div className="flex justify-center 2xl:justify-start">
-          <TotalSales />
+          <TotalSales key={`total-sales-${refreshKey}`} />
         </div>
       </div>
     </div>

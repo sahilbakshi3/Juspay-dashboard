@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useCallback } from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 
 // Layout Components
@@ -6,19 +6,23 @@ import Sidebar from './components/layout/Sidebar';
 import Header from './components/layout/Header';
 import RightSidebar from './components/layout/RightSidebar';
 
-// Theme Context
+// Context Providers
 import ThemeContextProvider, { ThemeContext } from "./context/ThemeContextProvider";
+import { ToastProvider } from './context/ToastContext';
 
 // Pages
 import DashboardPage from './pages/DashboardPage';
 import OrdersPage from './pages/OrdersPage';
 
 const AppContent = () => {
-  const { darkMode } = useContext(ThemeContext); // Access the theme state
+  const { darkMode } = useContext(ThemeContext);
   
   // Sidebar visibility state
   const [leftSidebarVisible, setLeftSidebarVisible] = useState(true);
   const [rightSidebarVisible, setRightSidebarVisible] = useState(true);
+  
+  // Dashboard refresh state
+  const [dashboardRefreshKey, setDashboardRefreshKey] = useState(0);
 
   // Toggle functions
   const toggleLeftSidebar = () => {
@@ -29,6 +33,11 @@ const AppContent = () => {
     setRightSidebarVisible(prev => !prev);
   };
 
+  // Dashboard refresh function
+  const handleDashboardRefresh = useCallback(() => {
+    setDashboardRefreshKey(prev => prev + 1);
+  }, []);
+
   return (
     <div className={`${darkMode ? 'dark' : ''}`}>
       <div className="min-h-screen flex transition-colors duration-300 bg-gray-50 dark:bg-gray-900 text-black dark:text-white">
@@ -37,21 +46,32 @@ const AppContent = () => {
 
         {/* Main Content */}
         <div className="flex-1 flex flex-col overflow-hidden">
-          {/* Header */}
+          {/* Header with refresh functionality */}
           <Header 
             leftSidebarVisible={leftSidebarVisible}
             rightSidebarVisible={rightSidebarVisible}
             toggleLeftSidebar={toggleLeftSidebar}
             toggleRightSidebar={toggleRightSidebar}
+            onRefreshDashboard={handleDashboardRefresh}
           />
 
           {/* Page Routes */}
           <main className="flex-1 overflow-x-hidden overflow-y-auto">
             <div className="p-6">
               <Switch>
-                <Route exact path="/" component={DashboardPage} />
-                <Route path="/overview" component={OrdersPage} />
-                <Route path="/projects" component={DashboardPage} /> {/* Add this route since it's referenced in sidebar */}
+                <Route 
+                  exact 
+                  path="/" 
+                  render={() => <DashboardPage refreshKey={dashboardRefreshKey} />}
+                />
+                <Route 
+                  path="/overview" 
+                  component={OrdersPage} 
+                />
+                <Route 
+                  path="/projects" 
+                  render={() => <DashboardPage refreshKey={dashboardRefreshKey} />}
+                />
               </Switch>
             </div>
           </main>
@@ -67,9 +87,11 @@ const AppContent = () => {
 const App = () => {
   return (
     <ThemeContextProvider>
-      <Router>
-        <AppContent />
-      </Router>
+      <ToastProvider>
+        <Router>
+          <AppContent />
+        </Router>
+      </ToastProvider>
     </ThemeContextProvider>
   );
 };

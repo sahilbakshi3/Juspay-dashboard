@@ -23,23 +23,26 @@ const RevenueChart = () => {
         opacity: 1,
       }}
     >
-      <div className="flex justify-between items-center mb-4" style={{ gap: '16px' }}>
+      {/* Header with title and legend starting from left */}
+      <div className="flex items-center mb-4" style={{ gap: '32px' }}>
         <h3 className={`text-lg font-semibold ${
           darkMode ? 'text-white' : 'text-gray-900'
         }`}>
           Revenue
         </h3>
-        <div className="flex items-center space-x-4 text-sm">
-          <div className="flex items-center">
-            <div className={`w-3 h-3 rounded-full mr-2 ${
+        
+        {/* Legend items positioned on the left side with gap */}
+        <div className="flex items-center gap-6 text-sm">
+          <div className="flex items-center gap-2">
+            <div className={`w-3 h-3 rounded-full ${
               darkMode ? 'bg-blue-500' : 'bg-blue-400'
             }`}></div>
             <span className={darkMode ? 'text-gray-300' : 'text-gray-700'}>
               Current Week $58,211
             </span>
           </div>
-          <div className="flex items-center">
-            <div className={`w-3 h-3 rounded-full mr-2 ${
+          <div className="flex items-center gap-2">
+            <div className={`w-3 h-3 rounded-full ${
               darkMode ? 'bg-gray-400' : 'bg-gray-800'
             }`}></div>
             <span className={darkMode ? 'text-gray-300' : 'text-gray-700'}>

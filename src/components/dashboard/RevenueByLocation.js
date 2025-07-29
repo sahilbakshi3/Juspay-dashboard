@@ -57,7 +57,7 @@ const RevenueByLocation = () => {
       }}
     >
       <h3
-        className={`text-[14px] font-semibold leading-[20px] mb-2 transition-colors duration-200 ${
+        className={`text-[17px] font-semibold leading-[20px] mb-2 transition-colors duration-200 ${
           darkMode ? 'text-gray-100' : 'text-gray-900'
         }`}
         style={{

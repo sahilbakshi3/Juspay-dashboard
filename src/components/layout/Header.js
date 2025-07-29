@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { Bell, Search, Notebook, SunMedium, History, Star } from 'lucide-react';
 import { ThemeContext } from "../../context/ThemeContextProvider";
 
-const Header = () => {
+const Header = ({ leftSidebarVisible, rightSidebarVisible, toggleLeftSidebar, toggleRightSidebar }) => {
   const { isDarkMode, toggleTheme } = useContext(ThemeContext);
 
   return (
@@ -14,11 +14,20 @@ const Header = () => {
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <div className="flex items-center space-x-2">
-            <button className={`p-2 ${
-              isDarkMode 
-                ? 'text-gray-400 hover:text-gray-200' 
-                : 'text-gray-500 hover:text-gray-700'
-            } transition-colors`}>
+            {/* Left Sidebar Toggle */}
+            <button 
+              onClick={toggleLeftSidebar}
+              className={`p-2 rounded-lg transition-all duration-200 ${
+                leftSidebarVisible
+                  ? (isDarkMode 
+                      ? 'text-blue-400 bg-gray-700 hover:text-blue-300' 
+                      : 'text-blue-600 bg-blue-50 hover:text-blue-700')
+                  : (isDarkMode 
+                      ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-700' 
+                      : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100')
+              }`}
+              title={`${leftSidebarVisible ? 'Hide' : 'Show'} left sidebar`}
+            >
               <Notebook className="w-5 h-5" />
             </button>
             <button className={`p-2 ${
@@ -75,11 +84,7 @@ const Header = () => {
             }`}
             title={`Switch to ${isDarkMode ? 'light' : 'dark'} mode`}
           >
-            {isDarkMode ? (
-              <SunMedium className="w-6 h-6" />
-            ) : (
-              <SunMedium className="w-6 h-6" />
-            )}
+            <SunMedium className="w-6 h-6" />
           </button>
           
           <button className={`p-2 ${
@@ -96,11 +101,20 @@ const Header = () => {
           } transition-colors`}>
             <Bell className="w-5 h-5" />
           </button>
-          <button className={`p-2 ${
-            isDarkMode 
-              ? 'text-gray-400 hover:text-gray-200' 
-              : 'text-gray-500 hover:text-gray-700'
-          } transition-colors`}>
+          {/* Right Sidebar Toggle */}
+          <button 
+            onClick={toggleRightSidebar}
+            className={`p-2 rounded-lg transition-all duration-200 ${
+              rightSidebarVisible
+                ? (isDarkMode 
+                    ? 'text-blue-400 bg-gray-700 hover:text-blue-300' 
+                    : 'text-blue-600 bg-blue-50 hover:text-blue-700')
+                : (isDarkMode 
+                    ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-700' 
+                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100')
+            }`}
+            title={`${rightSidebarVisible ? 'Hide' : 'Show'} right sidebar`}
+          >
             <Notebook className="w-5 h-5" />
           </button>
         </div>

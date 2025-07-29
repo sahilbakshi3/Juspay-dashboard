@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 
 // Layout Components
@@ -15,29 +15,50 @@ import OrdersPage from './pages/OrdersPage';
 
 const AppContent = () => {
   const { darkMode } = useContext(ThemeContext); // Access the theme state
+  
+  // Sidebar visibility state
+  const [leftSidebarVisible, setLeftSidebarVisible] = useState(true);
+  const [rightSidebarVisible, setRightSidebarVisible] = useState(true);
+
+  // Toggle functions
+  const toggleLeftSidebar = () => {
+    setLeftSidebarVisible(prev => !prev);
+  };
+
+  const toggleRightSidebar = () => {
+    setRightSidebarVisible(prev => !prev);
+  };
 
   return (
     <div className={`${darkMode ? 'dark' : ''}`}>
       <div className="min-h-screen flex transition-colors duration-300 bg-gray-50 dark:bg-gray-900 text-black dark:text-white">
-        {/* Sidebar */}
-        <Sidebar />
+        {/* Left Sidebar */}
+        <Sidebar isVisible={leftSidebarVisible} />
 
         {/* Main Content */}
-        <div className="flex-1 flex flex-col">
+        <div className="flex-1 flex flex-col overflow-hidden">
           {/* Header */}
-          <Header />
+          <Header 
+            leftSidebarVisible={leftSidebarVisible}
+            rightSidebarVisible={rightSidebarVisible}
+            toggleLeftSidebar={toggleLeftSidebar}
+            toggleRightSidebar={toggleRightSidebar}
+          />
 
           {/* Page Routes */}
-          <main className="flex-1 p-6">
-            <Switch>
-              <Route exact path="/" component={DashboardPage} />
-              <Route path="/overview" component={OrdersPage} />
-            </Switch>
+          <main className="flex-1 overflow-x-hidden overflow-y-auto">
+            <div className="p-6">
+              <Switch>
+                <Route exact path="/" component={DashboardPage} />
+                <Route path="/overview" component={OrdersPage} />
+                <Route path="/projects" component={DashboardPage} /> {/* Add this route since it's referenced in sidebar */}
+              </Switch>
+            </div>
           </main>
         </div>
 
         {/* Right Sidebar */}
-        <RightSidebar />
+        <RightSidebar isVisible={rightSidebarVisible} />
       </div>
     </div>
   );

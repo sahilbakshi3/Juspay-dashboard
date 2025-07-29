@@ -15,7 +15,7 @@ const DashboardPage = () => {
   const { darkMode } = useContext(ThemeContext);
 
   return (
-    <>
+    <div className="w-full max-w-none">
       {/* Page Title - Responsive to dark mode */}
       <div className="flex justify-between items-center mb-6">
         <h1 className={`text-xl font-semibold ${
@@ -25,50 +25,53 @@ const DashboardPage = () => {
         </h1>
       </div>
 
-      {/* Stats Cards and Projections Chart - Side by side */}
-      <div className="flex flex-col lg:flex-row gap-7">
-        <div className="flex-1 max-w-[524px]">
+      {/* Stats Cards and Projections Chart - Responsive Grid */}
+      <div className="grid grid-cols-1 2xl:grid-cols-2 gap-7 mb-8">
+        {/* Stats Cards Container */}
+        <div className="w-full">
           <StatsCards />
         </div>
         
-        {/* Projections Chart - Increased width */}
+        {/* Projections Chart Container */}
         <div className={`
-          rounded-2xl p-6 shadow-sm transition-colors
+          rounded-2xl p-6 shadow-sm transition-colors w-full
           ${darkMode ? 'bg-gray-800' : 'bg-white'}
-          w-full lg:w-[500px] h-[252px]
+          min-h-[252px]
         `}>
           <ProjectionsChart />
         </div>
       </div>
 
-      {/* Revenue Chart and Revenue by Location - Side by side */}
-      <div className="mt-8 flex flex-col lg:flex-row gap-7">
-        <div className="flex-1">
+      {/* Revenue Chart and Revenue by Location - Responsive Grid */}
+      <div className="grid grid-cols-1 2xl:grid-cols-[1fr_auto] gap-7 mb-8">
+        {/* Revenue Chart Container */}
+        <div className="w-full min-w-0">
           <RevenueChart />
         </div>
         
-        {/* Revenue by Location - No need to pass darkMode prop since component uses context */}
-        <div className="w-full lg:w-auto">
+        {/* Revenue by Location Container */}
+        <div className="flex justify-center 2xl:justify-start">
           <RevenueByLocation />
         </div>
       </div>
 
-      {/* Top Selling Products and Total Sales - Side by side */}
-      <div className="mt-8 flex flex-col xl:flex-row gap-7">
+      {/* Top Selling Products and Total Sales - Responsive Grid */}
+      <div className="grid grid-cols-1 2xl:grid-cols-[1fr_auto] gap-7">
+        {/* Top Selling Products Container */}
         <div className={`
-          rounded-2xl p-6 shadow-sm transition-colors flex-1
+          rounded-2xl p-6 shadow-sm transition-colors w-full min-w-0
           ${darkMode ? 'bg-gray-800' : 'bg-white'}
-          min-h-[336px]
+          min-h-[264px]
         `}>
           <TopSellingProducts />
         </div>
         
-        {/* TotalSales Component */}
-        <div className="w-full xl:w-auto flex justify-center xl:justify-start">
+        {/* TotalSales Container */}
+        <div className="flex justify-center 2xl:justify-start">
           <TotalSales />
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

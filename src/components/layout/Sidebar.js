@@ -67,7 +67,7 @@ const CollapsibleMenuItem = ({ icon: Icon, label, subItems = [], isExpanded, onT
   );
 };
 
-const Sidebar = () => {
+const Sidebar = ({ isVisible }) => {
   const history = useHistory();
   const location = useLocation();
   const { darkMode } = useContext(ThemeContext);
@@ -123,150 +123,153 @@ const Sidebar = () => {
   const blankSubItems = []; // Keep empty for now
 
   return (
-    <div className={`w-64 shadow-sm border-r transition-colors ${
+    <div className={`transition-all duration-300 ease-in-out ${
+      isVisible ? 'w-64 opacity-100' : 'w-0 opacity-0'
+    } shadow-sm border-r overflow-hidden ${
       darkMode 
         ? 'bg-gray-800 border-gray-700' 
         : 'bg-white border-gray-200'
     }`}>
-      <div className="p-6">
-        <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-            <span className="text-white font-bold text-sm">B</span>
+      <div className="w-64"> {/* Fixed width content wrapper */}
+        <div className="p-6">
+          <div className="flex items-center space-x-2">
+            <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+              <span className="text-white font-bold text-sm">B</span>
+            </div>
+            <span className={`font-semibold ${
+              darkMode ? 'text-white' : 'text-gray-900'
+            }`}>ByeWind</span>
           </div>
-          <span className={`font-semibold ${
-            darkMode ? 'text-white' : 'text-gray-900'
-          }`}>ByeWind</span>
         </div>
+
+        <nav className="px-6 space-y-1">
+          <div className={`text-xs font-medium uppercase tracking-wider mb-3 ${
+            darkMode ? 'text-gray-400' : 'text-gray-500'
+          }`}>
+            Favorites
+          </div>
+          <div className="space-y-1">
+            <button 
+              onClick={() => handleNavigation('/overview')}
+              className={`w-full flex items-center space-x-3 p-2 rounded-lg text-left transition-colors ${
+                isActive('/overview') 
+                  ? (darkMode ? 'bg-blue-900 text-blue-300' : 'bg-blue-50 text-blue-700')
+                  : (darkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100')
+              }`}
+            >
+              <BarChart3 className="w-5 h-5" />
+              <span>Overview</span>
+            </button>
+            <button 
+              onClick={() => handleNavigation('/projects')}
+              className={`w-full flex items-center space-x-3 p-2 rounded-lg text-left transition-colors ${
+                isActive('/projects') 
+                  ? (darkMode ? 'bg-blue-900 text-blue-300' : 'bg-blue-50 text-blue-700')
+                  : (darkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100')
+              }`}
+            >
+              <FolderOpen className="w-5 h-5" />
+              <span>Projects</span>
+            </button>
+          </div>
+
+          <div className={`text-xs font-medium uppercase tracking-wider mb-3 mt-6 ${
+            darkMode ? 'text-gray-400' : 'text-gray-500'
+          }`}>
+            Dashboards
+          </div>
+          <div className="space-y-1">
+            <CollapsibleMenuItem
+              label="Default"
+              subItems={blankSubItems}
+              isExpanded={expandedSections.default}
+              onToggle={() => toggleSection('default')}
+              onClick={() => handleNavigation('/')}
+              hasIcon={false}
+              darkMode={darkMode}
+            />
+            
+            <CollapsibleMenuItem
+              label="eCommerce"
+              subItems={blankSubItems}
+              isExpanded={expandedSections.ecommerce}
+              onToggle={() => toggleSection('ecommerce')}
+              hasIcon={false}
+              darkMode={darkMode}
+            />
+            
+            <CollapsibleMenuItem
+              label="Projects"
+              subItems={blankSubItems}
+              isExpanded={expandedSections.projects}
+              onToggle={() => toggleSection('projects')}
+              hasIcon={false}
+              darkMode={darkMode}
+            />
+            
+            <CollapsibleMenuItem
+              label="Online Courses"
+              subItems={blankSubItems}
+              isExpanded={expandedSections.onlineCourses}
+              onToggle={() => toggleSection('onlineCourses')}
+              hasIcon={false}
+              darkMode={darkMode}
+            />
+          </div>
+
+          <div className={`text-xs font-medium uppercase tracking-wider mb-3 mt-6 ${
+            darkMode ? 'text-gray-400' : 'text-gray-500'
+          }`}>
+            Pages
+          </div>
+          <div className="space-y-1">
+            <CollapsibleMenuItem
+              icon={User}
+              label="User Profile"
+              subItems={userProfileSubItems}
+              isExpanded={expandedSections.userProfile}
+              onToggle={() => toggleSection('userProfile')}
+              darkMode={darkMode}
+            />
+            
+            <CollapsibleMenuItem
+              icon={CreditCard}
+              label="Account"
+              subItems={blankSubItems}
+              isExpanded={expandedSections.account}
+              onToggle={() => toggleSection('account')}
+              darkMode={darkMode}
+            />
+            
+            <CollapsibleMenuItem
+              icon={Globe}
+              label="Corporate"
+              subItems={blankSubItems}
+              isExpanded={expandedSections.corporate}
+              onToggle={() => toggleSection('corporate')}
+              darkMode={darkMode}
+            />
+            
+            <CollapsibleMenuItem
+              icon={FileText}
+              label="Blog"
+              subItems={blankSubItems}
+              isExpanded={expandedSections.blog}
+              onToggle={() => toggleSection('blog')}
+              darkMode={darkMode}
+            />
+            
+            <CollapsibleMenuItem
+              icon={MessageSquare}
+              label="Social"
+              subItems={blankSubItems}
+              isExpanded={expandedSections.social}
+              onToggle={() => toggleSection('social')}
+              darkMode={darkMode}
+            />
+          </div>
+        </nav>
       </div>
-
-      <nav className="px-6 space-y-1">
-        <div className={`text-xs font-medium uppercase tracking-wider mb-3 ${
-          darkMode ? 'text-gray-400' : 'text-gray-500'
-        }`}>
-          Favorites
-        </div>
-        <div className="space-y-1">
-          <button 
-            onClick={() => handleNavigation('/overview')}
-            className={`w-full flex items-center space-x-3 p-2 rounded-lg text-left transition-colors ${
-              isActive('/overview') 
-                ? (darkMode ? 'bg-blue-900 text-blue-300' : 'bg-blue-50 text-blue-700')
-                : (darkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100')
-            }`}
-          >
-            <BarChart3 className="w-5 h-5" />
-            <span>Overview</span>
-          </button>
-          <button 
-            onClick={() => handleNavigation('/projects')}
-            className={`w-full flex items-center space-x-3 p-2 rounded-lg text-left transition-colors ${
-              isActive('/projects') 
-                ? (darkMode ? 'bg-blue-900 text-blue-300' : 'bg-blue-50 text-blue-700')
-                : (darkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100')
-            }`}
-          >
-            <FolderOpen className="w-5 h-5" />
-            <span>Projects</span>
-          </button>
-        </div>
-
-        <div className={`text-xs font-medium uppercase tracking-wider mb-3 mt-6 ${
-          darkMode ? 'text-gray-400' : 'text-gray-500'
-        }`}>
-          Dashboards
-        </div>
-        <div className="space-y-1">
-          <CollapsibleMenuItem
-            label="Default"
-            subItems={blankSubItems}
-            isExpanded={expandedSections.default}
-            onToggle={() => toggleSection('default')}
-            onClick={() => handleNavigation('/')}
-            hasIcon={false}
-            darkMode={darkMode}
-          />
-          
-          <CollapsibleMenuItem
-            label="eCommerce"
-            subItems={blankSubItems}
-            isExpanded={expandedSections.ecommerce}
-            onToggle={() => toggleSection('ecommerce')}
-            hasIcon={false}
-            darkMode={darkMode}
-          />
-          
-          <CollapsibleMenuItem
-            label="Projects"
-            subItems={blankSubItems}
-            isExpanded={expandedSections.projects}
-            onToggle={() => toggleSection('projects')}
-            hasIcon={false}
-            darkMode={darkMode}
-          />
-          
-          <CollapsibleMenuItem
-            label="Online Courses"
-            subItems={blankSubItems}
-            isExpanded={expandedSections.onlineCourses}
-            onToggle={() => toggleSection('onlineCourses')}
-            hasIcon={false}
-            darkMode={darkMode}
-          />
-        </div>
-
-        <div className={`text-xs font-medium uppercase tracking-wider mb-3 mt-6 ${
-          darkMode ? 'text-gray-400' : 'text-gray-500'
-        }`}>
-          Pages
-        </div>
-        <div className="space-y-1">
-          <CollapsibleMenuItem
-            icon={User}
-            label="User Profile"
-            subItems={userProfileSubItems}
-            isExpanded={expandedSections.userProfile}
-            onToggle={() => toggleSection('userProfile')}
-            darkMode={darkMode}
-          />
-          
-          <CollapsibleMenuItem
-            icon={CreditCard}
-            label="Account"
-            subItems={blankSubItems}
-            isExpanded={expandedSections.account}
-            onToggle={() => toggleSection('account')}
-            darkMode={darkMode}
-          />
-          
-          <CollapsibleMenuItem
-            icon={Globe}
-            label="Corporate"
-            subItems={blankSubItems}
-            isExpanded={expandedSections.corporate}
-            onToggle={() => toggleSection('corporate')}
-            darkMode={darkMode}
-          />
-          
-          <CollapsibleMenuItem
-            icon={FileText}
-            label="Blog"
-            subItems={blankSubItems}
-            isExpanded={expandedSections.blog}
-            onToggle={() => toggleSection('blog')}
-            darkMode={darkMode}
-          />
-          
-          <CollapsibleMenuItem
-            icon={MessageSquare}
-            label="Social"
-            subItems={blankSubItems}
-            isExpanded={expandedSections.social}
-            onToggle={() => toggleSection('social')}
-            darkMode={darkMode}
-          />
-        </div>
-
-      </nav>
     </div>
   );
 };

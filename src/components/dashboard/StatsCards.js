@@ -1,3 +1,5 @@
+// src/components/dashboard/StatsCards.js
+
 import React, { useContext } from 'react';
 import { TrendingUp, TrendingDown } from 'lucide-react';
 import { ThemeContext } from '../../context/ThemeContextProvider';
@@ -7,14 +9,14 @@ const StatCard = ({ title, value, trend, change }) => {
   
   return (
     <div className={`
-      min-w-[240px] w-[242px] h-[112px] p-6 rounded-2xl shadow-sm 
+      w-full h-[112px] p-6 rounded-2xl shadow-sm 
       flex flex-col justify-between transition-colors
       ${darkMode ? 'bg-gray-800' : 'bg-white'}
     `}>
       {/* Title */}
       <p 
         className={`text-base font-medium ${
-          darkMode ? 'text-black-500' : 'text-gray-500'
+          darkMode ? 'text-gray-400' : 'text-gray-500'
         }`}
         style={{ 
           fontFamily: 'Inter', 
@@ -53,31 +55,33 @@ const StatCard = ({ title, value, trend, change }) => {
 
 const StatCards = () => {
   return (
-    <div className="w-[524px] h-[252px] flex flex-wrap gap-[28px] bg-transparent">
-      <StatCard 
-        title="Customers" 
-        value="3,781" 
-        trend="up" 
-        change="+11.01%" 
-      />
-      <StatCard 
-        title="Orders" 
-        value="1,209" 
-        trend="down" 
-        change="-0.03%" 
-      />
-      <StatCard 
-        title="Revenue" 
-        value="$695" 
-        trend="up" 
-        change="+15.03%" 
-      />
-      <StatCard 
-        title="Growth" 
-        value="30.1%" 
-        trend="up" 
-        change="+6.08%" 
-      />
+    <div className="w-full">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-7">
+        <StatCard 
+          title="Customers" 
+          value="3,781" 
+          trend="up" 
+          change="+11.01%" 
+        />
+        <StatCard 
+          title="Orders" 
+          value="1,209" 
+          trend="down" 
+          change="-0.03%" 
+        />
+        <StatCard 
+          title="Revenue" 
+          value="$695" 
+          trend="up" 
+          change="+15.03%" 
+        />
+        <StatCard 
+          title="Growth" 
+          value="30.1%" 
+          trend="up" 
+          change="+6.08%" 
+        />
+      </div>
     </div>
   );
 };

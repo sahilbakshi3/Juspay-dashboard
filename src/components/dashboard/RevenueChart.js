@@ -12,13 +12,12 @@ const RevenueChart = () => {
 
   return (
     <div
-      className={`shadow-sm transition-colors ${
+      className={`w-full shadow-sm transition-colors ${
         darkMode ? 'bg-gray-800' : 'bg-white'
       }`}
       style={{
-        width: '825px',
         height: '318px',
-        minWidth: '800px',
+        minWidth: '600px',
         padding: '24px',
         borderRadius: '16px',
         opacity: 1,
@@ -66,62 +65,65 @@ const RevenueChart = () => {
           ))}
         </div>
 
-        {/* Chart area */}
+        {/* Chart area - Now responsive */}
         <div className="relative flex-1 border-l border-b border-gray-300">
-          <svg className="w-full h-full" viewBox="0 0 800 218">
+          <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
             {/* Grid lines for better visualization */}
             <defs>
               <pattern 
                 id="grid" 
-                width="80" 
-                height="40" 
+                width="14.28" 
+                height="20" 
                 patternUnits="userSpaceOnUse"
               >
                 <path 
-                  d="M 80 0 L 0 0 0 40" 
+                  d="M 14.28 0 L 0 0 0 20" 
                   fill="none" 
                   stroke={darkMode ? '#374151' : '#f3f4f6'} 
-                  strokeWidth="1"
+                  strokeWidth="0.2"
                   opacity="0.5"
                 />
               </pattern>
             </defs>
             <rect width="100%" height="100%" fill="url(#grid)" />
             
-            {/* Blue Line (Current Week) */}
+            {/* Blue Line (Current Week) - Responsive */}
             <path
-              d="M 0 130 Q 200 100 400 140 T 800 90"
+              d="M 0 60 Q 25 45 50 65 T 100 40"
               stroke={darkMode ? '#3B82F6' : '#60A5FA'}
-              strokeWidth="3"
+              strokeWidth="0.5"
               fill="none"
               className="opacity-100"
+              vectorEffect="non-scaling-stroke"
             />
             
             {/* Gray/Dark Line: Solid portion (Previous Week) */}
             <path
-              d="M 0 170 Q 200 160 400 120 Q 450 118 500 125"
+              d="M 0 78 Q 25 73 50 55 Q 57 54 62 57"
               stroke={darkMode ? '#9CA3AF' : '#1F2937'}
-              strokeWidth="3"
+              strokeWidth="0.5"
               fill="none"
+              vectorEffect="non-scaling-stroke"
             />
             
             {/* Gray/Dark Line: Dashed portion */}
             <path
-              d="M 500 125 Q 650 132 800 140"
+              d="M 62 57 Q 81 60 100 64"
               stroke={darkMode ? '#9CA3AF' : '#1F2937'}
-              strokeWidth="3"
+              strokeWidth="0.5"
               fill="none"
-              strokeDasharray="12 6"
+              strokeDasharray="2 1"
+              vectorEffect="non-scaling-stroke"
             />
             
-            {/* Data points */}
-            <circle cx="0" cy="130" r="4" fill={darkMode ? '#3B82F6' : '#60A5FA'} />
-            <circle cx="400" cy="140" r="4" fill={darkMode ? '#3B82F6' : '#60A5FA'} />
-            <circle cx="800" cy="90" r="4" fill={darkMode ? '#3B82F6' : '#60A5FA'} />
+            {/* Data points - Responsive */}
+            <circle cx="0" cy="60" r="0.8" fill={darkMode ? '#3B82F6' : '#60A5FA'} />
+            <circle cx="50" cy="65" r="0.8" fill={darkMode ? '#3B82F6' : '#60A5FA'} />
+            <circle cx="100" cy="40" r="0.8" fill={darkMode ? '#3B82F6' : '#60A5FA'} />
             
-            <circle cx="0" cy="170" r="4" fill={darkMode ? '#9CA3AF' : '#1F2937'} />
-            <circle cx="400" cy="120" r="4" fill={darkMode ? '#9CA3AF' : '#1F2937'} />
-            <circle cx="500" cy="125" r="4" fill={darkMode ? '#9CA3AF' : '#1F2937'} />
+            <circle cx="0" cy="78" r="0.8" fill={darkMode ? '#9CA3AF' : '#1F2937'} />
+            <circle cx="50" cy="55" r="0.8" fill={darkMode ? '#9CA3AF' : '#1F2937'} />
+            <circle cx="62" cy="57" r="0.8" fill={darkMode ? '#9CA3AF' : '#1F2937'} />
           </svg>
 
           {/* X-axis labels */}

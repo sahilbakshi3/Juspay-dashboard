@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { Bell, Search, Notebook, SunMedium, History, Star } from 'lucide-react';
 import { ThemeContext } from "../../context/ThemeContextProvider";
 import { useToast } from '../../context/ToastContext';
@@ -11,7 +11,10 @@ const Header = ({
   onRefreshDashboard
 }) => {
   const { isDarkMode, toggleTheme } = useContext(ThemeContext);
-  const { showRefreshToast } = useToast();
+  const { showRefreshToast, showFavoriteAddedToast, showFavoriteRemovedToast } = useToast();
+  
+  // State for star/favorite toggle
+  const [isFavorite, setIsFavorite] = useState(false);
 
   const handleRefresh = () => {
     if (onRefreshDashboard) {
@@ -29,14 +32,25 @@ const Header = ({
     }
   };
 
-  // Rest of your existing Header component code remains the same...
+  // Handle star/favorite toggle with toast notification
+  const handleFavoriteToggle = () => {
+    const newFavoriteState = !isFavorite;
+    setIsFavorite(newFavoriteState);
+    
+    // Show appropriate toast notification
+    if (newFavoriteState) {
+      showFavoriteAddedToast();
+    } else {
+      showFavoriteRemovedToast();
+    }
+  };
+
   return (
     <header className={`${
       isDarkMode 
         ? 'bg-gray-800 border-gray-700 text-white' 
         : 'bg-white border-gray-200 text-gray-900'
     } border-b px-6 py-4 transition-colors duration-200`}>
-      {/* Your existing header content */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <div className="flex items-center space-x-2">
@@ -75,13 +89,22 @@ const Header = ({
               </div>
             </button>
 
-            {/* Star Button */}
-            <button className={`p-2 transition-colors relative group ${
-              isDarkMode 
-                ? 'text-gray-400 hover:text-gray-200' 
-                : 'text-gray-500 hover:text-gray-700'
-            }`}>
-              <Star className="w-5 h-5" />
+            {/* Star/Favorite Button with Toggle */}
+            <button 
+              onClick={handleFavoriteToggle}
+              className={`p-2 rounded-lg transition-all duration-200 relative group ${
+                isFavorite
+                  ? 'text-yellow-500 hover:text-yellow-400'
+                  : (isDarkMode 
+                      ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-700' 
+                      : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100')
+              }`}
+            >
+              <Star 
+                className={`w-5 h-5 transition-all duration-200 ${
+                  isFavorite ? 'fill-yellow-500' : 'fill-none'
+                }`} 
+              />
               
               {/* Bottom Tooltip */}
               <div className={`
@@ -94,7 +117,7 @@ const Header = ({
                   : 'bg-gray-800 text-white'
                 }
               `}>
-                Favorites
+                {isFavorite ? 'Remove from favorites' : 'Add to favorites'}
                 <div className={`
                   absolute bottom-full left-1/2 transform -translate-x-1/2
                   border-4 border-transparent

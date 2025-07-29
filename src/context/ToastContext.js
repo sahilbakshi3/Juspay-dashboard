@@ -55,6 +55,15 @@ export const ToastProvider = ({ children }) => {
     showSuccessToast('Dashboard refreshed successfully!', 3000);
   };
 
+  // New favorite toast methods
+  const showFavoriteAddedToast = () => {
+    showSuccessToast('Successfully added to favorites!', 3000);
+  };
+
+  const showFavoriteRemovedToast = () => {
+    showInfoToast('Removed from favorites!', 3000);
+  };
+
   return (
     <ToastContext.Provider
       value={{
@@ -63,7 +72,9 @@ export const ToastProvider = ({ children }) => {
         showErrorToast,
         showWarningToast,
         showInfoToast,
-        showRefreshToast
+        showRefreshToast,
+        showFavoriteAddedToast,
+        showFavoriteRemovedToast
       }}
     >
       {children}

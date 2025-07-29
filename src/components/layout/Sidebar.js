@@ -14,7 +14,13 @@ import {
   ChevronRight,
   ShoppingCart,
   GraduationCap,
-  Building
+  Building,
+  ChartPie,
+  FolderClosed,
+  BookOpen,
+  ContactRound,
+  Users,
+  MessagesSquare
 } from 'lucide-react';
 
 const CollapsibleMenuItem = ({ icon: Icon, label, subItems = [], isExpanded, onToggle, hasIcon = true, onClick, darkMode }) => {
@@ -49,11 +55,14 @@ const CollapsibleMenuItem = ({ icon: Icon, label, subItems = [], isExpanded, onT
             {subItems.map((item) => (
               <button
                 key={item.id}
-                onClick={item.onClick}
+                onClick={item.disabled ? undefined : item.onClick}
+                disabled={item.disabled}
                 className={`w-full flex items-center space-x-3 p-2 rounded-lg text-sm text-left transition-colors ${
-                  item.isActive 
-                    ? (darkMode ? 'bg-blue-900 text-blue-300' : 'bg-blue-50 text-blue-700')
-                    : (darkMode ? 'text-gray-400 hover:bg-gray-700' : 'text-gray-600 hover:bg-gray-50')
+                  item.disabled
+                    ? (darkMode ? 'text-gray-600 cursor-not-allowed italic' : 'text-gray-400 cursor-not-allowed italic')
+                    : item.isActive 
+                      ? (darkMode ? 'bg-blue-900 text-blue-300' : 'bg-blue-50 text-blue-700')
+                      : (darkMode ? 'text-gray-400 hover:bg-gray-700' : 'text-gray-600 hover:bg-gray-50')
                 }`}
               >
                 {item.icon && <item.icon className="w-4 h-4" />}
@@ -106,21 +115,60 @@ const Sidebar = ({ isVisible }) => {
       id: 'overview', 
       label: 'Overview',
       onClick: () => handleNavigation('/overview'),
-      isActive: isActive('/overview')
+      isActive: isActive('/overview'),
+      disabled: false
     },
     { 
       id: 'projects', 
       label: 'Projects',
       onClick: () => handleNavigation('/projects'),
-      isActive: isActive('/projects')
+      isActive: isActive('/projects'),
+      disabled: false
     },
-    { id: 'campaigns', label: 'Campaigns', onClick: () => {}, isActive: false },
-    { id: 'documents', label: 'Documents', onClick: () => {}, isActive: false },
-    { id: 'followers', label: 'Followers', onClick: () => {}, isActive: false }
+    { 
+      id: 'campaigns', 
+      label: 'Campaigns', 
+      onClick: () => handleNavigation('/campaigns'), 
+      isActive: isActive('/campaigns'),
+      disabled: false
+    },
+    { 
+      id: 'documents', 
+      label: 'Documents', 
+      onClick: () => handleNavigation('/documents'), 
+      isActive: isActive('/documents'),
+      disabled: false
+    },
+    { 
+      id: 'followers', 
+      label: 'Followers', 
+      onClick: () => handleNavigation('/followers'), 
+      isActive: isActive('/followers'),
+      disabled: false
+    }
   ];
 
-  // Empty sub-items arrays for other sections (blank when opened)
-  const blankSubItems = []; // Keep empty for now
+  // Empty sub-items for other sections (showing placeholder message)
+  const blankSubItems = [
+    { 
+      id: 'placeholder', 
+      label: 'No items available', 
+      onClick: () => {}, 
+      isActive: false,
+      disabled: true
+    }
+  ];
+
+  // Dashboard sub-items with placeholder
+  const dashboardSubItems = [
+    { 
+      id: 'placeholder', 
+      label: 'No items available', 
+      onClick: () => {}, 
+      isActive: false,
+      disabled: true
+    }
+  ];
 
   return (
     <div className={`transition-all duration-300 ease-in-out ${
@@ -157,7 +205,7 @@ const Sidebar = ({ isVisible }) => {
                   : (darkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100')
               }`}
             >
-              <BarChart3 className="w-5 h-5" />
+              
               <span>Overview/Order List</span>
             </button>
             <button 
@@ -168,7 +216,7 @@ const Sidebar = ({ isVisible }) => {
                   : (darkMode ? 'text-gray-300 hover:bg-gray-700' : 'text-gray-700 hover:bg-gray-100')
               }`}
             >
-              <FolderOpen className="w-5 h-5" />
+              
               <span>Projects</span>
             </button>
           </div>
@@ -181,38 +229,42 @@ const Sidebar = ({ isVisible }) => {
           <div className="space-y-1">
             <CollapsibleMenuItem
               label="Default"
-              subItems={blankSubItems}
+              icon={ChartPie}
+              subItems={dashboardSubItems}
               isExpanded={expandedSections.default}
               onToggle={() => toggleSection('default')}
               onClick={() => handleNavigation('/')}
-              hasIcon={false}
+              hasIcon={ChartPie}
               darkMode={darkMode}
             />
             
             <CollapsibleMenuItem
               label="eCommerce"
-              subItems={blankSubItems}
+              icon={ShoppingCart}
+              subItems={dashboardSubItems}
               isExpanded={expandedSections.ecommerce}
               onToggle={() => toggleSection('ecommerce')}
-              hasIcon={false}
+              hasIcon={ShoppingCart}
               darkMode={darkMode}
             />
             
             <CollapsibleMenuItem
               label="Projects"
-              subItems={blankSubItems}
+              icon={FolderClosed}
+              subItems={dashboardSubItems}
               isExpanded={expandedSections.projects}
               onToggle={() => toggleSection('projects')}
-              hasIcon={false}
+              hasIcon={FolderClosed}
               darkMode={darkMode}
             />
             
             <CollapsibleMenuItem
               label="Online Courses"
-              subItems={blankSubItems}
+              icon={BookOpen}
+              subItems={dashboardSubItems}
               isExpanded={expandedSections.onlineCourses}
               onToggle={() => toggleSection('onlineCourses')}
-              hasIcon={false}
+              hasIcon={BookOpen}
               darkMode={darkMode}
             />
           </div>
@@ -224,7 +276,7 @@ const Sidebar = ({ isVisible }) => {
           </div>
           <div className="space-y-1">
             <CollapsibleMenuItem
-              icon={User}
+              icon={ContactRound}
               label="User Profile"
               subItems={userProfileSubItems}
               isExpanded={expandedSections.userProfile}
@@ -242,7 +294,7 @@ const Sidebar = ({ isVisible }) => {
             />
             
             <CollapsibleMenuItem
-              icon={Globe}
+              icon={Users}
               label="Corporate"
               subItems={blankSubItems}
               isExpanded={expandedSections.corporate}
@@ -260,7 +312,7 @@ const Sidebar = ({ isVisible }) => {
             />
             
             <CollapsibleMenuItem
-              icon={MessageSquare}
+              icon={MessagesSquare}
               label="Social"
               subItems={blankSubItems}
               isExpanded={expandedSections.social}

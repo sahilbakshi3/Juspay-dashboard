@@ -3,36 +3,29 @@
 import React, { useContext } from 'react';
 import { ThemeContext } from '../../context/ThemeContextProvider';
 
-const RevenueChart = () => {
+const RevenueChart = ({ isMobile = false }) => {
   const { darkMode } = useContext(ThemeContext);
 
   // Axis data
-  const xAxisLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-  const yAxisValues = ['80K', '60K', '40K', '20K', '0'];
+  const xAxisLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
+  const yAxisValues = ['80M', '60M', '40M', '20M', '0'];
 
   return (
-    <div
-      className={`w-full shadow-sm transition-colors ${
-        darkMode ? 'bg-gray-800' : 'bg-white'
-      }`}
-      style={{
-        height: '318px',
-        minWidth: '600px',
-        padding: '24px',
-        borderRadius: '16px',
-        opacity: 1,
-      }}
-    >
-      {/* Header with title and legend starting from left */}
-      <div className="flex items-center mb-4" style={{ gap: '32px' }}>
-        <h3 className={`text-lg font-semibold ${
+    <div className="w-full h-full" style={{ minWidth: isMobile ? '300px' : '600px' }}>
+      {/* Header with title and legend - Responsive */}
+      <div className={`flex ${isMobile ? 'flex-col' : 'items-center'} mb-2 ${
+        isMobile ? 'space-y-2' : 'space-x-8'
+      }`}>
+        <h3 className={`font-semibold ${
           darkMode ? 'text-white' : 'text-gray-900'
-        }`}>
+        } ${isMobile ? 'text-base' : 'text-lg'}`}>
           Revenue
         </h3>
         
-        {/* Legend items positioned on the left side with gap */}
-        <div className="flex items-center gap-6 text-sm">
+        {/* Legend items - Responsive layout */}
+        <div className={`flex ${isMobile ? 'flex-col space-y-2' : 'items-center gap-6'} ${
+          isMobile ? 'text-xs' : 'text-sm'
+        }`}>
           <div className="flex items-center gap-2">
             <div className={`w-3 h-3 rounded-full ${
               darkMode ? 'bg-blue-500' : 'bg-blue-400'
@@ -52,14 +45,16 @@ const RevenueChart = () => {
         </div>
       </div>
       
-      {/* Chart container with axes */}
-      <div className="flex h-[218px]">
+      {/* Chart container with axes - Responsive height */}
+      <div className={`flex mt-auto ${isMobile ? 'h-[200px]' : 'h-[240px]'}`}>
         {/* Y-axis */}
-        <div className="flex flex-col justify-between items-end pr-3 h-full py-2">
+        <div className={`flex flex-col justify-between items-end h-full py-2 ${
+          isMobile ? 'pr-2' : 'pr-3'
+        }`}>
           {yAxisValues.map((value, index) => (
             <span 
               key={value} 
-              className={`text-xs ${
+              className={`${isMobile ? 'text-xs' : 'text-xs'} ${
                 darkMode ? 'text-gray-400' : 'text-gray-500'
               }`}
             >
@@ -68,10 +63,10 @@ const RevenueChart = () => {
           ))}
         </div>
 
-        {/* Chart area - Now responsive */}
-        <div className="relative flex-1 border-l border-b border-gray-300">
+        {/* Chart area - Responsive */}
+        <div className="relative flex-1 border-l border-b border-gray-300 min-w-0">
           <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-            {/* Grid lines for better visualization */}
+            {/* Grid lines for better visualization - Responsive */}
             <defs>
               <pattern 
                 id="grid" 
@@ -83,18 +78,18 @@ const RevenueChart = () => {
                   d="M 14.28 0 L 0 0 0 20" 
                   fill="none" 
                   stroke={darkMode ? '#374151' : '#f3f4f6'} 
-                  strokeWidth="2.5"
+                  strokeWidth={isMobile ? "2" : "2.5"}
                   opacity="0.5"
                 />
               </pattern>
             </defs>
             <rect width="100%" height="100%" fill="url(#grid)" />
             
-            {/* Blue Line (Current Week) - Responsive */}
+            {/* Blue Line (Current Week) - Responsive stroke width */}
             <path
               d="M 0 60 Q 25 45 50 65 T 100 40"
               stroke={darkMode ? '#3B82F6' : '#60A5FA'}
-              strokeWidth="2.5"
+              strokeWidth={isMobile ? "2" : "2.5"}
               fill="none"
               className="opacity-100"
               vectorEffect="non-scaling-stroke"
@@ -104,7 +99,7 @@ const RevenueChart = () => {
             <path
               d="M 0 78 Q 25 60 50 55 Q 57 50 62 57"
               stroke={darkMode ? '#9CA3AF' : '#1F2937'}
-              strokeWidth="2.5"
+              strokeWidth={isMobile ? "2" : "2.5"}
               fill="none"
               vectorEffect="non-scaling-stroke"
             />
@@ -113,28 +108,30 @@ const RevenueChart = () => {
             <path
               d="M 62 57 Q 81 65 100 64"
               stroke={darkMode ? '#9CA3AF' : '#1F2937'}
-              strokeWidth="2.5"
+              strokeWidth={isMobile ? "2" : "2.5"}
               fill="none"
-              strokeDasharray="6 6"
+              strokeDasharray={isMobile ? "4 4" : "6 6"}
               vectorEffect="non-scaling-stroke"
             />
             
-            {/* Data points - Responsive */}
-            <circle cx="0" cy="60" r="0.8" fill={darkMode ? '#3B82F6' : '#60A5FA'} />
-            <circle cx="50" cy="65" r="0.8" fill={darkMode ? '#3B82F6' : '#60A5FA'} />
-            <circle cx="100" cy="40" r="0.8" fill={darkMode ? '#3B82F6' : '#60A5FA'} />
+            {/* Data points - Responsive size */}
+            <circle cx="0" cy="60" r={isMobile ? "0.6" : "0.8"} fill={darkMode ? '#3B82F6' : '#60A5FA'} />
+            <circle cx="50" cy="65" r={isMobile ? "0.6" : "0.8"} fill={darkMode ? '#3B82F6' : '#60A5FA'} />
+            <circle cx="100" cy="40" r={isMobile ? "0.6" : "0.8"} fill={darkMode ? '#3B82F6' : '#60A5FA'} />
             
-            <circle cx="0" cy="78" r="0.8" fill={darkMode ? '#9CA3AF' : '#1F2937'} />
-            <circle cx="50" cy="55" r="0.8" fill={darkMode ? '#9CA3AF' : '#1F2937'} />
-            <circle cx="62" cy="57" r="0.8" fill={darkMode ? '#9CA3AF' : '#1F2937'} />
+            <circle cx="0" cy="78" r={isMobile ? "0.6" : "0.8"} fill={darkMode ? '#9CA3AF' : '#1F2937'} />
+            <circle cx="50" cy="55" r={isMobile ? "0.6" : "0.8"} fill={darkMode ? '#9CA3AF' : '#1F2937'} />
+            <circle cx="62" cy="57" r={isMobile ? "0.6" : "0.8"} fill={darkMode ? '#9CA3AF' : '#1F2937'} />
           </svg>
 
-          {/* X-axis labels */}
-          <div className="absolute -bottom-6 left-0 right-0 flex justify-between px-2">
+          {/* X-axis labels - Responsive positioning */}
+          <div className={`absolute left-0 right-0 flex justify-between ${
+            isMobile ? '-bottom-5 px-1' : '-bottom-6 px-2'
+          }`}>
             {xAxisLabels.map((label, index) => (
               <span 
                 key={label} 
-                className={`text-xs ${
+                className={`${isMobile ? 'text-xs' : 'text-xs'} ${
                   darkMode ? 'text-gray-400' : 'text-gray-500'
                 }`}
               >

@@ -15,6 +15,15 @@ import {
   Typography,
   Box,
   useTheme,
+  useMediaQuery,
+  Card,
+  CardContent,
+  Stack,
+  Divider,
+  Button,
+  Menu,
+  MenuItem,
+  Collapse,
 } from '@mui/material';
 import {
   Search,
@@ -22,23 +31,46 @@ import {
   FilterList,
   Sort,
   MoreHoriz,
-  Clear
+  Clear,
+  KeyboardArrowDown,
+  KeyboardArrowUp,
+  ViewList,
+  ViewModule,
 } from '@mui/icons-material';
 import Pagination from '@mui/material/Pagination';
 
-const OrdersPage = () => {
+const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
+  const theme = useTheme();
+  const isMobileBreakpoint = useMediaQuery(theme.breakpoints.down('sm'));
+  const isTabletBreakpoint = useMediaQuery(theme.breakpoints.between('sm', 'md'));
+  const isDesktop = useMediaQuery(theme.breakpoints.up('lg'));
+  
+  // Use props or breakpoints for responsive behavior
+  const isMobile = propIsMobile !== undefined ? propIsMobile : isMobileBreakpoint;
+  const isTablet = propIsTablet !== undefined ? propIsTablet : isTabletBreakpoint;
+  
   const [selectedRows, setSelectedRows] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
+  const [viewMode, setViewMode] = useState(isMobile ? 'card' : 'table');
+  const [expandedCards, setExpandedCards] = useState(new Set());
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [selectedOrder, setSelectedOrder] = useState(null);
   
-  const theme = useTheme();
+  // Responsive items per page
+  const getItemsPerPage = () => {
+    if (isMobile) return 5;
+    if (isTablet) return 8;
+    return 10;
+  };
+  
+  const itemsPerPage = getItemsPerPage();
   const isDarkMode = theme.palette.mode === 'dark';
 
-  // Dashboard theme colors - matching your dashboard design
+  // Dashboard theme colors
   const dashboardColors = {
     light: {
-      background: '#fafafa', // Light gray background
+      background: '#fafafa',
       cardBackground: '#ffffff',
       border: '#e5e7eb',
       text: {
@@ -48,9 +80,9 @@ const OrdersPage = () => {
       hover: '#f9fafb'
     },
     dark: {
-      background: '#0f172a', // Dark slate background
-      cardBackground: '#1e293b', // Slate 800
-      border: '#334155', // Slate 600
+      background: '#0f172a',
+      cardBackground: '#1e293b',
+      border: '#334155',
       text: {
         primary: '#f8fafc',
         secondary: '#cbd5e1'
@@ -61,7 +93,7 @@ const OrdersPage = () => {
 
   const colors = isDarkMode ? dashboardColors.dark : dashboardColors.light;
 
-  // Extended sample order data (20+ entries)
+  // Extended sample order data
   const orders = [
     {
       id: '#CM9801',
@@ -183,46 +215,6 @@ const OrdersPage = () => {
       date: 'Feb 12, 2023',
       status: 'Approved'
     },
-    {
-      id: '#CM9816',
-      user: { name: 'Ryan Taylor', avatar: '👨‍🍳' },
-      project: 'Restaurant Website',
-      address: 'Food Street Nashville',
-      date: 'Feb 13, 2023',
-      status: 'In Progress'
-    },
-    {
-      id: '#CM9817',
-      user: { name: 'Amanda White', avatar: '👩‍🎵' },
-      project: 'Music Streaming App',
-      address: 'Entertainment District Vegas',
-      date: 'Feb 14, 2023',
-      status: 'Pending'
-    },
-    {
-      id: '#CM9818',
-      user: { name: 'Chris Martin', avatar: '👨‍🏋️' },
-      project: 'Fitness Tracking App',
-      address: 'Sports Complex Atlanta',
-      date: 'Feb 15, 2023',
-      status: 'Complete'
-    },
-    {
-      id: '#CM9819',
-      user: { name: 'Sophia Rodriguez', avatar: '👩‍🌾' },
-      project: 'Agriculture Platform',
-      address: 'Farm Road Kansas City',
-      date: 'Feb 16, 2023',
-      status: 'Approved'
-    },
-    {
-      id: '#CM9820',
-      user: { name: 'James Wilson', avatar: '👨‍🔬' },
-      project: 'Research Database',
-      address: 'Campus Drive Stanford',
-      date: 'Feb 17, 2023',
-      status: 'In Progress'
-    }
   ];
 
   // Filter orders based on search term
@@ -271,6 +263,33 @@ const OrdersPage = () => {
   const handlePageChange = (event, page) => {
     setCurrentPage(page);
     setSelectedRows([]);
+  };
+
+  // Handle view mode toggle
+  const handleViewModeToggle = () => {
+    setViewMode(viewMode === 'table' ? 'card' : 'table');
+  };
+
+  // Handle card expansion
+  const handleCardExpand = (orderId) => {
+    const newExpanded = new Set(expandedCards);
+    if (newExpanded.has(orderId)) {
+      newExpanded.delete(orderId);
+    } else {
+      newExpanded.add(orderId);
+    }
+    setExpandedCards(newExpanded);
+  };
+
+  // Handle menu
+  const handleMenuClick = (event, order) => {
+    setAnchorEl(event.currentTarget);
+    setSelectedOrder(order);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setSelectedOrder(null);
   };
 
   // Dashboard consistent status colors
@@ -322,24 +341,231 @@ const OrdersPage = () => {
   const isAllSelected = selectedRows.length === paginatedOrders.length && paginatedOrders.length > 0;
   const isIndeterminate = selectedRows.length > 0 && selectedRows.length < paginatedOrders.length;
 
+  // Highlight text function
+  const highlightText = (text, searchTerm) => {
+    if (!searchTerm.trim()) return text;
+    
+    const regex = new RegExp(`(${searchTerm})`, 'gi');
+    const parts = text.split(regex);
+    
+    return parts.map((part, i) => 
+      regex.test(part) ? (
+        <span 
+          key={i} 
+          style={{ 
+            backgroundColor: isDarkMode ? '#fbbf24' : '#fef3c7', 
+            color: isDarkMode ? '#000' : '#92400e',
+            fontWeight: 600,
+            borderRadius: '2px',
+            padding: '1px 2px'
+          }}
+        >
+          {part}
+        </span>
+      ) : part
+    );
+  };
+
+  // Card View Component
+  const OrderCard = ({ order, index, isSelected, onSelect }) => {
+    const isExpanded = expandedCards.has(order.id);
+    
+    return (
+      <Card
+        sx={{
+          mb: 2,
+          bgcolor: colors.cardBackground,
+          border: `1px solid ${colors.border}`,
+          borderRadius: 2,
+          boxShadow: isDarkMode ? '0 2px 4px rgba(0, 0, 0, 0.2)' : '0 1px 3px rgba(0,0,0,0.08)',
+          '&:hover': {
+            boxShadow: isDarkMode ? '0 4px 8px rgba(0, 0, 0, 0.3)' : '0 2px 6px rgba(0,0,0,0.12)',
+          },
+          ...(isSelected && {
+            borderColor: theme.palette.primary.main,
+            bgcolor: isDarkMode ? `${theme.palette.primary.dark}20` : `${theme.palette.primary.light}20`,
+          })
+        }}
+      >
+        <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+          {/* Card Header */}
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Checkbox
+                checked={isSelected}
+                onChange={onSelect}
+                size="small"
+                sx={{
+                  color: colors.text.secondary,
+                  '&.Mui-checked': {
+                    color: theme.palette.primary.main,
+                  }
+                }}
+              />
+              <Typography
+                variant="subtitle2"
+                sx={{
+                  fontWeight: 600,
+                  color: colors.text.primary,
+                  fontSize: '0.875rem'
+                }}
+              >
+                {highlightText(order.id, searchTerm)}
+              </Typography>
+            </Box>
+            
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Chip
+                label={
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <Box
+                      sx={{
+                        width: 6,
+                        height: 6,
+                        borderRadius: '50%',
+                        bgcolor: getStatusColor(order.status).color
+                      }}
+                    />
+                    <span style={{ fontSize: '0.75rem' }}>
+                      {order.status}
+                    </span>
+                  </Box>
+                }
+                size="small"
+                variant="outlined"
+                sx={{
+                  fontSize: '0.75rem',
+                  fontWeight: 500,
+                  bgcolor: getStatusColor(order.status).bgcolor,
+                  borderColor: getStatusColor(order.status).border,
+                  color: getStatusColor(order.status).color,
+                }}
+              />
+              
+              <IconButton 
+                size="small"
+                onClick={(e) => handleMenuClick(e, order)}
+                sx={{
+                  color: colors.text.secondary,
+                  '&:hover': {
+                    bgcolor: colors.hover,
+                    color: colors.text.primary
+                  }
+                }}
+              >
+                <MoreHoriz fontSize="small" />
+              </IconButton>
+            </Box>
+          </Box>
+
+          {/* Card Content */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
+            <Box sx={{ fontSize: '1.5rem' }}>{order.user.avatar}</Box>
+            <Box sx={{ flex: 1 }}>
+              <Typography 
+                variant="body2" 
+                sx={{ 
+                  fontWeight: 600, 
+                  color: colors.text.primary,
+                  fontSize: '0.875rem',
+                  mb: 0.5
+                }}
+              >
+                {highlightText(order.user.name, searchTerm)}
+              </Typography>
+              <Typography 
+                variant="caption" 
+                sx={{ 
+                  color: colors.text.secondary,
+                  fontSize: '0.75rem'
+                }}
+              >
+                {highlightText(order.project, searchTerm)}
+              </Typography>
+            </Box>
+          </Box>
+
+          {/* Expandable Content */}
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Typography 
+              variant="caption" 
+              sx={{ 
+                color: colors.text.secondary,
+                fontSize: '0.75rem'
+              }}
+            >
+              {highlightText(order.date, searchTerm)}
+            </Typography>
+            
+            <IconButton
+              size="small"
+              onClick={() => handleCardExpand(order.id)}
+              sx={{
+                color: colors.text.secondary,
+                '&:hover': {
+                  bgcolor: colors.hover,
+                  color: colors.text.primary
+                }
+              }}
+            >
+              {isExpanded ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
+            </IconButton>
+          </Box>
+
+          {/* Collapsible Details */}
+          <Collapse in={isExpanded}>
+            <Divider sx={{ my: 1, borderColor: colors.border }} />
+            <Box sx={{ pt: 1 }}>
+              <Typography 
+                variant="caption" 
+                sx={{ 
+                  color: colors.text.secondary,
+                  fontSize: '0.75rem',
+                  display: 'block',
+                  mb: 0.5
+                }}
+              >
+                <strong>Address:</strong> {highlightText(order.address, searchTerm)}
+              </Typography>
+              <Typography 
+                variant="caption" 
+                sx={{ 
+                  color: colors.text.secondary,
+                  fontSize: '0.75rem',
+                  display: 'block'
+                }}
+              >
+                <strong>Project:</strong> {highlightText(order.project, searchTerm)}
+              </Typography>
+            </Box>
+          </Collapse>
+        </CardContent>
+      </Card>
+    );
+  };
+
   return (
     <Box sx={{ 
-      p: 3,
+      p: isMobile ? 2 : isTablet ? 2.5 : 3,
       bgcolor: colors.background,
       minHeight: '100vh'
     }}>
-      {/* Page Title and Actions */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+      {/* Page Title and Actions - Responsive */}
+      <Box sx={{ 
+        display: 'flex', 
+        flexDirection: isMobile ? 'column' : 'row',
+        justifyContent: 'space-between', 
+        alignItems: isMobile ? 'stretch' : 'center', 
+        mb: 3,
+        gap: isMobile ? 2 : 1
+      }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
           <Typography
             component="h1"
             sx={{
               fontFamily: 'Inter',
               fontWeight: 600,
-              fontStyle: 'normal',
-              fontSize: '20px',
-              lineHeight: '20px',
-              letterSpacing: '0%',
+              fontSize: isMobile ? '18px' : isTablet ? '20px' : '24px',
               color: colors.text.primary,
             }}
           >
@@ -360,64 +586,94 @@ const OrdersPage = () => {
                 fontSize: '0.75rem'
               }}
             >
-              {filteredOrders.length} of {orders.length} orders
+              {filteredOrders.length} of {orders.length}
             </Typography>
           )}
         </Box>
         
-        <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-          {/* Dashboard-themed Icon Buttons */}
-          <IconButton 
-            sx={{ 
-              border: `1px solid ${colors.border}`,
-              color: colors.text.secondary,
-              bgcolor: colors.cardBackground,
-              '&:hover': {
-                bgcolor: colors.hover,
-                borderColor: theme.palette.primary.main,
-                color: colors.text.primary
-              }
-            }}
-          >
-            <Add />
-          </IconButton>
-          <IconButton 
-            sx={{ 
-              border: `1px solid ${colors.border}`,
-              color: colors.text.secondary,
-              bgcolor: colors.cardBackground,
-              '&:hover': {
-                bgcolor: colors.hover,
-                borderColor: theme.palette.primary.main,
-                color: colors.text.primary
-              }
-            }}
-          >
-            <FilterList />
-          </IconButton>
-          <IconButton 
-            sx={{ 
-              border: `1px solid ${colors.border}`,
-              color: colors.text.secondary,
-              bgcolor: colors.cardBackground,
-              '&:hover': {
-                bgcolor: colors.hover,
-                borderColor: theme.palette.primary.main,
-                color: colors.text.primary
-              }
-            }}
-          >
-            <Sort />
-          </IconButton>
+        <Box sx={{ 
+          display: 'flex', 
+          flexDirection: isMobile ? 'column' : 'row',
+          gap: 1, 
+          alignItems: isMobile ? 'stretch' : 'center'
+        }}>
+          {/* Action Buttons - Responsive */}
+          <Box sx={{ display: 'flex', gap: 1, mb: isMobile ? 1 : 0 }}>
+            <IconButton 
+              sx={{ 
+                border: `1px solid ${colors.border}`,
+                color: colors.text.secondary,
+                bgcolor: colors.cardBackground,
+                '&:hover': {
+                  bgcolor: colors.hover,
+                  borderColor: theme.palette.primary.main,
+                  color: colors.text.primary
+                }
+              }}
+              size={isMobile ? 'small' : 'medium'}
+            >
+              <Add />
+            </IconButton>
+            <IconButton 
+              sx={{ 
+                border: `1px solid ${colors.border}`,
+                color: colors.text.secondary,
+                bgcolor: colors.cardBackground,
+                '&:hover': {
+                  bgcolor: colors.hover,
+                  borderColor: theme.palette.primary.main,
+                  color: colors.text.primary
+                }
+              }}
+              size={isMobile ? 'small' : 'medium'}
+            >
+              <FilterList />
+            </IconButton>
+            <IconButton 
+              sx={{ 
+                border: `1px solid ${colors.border}`,
+                color: colors.text.secondary,
+                bgcolor: colors.cardBackground,
+                '&:hover': {
+                  bgcolor: colors.hover,
+                  borderColor: theme.palette.primary.main,
+                  color: colors.text.primary
+                }
+              }}
+              size={isMobile ? 'small' : 'medium'}
+            >
+              <Sort />
+            </IconButton>
+            
+            {/* View Mode Toggle - Only show on mobile/tablet */}
+            {(isMobile || isTablet) && (
+              <IconButton 
+                onClick={handleViewModeToggle}
+                sx={{ 
+                  border: `1px solid ${colors.border}`,
+                  color: viewMode === 'card' ? theme.palette.primary.main : colors.text.secondary,
+                  bgcolor: colors.cardBackground,
+                  '&:hover': {
+                    bgcolor: colors.hover,
+                    borderColor: theme.palette.primary.main,
+                    color: colors.text.primary
+                  }
+                }}
+                size={isMobile ? 'small' : 'medium'}
+              >
+                {viewMode === 'card' ? <ViewModule /> : <ViewList />}
+              </IconButton>
+            )}
+          </Box>
           
-          {/* Dashboard-themed Search Field */}
+          {/* Search Field - Responsive */}
           <TextField
             placeholder="Search orders..."
             size="small"
             value={searchTerm}
             onChange={handleSearchChange}
             sx={{ 
-              width: 250, 
+              width: isMobile ? '100%' : isTablet ? 200 : 250,
               bgcolor: colors.cardBackground,
               '& .MuiOutlinedInput-root': {
                 color: colors.text.primary,
@@ -444,21 +700,19 @@ const OrdersPage = () => {
               ),
               endAdornment: (
                 <InputAdornment position="end">
-                  {/* Command + Slash Icon */}
-                  <Box
-                    className={`flex items-center space-x-0.5 ${
-                      isDarkMode ? 'text-gray-500' : 'text-gray-400'
-                    }`}
-                    sx={{
-                      mr: searchTerm ? 1 : 0,
-                      display: 'flex',
-                      alignItems: 'center'
-                    }}
-                  >
-                    <span style={{ fontSize: '0.75rem', fontWeight: 500 }}>⌘</span>
-                    <span style={{ fontSize: '0.75rem' }}>/</span>
-                  </Box>
-                  {/* Clear button */}
+                  {!isMobile && (
+                    <Box
+                      sx={{
+                        mr: searchTerm ? 1 : 0,
+                        display: 'flex',
+                        alignItems: 'center',
+                        color: colors.text.secondary
+                      }}
+                    >
+                      <span style={{ fontSize: '0.75rem', fontWeight: 500 }}>⌘</span>
+                      <span style={{ fontSize: '0.75rem' }}>/</span>
+                    </Box>
+                  )}
                   {searchTerm && (
                     <IconButton
                       size="small"
@@ -486,109 +740,125 @@ const OrdersPage = () => {
         <Box 
           sx={{ 
             textAlign: 'center', 
-            py: 2, 
+            py: 4, 
             mb: 2,
             bgcolor: colors.cardBackground,
-            borderRadius: 1,
+            borderRadius: 2,
             border: `1px solid ${colors.border}`
           }}
         >
-          <Typography variant="body2" sx={{ color: colors.text.secondary }}>
+          <Typography variant="body2" sx={{ color: colors.text.secondary, mb: 1 }}>
             No orders found for "<strong>{searchTerm}</strong>"
           </Typography>
-          <Typography variant="caption" sx={{ color: colors.text.secondary, mt: 0.5, display: 'block' }}>
+          <Typography variant="caption" sx={{ color: colors.text.secondary }}>
             Try adjusting your search terms or clear the search to see all orders
           </Typography>
         </Box>
       )}
 
-      {/* Orders Table - Dashboard Theme */}
-      <TableContainer 
-        component={Paper} 
-        sx={{ 
-          width: '100%',
-          minHeight: '400px',
-          maxHeight: '400px',
-          boxShadow: isDarkMode ? '0 4px 6px rgba(0, 0, 0, 0.3)' : '0 1px 3px rgba(0,0,0,0.08)',
-          borderRadius: 2,
-          overflow: 'hidden',
-          bgcolor: colors.cardBackground,
-          border: `1px solid ${colors.border}`
-        }}
-      >
-        <Table stickyHeader>
-          <TableHead>
-            <TableRow>
-              <TableCell 
-                padding="checkbox"
-                sx={{ 
-                  bgcolor: colors.cardBackground,
-                  borderBottom: `1px solid ${colors.border}`
-                }}
-              >
-                <Checkbox
-                  checked={isAllSelected}
-                  indeterminate={isIndeterminate}
-                  onChange={handleSelectAll}
-                  disabled={paginatedOrders.length === 0}
-                  sx={{
-                    color: colors.text.secondary,
-                    '&.Mui-checked': {
-                      color: theme.palette.primary.main,
-                    }
-                  }}
-                />
-              </TableCell>
-              {['Order ID', 'User', 'Project', 'Address', 'Date', 'Status', ''].map((header) => (
+      {/* Orders Content - Responsive Views */}
+      {(isMobile || isTablet) && viewMode === 'card' ? (
+        // Card View for Mobile/Tablet
+        <Box>
+          {paginatedOrders.map((order, index) => (
+            <OrderCard
+              key={`${order.id}-${index}`}
+              order={order}
+              index={index}
+              isSelected={isSelected(index)}
+              onSelect={handleSelectRow(index)}
+            />
+          ))}
+          
+          {paginatedOrders.length === 0 && !searchTerm && (
+            <Box 
+              sx={{ 
+                textAlign: 'center', 
+                py: 8,
+                bgcolor: colors.cardBackground,
+                borderRadius: 2,
+                border: `1px solid ${colors.border}`
+              }}
+            >
+              <Typography variant="body2" sx={{ color: colors.text.secondary }}>
+                No orders available
+              </Typography>
+            </Box>
+          )}
+        </Box>
+      ) : (
+        // Table View
+        <TableContainer 
+          component={Paper} 
+          sx={{ 
+            width: '100%',
+            minHeight: isMobile ? '300px' : isTablet ? '400px' : '500px',
+            maxHeight: isMobile ? '400px' : isTablet ? '500px' : '600px',
+            boxShadow: isDarkMode ? '0 4px 6px rgba(0, 0, 0, 0.3)' : '0 1px 3px rgba(0,0,0,0.08)',
+            borderRadius: 2,
+            overflow: 'auto',
+            bgcolor: colors.cardBackground,
+            border: `1px solid ${colors.border}`
+          }}
+        >
+          <Table stickyHeader size={isMobile ? 'small' : 'medium'}>
+            <TableHead>
+              <TableRow>
                 <TableCell 
-                  key={header}
+                  padding="checkbox"
                   sx={{ 
-                    fontWeight: 600, 
-                    fontSize: '0.875rem', 
-                    color: colors.text.secondary,
                     bgcolor: colors.cardBackground,
-                    borderBottom: `1px solid ${colors.border}`
+                    borderBottom: `1px solid ${colors.border}`,
+                    width: isMobile ? '40px' : 'auto'
                   }}
                 >
-                  {header}
+                  <Checkbox
+                    checked={isAllSelected}
+                    indeterminate={isIndeterminate}
+                    onChange={handleSelectAll}
+                    disabled={paginatedOrders.length === 0}
+                    sx={{
+                      color: colors.text.secondary,
+                      '&.Mui-checked': {
+                        color: theme.palette.primary.main,
+                      }
+                    }}
+                    size={isMobile ? 'small' : 'medium'}
+                  />
                 </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {paginatedOrders.map((order, index) => {
-              // Dashboard-themed highlight
-              const highlightText = (text, searchTerm) => {
-                if (!searchTerm.trim()) return text;
-                
-                const regex = new RegExp(`(${searchTerm})`, 'gi');
-                const parts = text.split(regex);
-                
-                return parts.map((part, i) => 
-                  regex.test(part) ? (
-                    <span 
-                      key={i} 
-                      style={{ 
-                        backgroundColor: isDarkMode ? '#fbbf24' : '#fef3c7', 
-                        color: isDarkMode ? '#000' : '#92400e',
-                        fontWeight: 600,
-                        borderRadius: '2px',
-                        padding: '1px 2px'
-                      }}
-                    >
-                      {part}
-                    </span>
-                  ) : part
-                );
-              };
-
-              return (
+                {[
+                  'Order ID', 
+                  'User', 
+                  'Project', 
+                  ...(isMobile ? [] : ['Address']),
+                  ...(isMobile ? [] : ['Date']), 
+                  'Status', 
+                  ''
+                ].map((header) => (
+                  <TableCell 
+                    key={header}
+                    sx={{ 
+                      fontWeight: 600, 
+                      fontSize: isMobile ? '0.75rem' : '0.875rem', 
+                      color: colors.text.secondary,
+                      bgcolor: colors.cardBackground,
+                      borderBottom: `1px solid ${colors.border}`,
+                      padding: isMobile ? '8px 4px' : '16px'
+                    }}
+                  >
+                    {header}
+                  </TableCell>
+                ))}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {paginatedOrders.map((order, index) => (
                 <TableRow
                   key={`${order.id}-${index}`}
                   hover
                   selected={isSelected(index)}
                   sx={{ 
-                    height: '64px',
+                    height: isMobile ? '48px' : '64px',
                     bgcolor: colors.cardBackground,
                     '&:hover': {
                       bgcolor: colors.hover
@@ -600,7 +870,8 @@ const OrdersPage = () => {
                       }
                     },
                     '& .MuiTableCell-root': {
-                      borderBottom: `1px solid ${colors.border}`
+                      borderBottom: `1px solid ${colors.border}`,
+                      padding: isMobile ? '8px 4px' : '16px'
                     }
                   }}
                 >
@@ -614,6 +885,7 @@ const OrdersPage = () => {
                           color: theme.palette.primary.main,
                         }
                       }}
+                      size={isMobile ? 'small' : 'medium'}
                     />
                   </TableCell>
                   <TableCell>
@@ -621,20 +893,28 @@ const OrdersPage = () => {
                       variant="body2" 
                       sx={{ 
                         fontWeight: 600, 
-                        color: colors.text.primary
+                        color: colors.text.primary,
+                        fontSize: isMobile ? '0.75rem' : '0.875rem'
                       }}
                     >
                       {highlightText(order.id, searchTerm)}
                     </Typography>
                   </TableCell>
                   <TableCell>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                      <Box sx={{ fontSize: '1.5rem' }}>{order.user.avatar}</Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: isMobile ? 1 : 1.5 }}>
+                      <Box sx={{ fontSize: isMobile ? '1rem' : '1.5rem' }}>{order.user.avatar}</Box>
                       <Typography 
                         variant="body2" 
                         sx={{ 
                           fontWeight: 600, 
-                          color: colors.text.primary
+                          color: colors.text.primary,
+                          fontSize: isMobile ? '0.75rem' : '0.875rem',
+                          ...(isMobile && { 
+                            maxWidth: '80px', 
+                            overflow: 'hidden', 
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap'
+                          })
                         }}
                       >
                         {highlightText(order.user.name, searchTerm)}
@@ -644,52 +924,73 @@ const OrdersPage = () => {
                   <TableCell>
                     <Typography 
                       variant="body2" 
-                      sx={{ color: colors.text.secondary }}
+                      sx={{ 
+                        color: colors.text.secondary,
+                        fontSize: isMobile ? '0.75rem' : '0.875rem',
+                        ...(isMobile && { 
+                          maxWidth: '100px', 
+                          overflow: 'hidden', 
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap'
+                        })
+                      }}
                     >
                       {highlightText(order.project, searchTerm)}
                     </Typography>
                   </TableCell>
-                  <TableCell>
-                    <Typography 
-                      variant="body2" 
-                      sx={{ color: colors.text.secondary }}
-                    >
-                      {highlightText(order.address, searchTerm)}
-                    </Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography 
-                      variant="body2" 
-                      sx={{ color: colors.text.secondary }}
-                    >
-                      {highlightText(order.date, searchTerm)}
-                    </Typography>
-                  </TableCell>
+                  {!isMobile && (
+                    <TableCell>
+                      <Typography 
+                        variant="body2" 
+                        sx={{ 
+                          color: colors.text.secondary,
+                          fontSize: '0.875rem'
+                        }}
+                      >
+                        {highlightText(order.address, searchTerm)}
+                      </Typography>
+                    </TableCell>
+                  )}
+                  {!isMobile && (
+                    <TableCell>
+                      <Typography 
+                        variant="body2" 
+                        sx={{ 
+                          color: colors.text.secondary,
+                          fontSize: '0.875rem'
+                        }}
+                      >
+                        {highlightText(order.date, searchTerm)}
+                      </Typography>
+                    </TableCell>
+                  )}
                   <TableCell>
                     <Chip
                       label={
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                           <Box
                             sx={{
-                              width: 8,
-                              height: 8,
+                              width: 6,
+                              height: 6,
                               borderRadius: '50%',
                               bgcolor: getStatusColor(order.status).color
                             }}
                           />
-                          {highlightText(order.status, searchTerm)}
+                          <span style={{ fontSize: isMobile ? '0.6rem' : '0.75rem' }}>
+                            {isMobile ? order.status.slice(0, 3) + (order.status.length > 3 ? '.' : '') : order.status}
+                          </span>
                         </Box>
                       }
                       size="small"
                       variant="outlined"
                       sx={{
-                        fontSize: '0.75rem',
+                        fontSize: isMobile ? '0.6rem' : '0.75rem',
                         fontWeight: 500,
                         bgcolor: getStatusColor(order.status).bgcolor,
                         borderColor: getStatusColor(order.status).border,
                         color: getStatusColor(order.status).color,
                         '& .MuiChip-label': {
-                          px: 1
+                          px: isMobile ? 0.5 : 1
                         }
                       }}
                     />
@@ -697,6 +998,7 @@ const OrdersPage = () => {
                   <TableCell>
                     <IconButton 
                       size="small"
+                      onClick={(e) => handleMenuClick(e, order)}
                       sx={{
                         color: colors.text.secondary,
                         '&:hover': {
@@ -705,90 +1007,227 @@ const OrdersPage = () => {
                         }
                       }}
                     >
-                      <MoreHoriz />
+                      <MoreHoriz fontSize={isMobile ? 'small' : 'medium'} />
                     </IconButton>
                   </TableCell>
                 </TableRow>
-              );
-            })}
-            {/* Fill empty rows to maintain consistent height */}
-            {Array.from({ length: Math.max(0, itemsPerPage - paginatedOrders.length) }).map((_, index) => (
-              <TableRow 
-                key={`empty-${index}`} 
-                sx={{ 
-                  height: '64px',
-                  bgcolor: colors.cardBackground,
-                  '& .MuiTableCell-root': {
-                    borderBottom: `1px solid ${colors.border}`
-                  }
-                }}
-              >
-                <TableCell colSpan={8}></TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+              ))}
+              
+              {/* Fill empty rows to maintain consistent height */}
+              {Array.from({ length: Math.max(0, itemsPerPage - paginatedOrders.length) }).map((_, index) => (
+                <TableRow 
+                  key={`empty-${index}`} 
+                  sx={{ 
+                    height: isMobile ? '48px' : '64px',
+                    bgcolor: colors.cardBackground,
+                    '& .MuiTableCell-root': {
+                      borderBottom: `1px solid ${colors.border}`,
+                    }
+                  }}
+                >
+                  <TableCell colSpan={isMobile ? 5 : 7} />
+                </TableRow>
+              ))}
+              
+              {/* Empty state */}
+              {paginatedOrders.length === 0 && !searchTerm && (
+                <TableRow sx={{ height: '200px' }}>
+                  <TableCell 
+                    colSpan={isMobile ? 5 : 7} 
+                    sx={{ 
+                      textAlign: 'center',
+                      borderBottom: 'none'
+                    }}
+                  >
+                    <Typography variant="body2" sx={{ color: colors.text.secondary }}>
+                      No orders available
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
 
-      {/* Dashboard-themed Pagination */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
-        {/* Results Info */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Typography 
-            variant="body2" 
-            sx={{ color: colors.text.secondary }}
-          >
-            Showing {paginatedOrders.length > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0} to{' '}
-            {Math.min(currentPage * itemsPerPage, filteredOrders.length)} of {filteredOrders.length} entries
-          </Typography>
-          {searchTerm && (
+      {/* Pagination - Responsive */}
+      {totalPages > 1 && (
+        <Box 
+          sx={{ 
+            display: 'flex', 
+            justifyContent: isMobile ? 'center' : 'space-between',
+            alignItems: 'center',
+            mt: 3,
+            flexDirection: isMobile ? 'column' : 'row',
+            gap: isMobile ? 2 : 0
+          }}
+        >
+          {!isMobile && (
             <Typography 
               variant="body2" 
               sx={{ color: colors.text.secondary }}
             >
-              (filtered from {orders.length} total entries)
+              Showing {Math.min((currentPage - 1) * itemsPerPage + 1, filteredOrders.length)} to{' '}
+              {Math.min(currentPage * itemsPerPage, filteredOrders.length)} of {filteredOrders.length} orders
+            </Typography>
+          )}
+          
+          <Pagination
+            count={totalPages}
+            page={currentPage}
+            onChange={handlePageChange}
+            color="primary"
+            size={isMobile ? 'small' : 'medium'}
+            showFirstButton={!isMobile}
+            showLastButton={!isMobile}
+            sx={{
+              '& .MuiPaginationItem-root': {
+                color: colors.text.secondary,
+                '&:hover': {
+                  bgcolor: colors.hover,
+                },
+                '&.Mui-selected': {
+                  bgcolor: theme.palette.primary.main,
+                  color: theme.palette.primary.contrastText,
+                  '&:hover': {
+                    bgcolor: theme.palette.primary.dark,
+                  }
+                }
+              }
+            }}
+          />
+          
+          {isMobile && (
+            <Typography 
+              variant="caption" 
+              sx={{ color: colors.text.secondary, textAlign: 'center' }}
+            >
+              {Math.min((currentPage - 1) * itemsPerPage + 1, filteredOrders.length)} - {Math.min(currentPage * itemsPerPage, filteredOrders.length)} of {filteredOrders.length}
             </Typography>
           )}
         </Box>
-        
-        {/* Dashboard-themed Pagination */}
-        <Pagination 
-          count={totalPages} 
-          page={currentPage}
-          onChange={handlePageChange}
-          shape="rounded"
-          disabled={filteredOrders.length === 0}
-          sx={{
-            '& .MuiPaginationItem-root': {
-              fontWeight: 500,
+      )}
+
+      {/* Action Menu */}
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleMenuClose}
+        PaperProps={{
+          sx: {
+            bgcolor: colors.cardBackground,
+            border: `1px solid ${colors.border}`,
+            boxShadow: isDarkMode 
+              ? '0 4px 6px rgba(0, 0, 0, 0.3)' 
+              : '0 2px 8px rgba(0, 0, 0, 0.15)',
+            '& .MuiMenuItem-root': {
               color: colors.text.primary,
-              bgcolor: colors.cardBackground,
-              border: `1px solid ${colors.border}`,
+              fontSize: '0.875rem',
               '&:hover': {
                 bgcolor: colors.hover,
-                borderColor: theme.palette.primary.main
-              },
-              '&.Mui-disabled': {
-                color: colors.text.secondary,
-                bgcolor: colors.cardBackground,
-                borderColor: colors.border,
-                opacity: 0.5
               }
-            },
-            '& .Mui-selected': {
-              bgcolor: `${theme.palette.primary.main} !important`,
-              color: 'white !important',
-              borderColor: `${theme.palette.primary.main} !important`,
-              '&:hover': {
-                bgcolor: `${theme.palette.primary.dark} !important`
-              }
-            },
-            '& .MuiPaginationItem-ellipsis': {
-              color: colors.text.secondary
+            }
+          }
+        }}
+        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+      >
+        <MenuItem onClick={handleMenuClose}>
+          View Details
+        </MenuItem>
+        <MenuItem onClick={handleMenuClose}>
+          Edit Order
+        </MenuItem>
+        <MenuItem onClick={handleMenuClose}>
+          Download Invoice
+        </MenuItem>
+        <Divider sx={{ borderColor: colors.border }} />
+        <MenuItem 
+          onClick={handleMenuClose}
+          sx={{ 
+            color: theme.palette.error.main + ' !important',
+            '&:hover': {
+              bgcolor: theme.palette.error.main + '20 !important'
             }
           }}
-        />
-      </Box>
+        >
+          Delete Order
+        </MenuItem>
+      </Menu>
+
+      {/* Selected Items Actions Bar - Responsive */}
+      {selectedRows.length > 0 && (
+        <Box
+          sx={{
+            position: 'fixed',
+            bottom: isMobile ? 16 : 24,
+            left: '50%',
+            transform: 'translateX(-50%)',
+            zIndex: 1000,
+            bgcolor: colors.cardBackground,
+            border: `1px solid ${colors.border}`,
+            borderRadius: 2,
+            px: 3,
+            py: 2,
+            boxShadow: isDarkMode 
+              ? '0 8px 24px rgba(0, 0, 0, 0.4)' 
+              : '0 4px 16px rgba(0, 0, 0, 0.15)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 2,
+            flexDirection: isMobile ? 'column' : 'row',
+            minWidth: isMobile ? '280px' : '320px'
+          }}
+        >
+          <Typography 
+            variant="body2" 
+            sx={{ 
+              color: colors.text.primary,
+              fontWeight: 500,
+              fontSize: isMobile ? '0.875rem' : '1rem'
+            }}
+          >
+            {selectedRows.length} order{selectedRows.length !== 1 ? 's' : ''} selected
+          </Typography>
+          
+          <Box sx={{ 
+            display: 'flex', 
+            gap: 1,
+            flexDirection: isMobile ? 'row' : 'row',
+            width: isMobile ? '100%' : 'auto'
+          }}>
+            <Button
+              variant="outlined"
+              size="small"
+              onClick={() => setSelectedRows([])}
+              sx={{
+                borderColor: colors.border,
+                color: colors.text.secondary,
+                '&:hover': {
+                  borderColor: theme.palette.primary.main,
+                  bgcolor: colors.hover
+                },
+                flex: isMobile ? 1 : 'none'
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="contained"
+              size="small"
+              sx={{
+                bgcolor: theme.palette.primary.main,
+                '&:hover': {
+                  bgcolor: theme.palette.primary.dark
+                },
+                flex: isMobile ? 1 : 'none'
+              }}
+            >
+              Export
+            </Button>
+          </Box>
+        </Box>
+      )}
     </Box>
   );
 };

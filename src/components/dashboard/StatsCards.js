@@ -4,7 +4,7 @@ import React, { useContext } from 'react';
 import { TrendingUp, TrendingDown } from 'lucide-react';
 import { ThemeContext } from '../../context/ThemeContextProvider';
 
-const StatCard = ({ title, value, trend, change }) => {
+const StatCard = ({ title, value, trend, change, isMobile }) => {
   const { darkMode } = useContext(ThemeContext);
 
   // Custom backgrounds for Customers and Growth
@@ -29,21 +29,24 @@ const StatCard = ({ title, value, trend, change }) => {
   return (
     <div
       className={`
-        w-full h-[112px] p-6 rounded-2xl shadow-sm 
+        w-full p-4 sm:p-6 rounded-xl sm:rounded-2xl shadow-sm 
         flex flex-col justify-between transition-colors
         ${!inlineBackground ? (darkMode ? 'bg-gray-800' : 'bg-white') : ''}
+        ${isMobile ? 'min-h-[100px] h-[100px]' : 'h-[112px]'}
       `}
       style={inlineBackground ?? undefined}
     >
-      {/* Heading with requested typography */}
+      {/* Heading with responsive typography */}
       <p
-        className={`text-base font-medium ${headingClass}`}
+        className={`font-medium ${headingClass} ${
+          isMobile ? 'text-sm' : 'text-base'
+        }`}
         style={{
           fontFamily: 'Inter',
           fontWeight: 600,
           fontStyle: 'normal',
-          fontSize: '17px',
-          lineHeight: '20px',
+          fontSize: isMobile ? '14px' : '17px',
+          lineHeight: isMobile ? '18px' : '20px',
           letterSpacing: '0%',
         }}
       >
@@ -51,18 +54,22 @@ const StatCard = ({ title, value, trend, change }) => {
       </p>
 
       <div className="flex justify-between items-center">
-        <h3 className={`text-xl font-semibold ${headingClass}`}>
+        <h3 className={`font-semibold ${headingClass} ${
+          isMobile ? 'text-lg' : 'text-xl'
+        }`}>
           {value}
         </h3>
         {trend && change && (
-          <div className={`flex items-center text-xs ${
+          <div className={`flex items-center ${
+            isMobile ? 'text-xs' : 'text-xs'
+          } ${
             trend === 'up' ? 'text-green-600' : 'text-red-600'
           }`}>
             <span className="mr-1">{change}</span>
             {trend === 'up' ? (
-              <TrendingUp className="w-3 h-3" />
+              <TrendingUp className={`${isMobile ? 'w-3 h-3' : 'w-3 h-3'}`} />
             ) : (
-              <TrendingDown className="w-3 h-3" />
+              <TrendingDown className={`${isMobile ? 'w-3 h-3' : 'w-3 h-3'}`} />
             )}
           </div>
         )}
@@ -71,32 +78,38 @@ const StatCard = ({ title, value, trend, change }) => {
   );
 };
 
-const StatCards = () => (
+const StatCards = ({ isMobile = false }) => (
   <div className="w-full">
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-7">
+    <div className={`grid grid-cols-1 sm:grid-cols-2 ${
+      isMobile ? 'gap-4' : 'gap-7'
+    }`}>
       <StatCard
         title="Customers"
         value="3,781"
         trend="up"
         change="+11.01%"
+        isMobile={isMobile}
       />
       <StatCard
         title="Orders"
         value="1,209"
         trend="down"
         change="-0.03%"
+        isMobile={isMobile}
       />
       <StatCard
         title="Revenue"
         value="$695"
         trend="up"
         change="+15.03%"
+        isMobile={isMobile}
       />
       <StatCard
         title="Growth"
         value="30.1%"
         trend="up"
         change="+6.08%"
+        isMobile={isMobile}
       />
     </div>
   </div>

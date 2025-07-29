@@ -215,6 +215,126 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
       date: 'Feb 12, 2023',
       status: 'Approved'
     },
+    {
+    id: '#CM9816',
+    user: { name: 'Brian White', avatar: '👨‍💼' },
+    project: 'Job Board App',
+    address: 'King Street Charleston',
+    date: 'Feb 13, 2023',
+    status: 'Pending'
+  },
+  {
+    id: '#CM9817',
+    user: { name: 'Olivia Moore', avatar: '👩‍🔧' },
+    project: 'HR Management Tool',
+    address: 'Queen Street Toronto',
+    date: 'Feb 14, 2023',
+    status: 'Complete'
+  },
+  {
+    id: '#CM9818',
+    user: { name: 'Ethan Taylor', avatar: '👨‍🎨' },
+    project: 'Design System',
+    address: 'Creative Avenue Atlanta',
+    date: 'Feb 15, 2023',
+    status: 'In Progress'
+  },
+  {
+    id: '#CM9819',
+    user: { name: 'Sophia Martin', avatar: '👩‍🚒' },
+    project: 'Disaster Response Portal',
+    address: 'Firehouse Road Houston',
+    date: 'Feb 16, 2023',
+    status: 'Approved'
+  },
+  {
+    id: '#CM9820',
+    user: { name: 'Daniel Walker', avatar: '👨‍🍳' },
+    project: 'Recipe App',
+    address: 'Baker Street London',
+    date: 'Feb 17, 2023',
+    status: 'Rejected'
+  },
+  {
+    id: '#CM9821',
+    user: { name: 'Ella Harris', avatar: '👩‍🔧' },
+    project: 'Customer Support Dashboard',
+    address: 'Helpdesk Lane Dallas',
+    date: 'Feb 18, 2023',
+    status: 'In Progress'
+  },
+  {
+    id: '#CM9822',
+    user: { name: 'Logan Martinez', avatar: '👨‍🎓' },
+    project: 'Student Portal',
+    address: 'Campus Circle Raleigh',
+    date: 'Feb 19, 2023',
+    status: 'Pending'
+  },
+  {
+    id: '#CM9823',
+    user: { name: 'Grace Thompson', avatar: '👩‍🌾' },
+    project: 'Farm Management System',
+    address: 'Harvest Road Boise',
+    date: 'Feb 20, 2023',
+    status: 'Complete'
+  },
+  {
+    id: '#CM9824',
+    user: { name: 'Henry Scott', avatar: '👨‍🚒' },
+    project: 'Safety Compliance App',
+    address: 'Rescue Blvd Tampa',
+    date: 'Feb 21, 2023',
+    status: 'Approved'
+  },
+  {
+    id: '#CM9825',
+    user: { name: 'Chloe Adams', avatar: '👩‍✈️' },
+    project: 'Travel Booking Platform',
+    address: 'Aviation Road Nashville',
+    date: 'Feb 22, 2023',
+    status: 'In Progress'
+  },
+  {
+    id: '#CM9826',
+    user: { name: 'Lucas Mitchell', avatar: '👨‍⚕️' },
+    project: 'Telemedicine App',
+    address: 'Wellness Drive Baltimore',
+    date: 'Feb 23, 2023',
+    status: 'Complete'
+  },
+  {
+    id: '#CM9827',
+    user: { name: 'Amelia Perez', avatar: '👩‍🚀' },
+    project: 'Space Education Portal',
+    address: 'Galaxy Street Houston',
+    date: 'Feb 24, 2023',
+    status: 'Pending'
+  },
+  {
+    id: '#CM9828',
+    user: { name: 'Jack Rivera', avatar: '👨‍🌾' },
+    project: 'AgriTech CRM',
+    address: 'Greenfield Road Fresno',
+    date: 'Feb 25, 2023',
+    status: 'Rejected'
+  },
+  {
+    id: '#CM9829',
+    user: { name: 'Zoe Cooper', avatar: '👩‍🎤' },
+    project: 'Music Collaboration App',
+    address: 'Harmony Lane Austin',
+    date: 'Feb 26, 2023',
+    status: 'Complete'
+  },
+  {
+    id: '#CM9830',
+    user: { name: 'Nathan Bell', avatar: '👨‍🔬' },
+    project: 'Lab Management System',
+    address: 'Science Park San Diego',
+    date: 'Feb 27, 2023',
+    status: 'Approved'
+  }
   ];
 
   // Filter orders based on search term

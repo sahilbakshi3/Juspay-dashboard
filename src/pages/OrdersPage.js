@@ -442,21 +442,38 @@ const OrdersPage = () => {
                   <Search sx={{ color: colors.text.secondary }} />
                 </InputAdornment>
               ),
-              endAdornment: searchTerm && (
+              endAdornment: (
                 <InputAdornment position="end">
-                  <IconButton
-                    size="small"
-                    onClick={handleClearSearch}
-                    sx={{ 
-                      color: colors.text.secondary,
-                      '&:hover': { 
-                        color: colors.text.primary,
-                        bgcolor: colors.hover
-                      }
+                  {/* Command + Slash Icon */}
+                  <Box
+                    className={`flex items-center space-x-0.5 ${
+                      isDarkMode ? 'text-gray-500' : 'text-gray-400'
+                    }`}
+                    sx={{
+                      mr: searchTerm ? 1 : 0,
+                      display: 'flex',
+                      alignItems: 'center'
                     }}
                   >
-                    <Clear fontSize="small" />
-                  </IconButton>
+                    <span style={{ fontSize: '0.75rem', fontWeight: 500 }}>⌘</span>
+                    <span style={{ fontSize: '0.75rem' }}>/</span>
+                  </Box>
+                  {/* Clear button */}
+                  {searchTerm && (
+                    <IconButton
+                      size="small"
+                      onClick={handleClearSearch}
+                      sx={{ 
+                        color: colors.text.secondary,
+                        '&:hover': { 
+                          color: colors.text.primary,
+                          bgcolor: colors.hover
+                        }
+                      }}
+                    >
+                      <Clear fontSize="small" />
+                    </IconButton>
+                  )}
                 </InputAdornment>
               ),
             }}

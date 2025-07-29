@@ -80,7 +80,7 @@ const RevenueChart = () => {
                   d="M 14.28 0 L 0 0 0 20" 
                   fill="none" 
                   stroke={darkMode ? '#374151' : '#f3f4f6'} 
-                  strokeWidth="0.2"
+                  strokeWidth="2.5"
                   opacity="0.5"
                 />
               </pattern>
@@ -91,7 +91,7 @@ const RevenueChart = () => {
             <path
               d="M 0 60 Q 25 45 50 65 T 100 40"
               stroke={darkMode ? '#3B82F6' : '#60A5FA'}
-              strokeWidth="0.5"
+              strokeWidth="2.5"
               fill="none"
               className="opacity-100"
               vectorEffect="non-scaling-stroke"
@@ -99,20 +99,20 @@ const RevenueChart = () => {
             
             {/* Gray/Dark Line: Solid portion (Previous Week) */}
             <path
-              d="M 0 78 Q 25 73 50 55 Q 57 54 62 57"
+              d="M 0 78 Q 25 60 50 55 Q 57 50 62 57"
               stroke={darkMode ? '#9CA3AF' : '#1F2937'}
-              strokeWidth="0.5"
+              strokeWidth="2.5"
               fill="none"
               vectorEffect="non-scaling-stroke"
             />
             
             {/* Gray/Dark Line: Dashed portion */}
             <path
-              d="M 62 57 Q 81 60 100 64"
+              d="M 62 57 Q 81 65 100 64"
               stroke={darkMode ? '#9CA3AF' : '#1F2937'}
-              strokeWidth="0.5"
+              strokeWidth="2.5"
               fill="none"
-              strokeDasharray="2 1"
+              strokeDasharray="6 6"
               vectorEffect="non-scaling-stroke"
             />
             

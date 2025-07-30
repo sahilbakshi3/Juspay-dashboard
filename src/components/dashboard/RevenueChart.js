@@ -28,7 +28,6 @@ function smoothPath(dataArr, chartWidth = 100, chartHeight = 100, yMax = 80, yMi
   return d;
 }
 
-// Linear interpolate utility
 function lerp(a, b, t) {
   return a + (b - a) * t;
 }
@@ -37,12 +36,10 @@ const RevenueChart = ({ isMobile = false }) => {
   const { darkMode } = useContext(ThemeContext);
   const chartRef = useRef(null);
 
-  // Labels and data arrays
   const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
   const previousWeek = [51, 50, 57, 68, 60, 54, 34];
-  const currentWeek =  [44, 55, 62, 37, 66, 58, 58];
+  const currentWeek = [44, 55, 62, 37, 66, 58, 58];
 
-  // Tooltip state
   const [tooltip, setTooltip] = useState({
     visible: false,
     clientX: 0,
@@ -50,10 +47,8 @@ const RevenueChart = ({ isMobile = false }) => {
     data: null,
   });
 
-  // SVG mapping
   const CHART_W = 100, CHART_H = 100, Y_MAX = 80, Y_MIN = 0;
 
-  // Handler for mouse move over SVG
   const handleMouseMove = (e) => {
     const rect = e.target.getBoundingClientRect();
     const x = ((e.clientX - rect.left) / rect.width) * CHART_W;
@@ -81,7 +76,6 @@ const RevenueChart = ({ isMobile = false }) => {
     setTooltip({ visible: false, clientX: 0, clientY: 0, data: null });
   };
 
-  // Tooltip portal
   const renderTooltip = () => {
     if (!(tooltip.visible && tooltip.data)) return null;
     const { previous, current, pct, label } = tooltip.data;
@@ -140,6 +134,18 @@ const RevenueChart = ({ isMobile = false }) => {
           ))}
         </div>
         <div className="relative flex-1 border-l border-b border-gray-300 min-w-0">
+          {/* Grid lines */}
+          {['20%', '40%', '60%', '80%'].map((top, idx) => (
+            <div
+              key={idx}
+              className="absolute left-0 w-full h-px"
+              style={{
+                top,
+                backgroundColor: darkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)'
+              }}
+            />
+          ))}
+          {/* Chart lines */}
           <svg
             className="w-full h-full"
             viewBox="0 0 100 100"
@@ -148,7 +154,6 @@ const RevenueChart = ({ isMobile = false }) => {
             onMouseLeave={handleMouseLeave}
             style={{ touchAction: 'none' }}
           >
-            {/* Curvy blue line (current week) */}
             <path
               d={smoothPath(currentWeek, 100, 100, 80, 0)}
               fill="none"
@@ -156,7 +161,6 @@ const RevenueChart = ({ isMobile = false }) => {
               strokeWidth={isMobile ? "2" : "2.5"}
               vectorEffect="non-scaling-stroke"
             />
-            {/* Curvy gray/black line (previous week) */}
             <path
               d={smoothPath(previousWeek, 100, 100, 80, 0)}
               fill="none"
@@ -168,10 +172,7 @@ const RevenueChart = ({ isMobile = false }) => {
           {/* X-axis labels */}
           <div className={`absolute left-0 right-0 flex justify-between ${isMobile ? '-bottom-5 px-1' : '-bottom-6 px-2'}`}>
             {labels.map((label) => (
-              <span
-                key={label}
-                className={`${isMobile ? 'text-xs' : 'text-xs'} ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}
-              >
+              <span key={label} className={`${isMobile ? 'text-xs' : 'text-xs'} ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                 {label}
               </span>
             ))}

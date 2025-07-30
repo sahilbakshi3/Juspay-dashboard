@@ -1,13 +1,12 @@
 import React, { useContext, useRef, useEffect, useState } from 'react';
 import { ThemeContext } from '../../context/ThemeContextProvider';
-import { createPortal } from 'react-dom'; // <= NEW
+import { createPortal } from 'react-dom';
 
 const ProjectionsChart = () => {
   const { darkMode } = useContext(ThemeContext);
   const chartRef = useRef(null);
   const [chartDimensions, setChartDimensions] = useState({ width: 0, height: 0 });
 
-  // Tooltip state with clientX/Y
   const [tooltip, setTooltip] = useState({
     visible: false,
     clientX: 0,
@@ -54,7 +53,6 @@ const ProjectionsChart = () => {
   const barWidth = isMobile ? 'w-6' : isTablet ? 'w-7' : 'w-8';
   const barSpacing = isMobile ? 'space-x-2' : isTablet ? 'space-x-3' : 'space-x-4';
 
-  // Tooltip rendering using portal
   const renderTooltip = () => {
     if (!(tooltip.visible && tooltip.data)) return null;
 
@@ -125,19 +123,37 @@ const ProjectionsChart = () => {
             </span>
           ))}
         </div>
+
         {/* Chart area */}
         <div className="flex flex-col flex-1 min-w-0">
-          {/* Bars */}
+          {/* Bars container */}
           <div
             className={`flex items-end justify-between ${barSpacing} border-l border-b border-gray-300 relative overflow-visible`}
             style={{ height: `${chartHeight}px` }}
           >
+            {/* Horizontal grid lines */}
+            {yAxisValues.map((value, index) => {
+              const positionFromBottom = (chartHeight - 1) * (index / (yAxisValues.length - 1));
+              return (
+                <div
+                  key={value}
+                  className={`absolute left-0 w-full border-t ${
+                    darkMode ? 'border-gray-700' : 'border-gray-200'
+                  }`}
+                  style={{
+                    bottom: `${positionFromBottom}px`,
+                    opacity: 0.4  // Light opacity for subtle appearance
+                  }}
+                ></div>
+              );
+            })}
+
+            {/* Bars */}
             {chartData.map((data) => {
               const availableHeight = chartHeight - 20;
               const projectionHeight = Math.min((data.projection / maxValue) * availableHeight, availableHeight);
               const actualHeight = Math.min((data.actual / maxValue) * availableHeight, availableHeight);
 
-              // Mouse events with screen coordinates
               return (
                 <div
                   key={data.month}
@@ -162,7 +178,6 @@ const ProjectionsChart = () => {
                   }
                   style={{ zIndex: 10, position: 'relative' }}
                 >
-                  {/* Bar */}
                   <div className={`flex flex-col mx-auto ${barWidth} min-w-[16px] max-w-[40px]`}>
                     <div
                       className={`w-full transition-colors ${
@@ -186,9 +201,10 @@ const ProjectionsChart = () => {
                 </div>
               );
             })}
-            {/* Tooltip portal (always at document.body) */}
+            {/* Tooltip */}
             {renderTooltip()}
           </div>
+
           {/* X-axis labels */}
           <div className={`flex justify-between ${barSpacing} mt-2 px-1 overflow-hidden`}>
             {months.map((month) => (

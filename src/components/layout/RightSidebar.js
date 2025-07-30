@@ -43,7 +43,7 @@ const RightSidebar = ({ isVisible, isMobile = false, onClose }) => {
         <div className="flex-1 overflow-y-auto space-y-6">
           {/* Notifications Section */}
           <div>
-            <h3 className={`text-sm font-medium mb-4 ${
+            <h3 className={`text-sm font-bold mb-4 ${
               darkMode ? 'text-white' : 'text-gray-900'
             }`}>Notifications</h3>
             <div className="space-y-3">
@@ -80,7 +80,7 @@ const RightSidebar = ({ isVisible, isMobile = false, onClose }) => {
 
           {/* Activities Section */}
           <div>
-            <h3 className={`text-sm font-medium mb-4 ${
+            <h3 className={`text-sm font-bold mb-4 ${
               darkMode ? 'text-white' : 'text-gray-900'
             }`}>Activities</h3>
             <div className="space-y-3">
@@ -106,7 +106,7 @@ const RightSidebar = ({ isVisible, isMobile = false, onClose }) => {
 
           {/* Contacts Section */}
           <div>
-            <h3 className={`text-sm font-medium mb-4 ${
+            <h3 className={`text-sm font-bold mb-4 ${
               darkMode ? 'text-white' : 'text-gray-900'
             }`}>Contacts</h3>
             <div className="space-y-3">

@@ -19,8 +19,6 @@ const StatCard = ({ title, value, trend, change, isMobile }) => {
   const isSpecialCard = title === 'Customers' || title === 'Growth';
 
   // Font color logic for headings and values
-  // Light mode: all black
-  // Dark mode: Customers/Growth black, Orders/Revenue white
   const headingClass =
     darkMode
       ? (isSpecialCard ? 'text-black' : 'text-white')
@@ -32,59 +30,58 @@ const StatCard = ({ title, value, trend, change, isMobile }) => {
         w-full p-4 sm:p-6 rounded-xl sm:rounded-2xl shadow-sm 
         flex flex-col justify-between transition-colors
         ${!inlineBackground ? (darkMode ? 'bg-gray-800' : 'bg-white') : ''}
-        ${isMobile ? 'min-h-[100px] h-[100px]' : 'h-[112px]'}
+        ${isMobile ? 'h-[100px]' : 'h-[112px]'}
       `}
       style={inlineBackground ?? undefined}
     >
-      {/* Heading with responsive typography */}
-      <p
-        className={`font-medium ${headingClass} ${
-          isMobile ? 'text-sm' : 'text-base'
-        }`}
-        style={{
-          fontFamily: 'Inter, sans-serif',
-          fontWeight: 600,
-          fontStyle: 'normal',
-          fontSize: 'clamp(14px, 1.5vw, 17px)',
-          lineHeight: 'clamp(18px, 2vw, 20px)',
-        }}
-
-      >
-        {title}
-      </p>
-
-      <div className="flex justify-between items-center">
-        <h3
-          className={`font-semibold ${headingClass}`}
+      {/* Heading with better responsive typography */}
+      <div className="flex-shrink-0 mb-2">
+        <p
+          className={`font-semibold ${headingClass} truncate`}
           style={{
-            fontFamily: 'Inter, sans-serif',
-            fontWeight: 600,
-            fontStyle: 'normal',
-            fontSize: 'clamp(18px, 2.2vw, 24px)',
-            lineHeight: 'clamp(22px, 2.4vw, 30px)',
+            fontSize: 'clamp(12px, 2.5vw, 16px)'
           }}
         >
-          {value}
-        </h3>
-        {trend && change && (
-          <div
-            className={`flex items-center ${
-              trend === 'up' ? 'text-green-600' : 'text-red-600'
-            }`}
-            style={{
-              fontSize: 'clamp(10px, 1.1vw, 12px)',
-              lineHeight: 'clamp(12px, 1.3vw, 16px)',
-              fontWeight: 500,
-            }}
-          >
-            <span className="mr-1">{change}</span>
-            {trend === 'up' ? (
-              <TrendingUp className="w-[12px] h-[12px]" />
-            ) : (
-              <TrendingDown className="w-[12px] h-[12px]" />
-            )}
+          {title}
+        </p>
+      </div>
+
+      {/* Value and trend container with responsive layout */}
+      <div className="flex-1 flex justify-end flex-col">
+        {/* Container for value and trend - responsive wrapping */}
+        <div className="flex flex-wrap items-end justify-between gap-x-2 gap-y-1">
+          {/* Value with better overflow handling */}
+          <div className="flex-shrink-0">
+            <h3
+              className={`font-bold ${headingClass} leading-none`}
+              style={{
+                fontSize: 'clamp(18px, 3.5vw, 24px)',
+                whiteSpace: 'nowrap'
+              }}
+            >
+              {value}
+            </h3>
           </div>
-        )}
+          
+          {/* Trend indicator - will wrap below when needed */}
+          {trend && change && (
+            <div
+              className={`flex items-center gap-1 font-medium flex-shrink-0 ${
+                trend === 'up' ? 'text-green-600' : 'text-red-600'
+              }`}
+              style={{
+                fontSize: 'clamp(10px, 2vw, 12px)'
+              }}
+            >
+              <span className="whitespace-nowrap">{change}</span>
+              {trend === 'up' ? (
+                <TrendingUp className="w-3 h-3" />
+              ) : (
+                <TrendingDown className="w-3 h-3" />
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

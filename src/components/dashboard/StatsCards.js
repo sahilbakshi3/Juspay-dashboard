@@ -45,10 +45,10 @@ const StatCard = ({ title, value, trend, change, isMobile }) => {
           fontFamily: 'Inter, sans-serif',
           fontWeight: 600,
           fontStyle: 'normal',
-          fontSize: isMobile ? '14px' : '17px',
-          lineHeight: isMobile ? '18px' : '20px',
-          letterSpacing: '0%',
+          fontSize: 'clamp(14px, 1.5vw, 17px)',
+          lineHeight: 'clamp(18px, 2vw, 20px)',
         }}
+
       >
         {title}
       </p>

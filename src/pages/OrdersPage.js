@@ -24,18 +24,20 @@ import {
   Menu,
   MenuItem,
   Collapse,
+  TableSortLabel,
 } from '@mui/material';
 import {
   Search,
   Add,
   FilterList,
-  Sort,
-  MoreHoriz,
   Clear,
   KeyboardArrowDown,
   KeyboardArrowUp,
   ViewList,
   ViewModule,
+  MoreHoriz,
+  ArrowUpward,
+  ArrowDownward,
 } from '@mui/icons-material';
 import Pagination from '@mui/material/Pagination';
 
@@ -56,6 +58,12 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
   const [expandedCards, setExpandedCards] = useState(new Set());
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  
+  // Sorting state
+  const [sortConfig, setSortConfig] = useState({
+    key: null,
+    direction: 'asc'
+  });
   
   // Filter state
   const [filterAnchorEl, setFilterAnchorEl] = useState(null);
@@ -108,7 +116,8 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
       project: 'Landing Page',
       address: 'Meadow Lane Oakland',
       date: 'Just now',
-      status: 'In Progress'
+      status: 'In Progress',
+      dateSort: new Date('2024-02-28T10:00:00')
     },
     {
       id: '#CM9802',
@@ -116,7 +125,8 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
       project: 'CRM Admin pages',
       address: 'Larry San Francisco',
       date: 'A minute ago',
-      status: 'Complete'
+      status: 'Complete',
+      dateSort: new Date('2024-02-28T09:59:00')
     },
     {
       id: '#CM9803',
@@ -124,7 +134,8 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
       project: 'Client Project',
       address: 'Bagwell Avenue Ocala',
       date: '1 hour ago',
-      status: 'Pending'
+      status: 'Pending',
+      dateSort: new Date('2024-02-28T09:00:00')
     },
     {
       id: '#CM9804',
@@ -132,7 +143,8 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
       project: 'Admin Dashboard',
       address: 'Washburn Baton Rouge',
       date: 'Yesterday',
-      status: 'Approved'
+      status: 'Approved',
+      dateSort: new Date('2024-02-27T10:00:00')
     },
     {
       id: '#CM9805',
@@ -140,7 +152,8 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
       project: 'App Landing Page',
       address: 'Nest Lane Olivette',
       date: 'Feb 2, 2023',
-      status: 'Rejected'
+      status: 'Rejected',
+      dateSort: new Date('2023-02-02T10:00:00')
     },
     {
       id: '#CM9806',
@@ -148,7 +161,8 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
       project: 'E-commerce Site',
       address: 'Broadway New York',
       date: 'Feb 3, 2023',
-      status: 'In Progress'
+      status: 'In Progress',
+      dateSort: new Date('2023-02-03T10:00:00')
     },
     {
       id: '#CM9807',
@@ -156,7 +170,8 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
       project: 'Portfolio Website',
       address: 'Sunset Boulevard LA',
       date: 'Feb 4, 2023',
-      status: 'Complete'
+      status: 'Complete',
+      dateSort: new Date('2023-02-04T10:00:00')
     },
     {
       id: '#CM9808',
@@ -164,7 +179,8 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
       project: 'Mobile App',
       address: 'Michigan Avenue Chicago',
       date: 'Feb 5, 2023',
-      status: 'Pending'
+      status: 'Pending',
+      dateSort: new Date('2023-02-05T10:00:00')
     },
     {
       id: '#CM9809',
@@ -172,7 +188,8 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
       project: 'Dashboard Redesign',
       address: 'Pine Street Seattle',
       date: 'Feb 6, 2023',
-      status: 'Approved'
+      status: 'Approved',
+      dateSort: new Date('2023-02-06T10:00:00')
     },
     {
       id: '#CM9810',
@@ -180,7 +197,8 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
       project: 'Marketing Site',
       address: 'Oak Street Portland',
       date: 'Feb 7, 2023',
-      status: 'Complete'
+      status: 'Complete',
+      dateSort: new Date('2023-02-07T10:00:00')
     },
     {
       id: '#CM9811',
@@ -188,7 +206,8 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
       project: 'Data Analytics Platform',
       address: 'Main Street Boston',
       date: 'Feb 8, 2023',
-      status: 'In Progress'
+      status: 'In Progress',
+      dateSort: new Date('2023-02-08T10:00:00')
     },
     {
       id: '#CM9812',
@@ -196,7 +215,8 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
       project: 'Learning Management System',
       address: 'University Avenue Austin',
       date: 'Feb 9, 2023',
-      status: 'Pending'
+      status: 'Pending',
+      dateSort: new Date('2023-02-09T10:00:00')
     },
     {
       id: '#CM9813',
@@ -204,7 +224,8 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
       project: 'Event Management App',
       address: 'Festival Street Miami',
       date: 'Feb 10, 2023',
-      status: 'Rejected'
+      status: 'Rejected',
+      dateSort: new Date('2023-02-10T10:00:00')
     },
     {
       id: '#CM9814',
@@ -212,7 +233,8 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
       project: 'Inventory System',
       address: 'Industrial Park Denver',
       date: 'Feb 11, 2023',
-      status: 'Complete'
+      status: 'Complete',
+      dateSort: new Date('2023-02-11T10:00:00')
     },
     {
       id: '#CM9815',
@@ -220,7 +242,8 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
       project: 'Healthcare Portal',
       address: 'Medical Center Phoenix',
       date: 'Feb 12, 2023',
-      status: 'Approved'
+      status: 'Approved',
+      dateSort: new Date('2023-02-12T10:00:00')
     },
     {
       id: '#CM9816',
@@ -228,7 +251,8 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
       project: 'Job Board App',
       address: 'King Street Charleston',
       date: 'Feb 13, 2023',
-      status: 'Pending'
+      status: 'Pending',
+      dateSort: new Date('2023-02-13T10:00:00')
     },
     {
       id: '#CM9817',
@@ -236,7 +260,8 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
       project: 'HR Management Tool',
       address: 'Queen Street Toronto',
       date: 'Feb 14, 2023',
-      status: 'Complete'
+      status: 'Complete',
+      dateSort: new Date('2023-02-14T10:00:00')
     },
     {
       id: '#CM9818',
@@ -244,7 +269,8 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
       project: 'Design System',
       address: 'Creative Avenue Atlanta',
       date: 'Feb 15, 2023',
-      status: 'In Progress'
+      status: 'In Progress',
+      dateSort: new Date('2023-02-15T10:00:00')
     },
     {
       id: '#CM9819',
@@ -252,7 +278,8 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
       project: 'Disaster Response Portal',
       address: 'Firehouse Road Houston',
       date: 'Feb 16, 2023',
-      status: 'Approved'
+      status: 'Approved',
+      dateSort: new Date('2023-02-16T10:00:00')
     },
     {
       id: '#CM9820',
@@ -260,7 +287,8 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
       project: 'Recipe App',
       address: 'Baker Street London',
       date: 'Feb 17, 2023',
-      status: 'Rejected'
+      status: 'Rejected',
+      dateSort: new Date('2023-02-17T10:00:00')
     },
     {
       id: '#CM9821',
@@ -268,7 +296,8 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
       project: 'Customer Support Dashboard',
       address: 'Helpdesk Lane Dallas',
       date: 'Feb 18, 2023',
-      status: 'In Progress'
+      status: 'In Progress',
+      dateSort: new Date('2023-02-18T10:00:00')
     },
     {
       id: '#CM9822',
@@ -276,7 +305,8 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
       project: 'Student Portal',
       address: 'Campus Circle Raleigh',
       date: 'Feb 19, 2023',
-      status: 'Pending'
+      status: 'Pending',
+      dateSort: new Date('2023-02-19T10:00:00')
     },
     {
       id: '#CM9823',
@@ -284,7 +314,8 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
       project: 'Farm Management System',
       address: 'Harvest Road Boise',
       date: 'Feb 20, 2023',
-      status: 'Complete'
+      status: 'Complete',
+      dateSort: new Date('2023-02-20T10:00:00')
     },
     {
       id: '#CM9824',
@@ -292,7 +323,8 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
       project: 'Safety Compliance App',
       address: 'Rescue Blvd Tampa',
       date: 'Feb 21, 2023',
-      status: 'Approved'
+      status: 'Approved',
+      dateSort: new Date('2023-02-21T10:00:00')
     },
     {
       id: '#CM9825',
@@ -300,7 +332,8 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
       project: 'Travel Booking Platform',
       address: 'Aviation Road Nashville',
       date: 'Feb 22, 2023',
-      status: 'In Progress'
+      status: 'In Progress',
+      dateSort: new Date('2023-02-22T10:00:00')
     },
     {
       id: '#CM9826',
@@ -308,7 +341,8 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
       project: 'Telemedicine App',
       address: 'Wellness Drive Baltimore',
       date: 'Feb 23, 2023',
-      status: 'Complete'
+      status: 'Complete',
+      dateSort: new Date('2023-02-23T10:00:00')
     },
     {
       id: '#CM9827',
@@ -316,7 +350,8 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
       project: 'Space Education Portal',
       address: 'Galaxy Street Houston',
       date: 'Feb 24, 2023',
-      status: 'Pending'
+      status: 'Pending',
+      dateSort: new Date('2023-02-24T10:00:00')
     },
     {
       id: '#CM9828',
@@ -324,7 +359,8 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
       project: 'AgriTech CRM',
       address: 'Greenfield Road Fresno',
       date: 'Feb 25, 2023',
-      status: 'Rejected'
+      status: 'Rejected',
+      dateSort: new Date('2023-02-25T10:00:00')
     },
     {
       id: '#CM9829',
@@ -332,7 +368,8 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
       project: 'Music Collaboration App',
       address: 'Harmony Lane Austin',
       date: 'Feb 26, 2023',
-      status: 'Complete'
+      status: 'Complete',
+      dateSort: new Date('2023-02-26T10:00:00')
     },
     {
       id: '#CM9830',
@@ -340,9 +377,72 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
       project: 'Lab Management System',
       address: 'Science Park San Diego',
       date: 'Feb 27, 2023',
-      status: 'Approved'
+      status: 'Approved',
+      dateSort: new Date('2023-02-27T10:00:00')
     }
   ];
+
+  // Sorting function
+  const handleSort = (key) => {
+    let direction = 'asc';
+    if (sortConfig.key === key && sortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+    setSortConfig({ key, direction });
+    setCurrentPage(1); // Reset to first page when sorting
+    setSelectedRows([]); // Clear selection when sorting
+  };
+
+  // Sort data based on current sort config
+  const getSortedData = (data) => {
+    if (!sortConfig.key) return data;
+
+    return [...data].sort((a, b) => {
+      let aValue, bValue;
+
+      switch (sortConfig.key) {
+        case 'id':
+          aValue = a.id.replace('#CM', '');
+          bValue = b.id.replace('#CM', '');
+          aValue = parseInt(aValue);
+          bValue = parseInt(bValue);
+          break;
+        case 'user':
+          aValue = a.user.name.toLowerCase();
+          bValue = b.user.name.toLowerCase();
+          break;
+        case 'project':
+          aValue = a.project.toLowerCase();
+          bValue = b.project.toLowerCase();
+          break;
+        case 'address':
+          aValue = a.address.toLowerCase();
+          bValue = b.address.toLowerCase();
+          break;
+        case 'date':
+          aValue = a.dateSort;
+          bValue = b.dateSort;
+          break;
+        case 'status':
+          // Custom status order for logical sorting
+          const statusOrder = { 'Pending': 1, 'In Progress': 2, 'Approved': 3, 'Complete': 4, 'Rejected': 5 };
+          aValue = statusOrder[a.status] || 6;
+          bValue = statusOrder[b.status] || 6;
+          break;
+        default:
+          aValue = a[sortConfig.key];
+          bValue = b[sortConfig.key];
+      }
+
+      if (aValue < bValue) {
+        return sortConfig.direction === 'asc' ? -1 : 1;
+      }
+      if (aValue > bValue) {
+        return sortConfig.direction === 'asc' ? 1 : -1;
+      }
+      return 0;
+    });
+  };
 
   // Filter event handlers
   const handleFilterClick = (event) => {
@@ -411,12 +511,17 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
     return filtered;
   }, [orders, searchTerm, activeFilters]);
 
-  // Paginate filtered orders
+  // Apply sorting to filtered orders
+  const sortedAndFilteredOrders = useMemo(() => {
+    return getSortedData(filteredOrders);
+  }, [filteredOrders, sortConfig]);
+
+  // Paginate sorted and filtered orders
   const paginatedOrders = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    return filteredOrders.slice(startIndex, endIndex);
-  }, [filteredOrders, currentPage, itemsPerPage]);
+    return sortedAndFilteredOrders.slice(startIndex, endIndex);
+  }, [sortedAndFilteredOrders, currentPage, itemsPerPage]);
 
   // Calculate total pages
   const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
@@ -539,6 +644,72 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
           {part}
         </span>
       ) : part
+    );
+  };
+
+  // Sortable Table Header Cell Component
+  const SortableTableCell = ({ children, sortKey, align = 'left', sx = {} }) => {
+    const isActive = sortConfig.key === sortKey;
+    const direction = isActive ? sortConfig.direction : 'asc';
+    
+    return (
+      <TableCell
+        sx={{
+          fontWeight: 600,
+          fontSize: isMobile ? '0.75rem' : '0.875rem',
+          color: colors.text.secondary,
+          bgcolor: colors.cardBackground,
+          borderBottom: `1px solid ${colors.border}`,
+          padding: isMobile ? '8px 4px' : '16px',
+          cursor: 'pointer',
+          userSelect: 'none',
+          position: 'relative',
+          '&:hover': {
+            bgcolor: colors.hover,
+            color: colors.text.primary
+          },
+          ...(isActive && {
+            color: theme.palette.primary.main,
+            bgcolor: isDarkMode ? `${theme.palette.primary.dark}20` : `${theme.palette.primary.light}20`
+          }),
+          ...sx
+        }}
+        align={align}
+        onClick={() => handleSort(sortKey)}
+      >
+        <Box sx={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          gap: 0.5,
+          justifyContent: align === 'center' ? 'center' : align === 'right' ? 'flex-end' : 'flex-start'
+        }}>
+          {children}
+          {isActive && (
+            <Box sx={{ 
+              display: 'flex', 
+              alignItems: 'center',
+              color: theme.palette.primary.main
+            }}>
+              {direction === 'asc' ? (
+                <ArrowUpward sx={{ fontSize: isMobile ? '0.75rem' : '1rem' }} />
+              ) : (
+                <ArrowDownward sx={{ fontSize: isMobile ? '0.75rem' : '1rem' }} />
+              )}
+            </Box>
+          )}
+          {!isActive && (
+            <Box sx={{ 
+              display: 'flex', 
+              flexDirection: 'column',
+              opacity: 0.3,
+              '&:hover': { opacity: 0.6 }
+            }}>
+              <ArrowUpward sx={{ fontSize: '0.5rem', mb: -0.25 }} />
+              <ArrowDownward sx={{ fontSize: '0.5rem' }} />
+            </Box>
+          )}
+        </Box>
+      </TableCell>
     );
   };
 
@@ -797,6 +968,30 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
               {filteredOrders.length} of {orders.length}
             </Typography>
           )}
+
+          {/* Sorting Indicator */}
+          {sortConfig.key && (
+            <Chip
+              label={
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                  <span>Sorted by {sortConfig.key}</span>
+                  {sortConfig.direction === 'asc' ? (
+                    <ArrowUpward sx={{ fontSize: '0.75rem' }} />
+                  ) : (
+                    <ArrowDownward sx={{ fontSize: '0.75rem' }} />
+                  )}
+                </Box>
+              }
+              size="small"
+              onDelete={() => setSortConfig({ key: null, direction: 'asc' })}
+              sx={{
+                bgcolor: theme.palette.primary.light + '20',
+                border: `1px solid ${theme.palette.primary.main}`,
+                color: theme.palette.primary.main,
+                fontSize: '0.75rem'
+              }}
+            />
+          )}
         </Box>
         
         <Box sx={{ 
@@ -805,7 +1000,7 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
           gap: 1, 
           alignItems: isMobile ? 'stretch' : 'center'
         }}>
-          {/* Action Buttons - Responsive */}
+          {/* Action Buttons - Responsive (Sort button removed) */}
           <Box sx={{ display: 'flex', gap: 1, mb: isMobile ? 1 : 0 }}>
             <IconButton 
               sx={{ 
@@ -839,21 +1034,6 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
               size={isMobile ? 'small' : 'medium'}
             >
               <FilterList />
-            </IconButton>
-            <IconButton 
-              sx={{ 
-                border: `1px solid ${colors.border}`,
-                color: colors.text.secondary,
-                bgcolor: colors.cardBackground,
-                '&:hover': {
-                  bgcolor: colors.hover,
-                  borderColor: theme.palette.primary.main,
-                  color: colors.text.primary
-                }
-              }}
-              size={isMobile ? 'small' : 'medium'}
-            >
-              <Sort />
             </IconButton>
             
             {/* View Mode Toggle - Only show on mobile/tablet */}
@@ -998,7 +1178,7 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
           )}
         </Box>
       ) : (
-        // Table View
+        // Table View with Sortable Headers
         <TableContainer 
           component={Paper} 
           sx={{ 
@@ -1037,29 +1217,27 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
                     size={isMobile ? 'small' : 'medium'}
                   />
                 </TableCell>
-                {[
-                  'Order ID', 
-                  'User', 
-                  'Project', 
-                  ...(isMobile ? [] : ['Address']),
-                  ...(isMobile ? [] : ['Date']), 
-                  'Status', 
-                  ''
-                ].map((header) => (
-                  <TableCell 
-                    key={header}
-                    sx={{ 
-                      fontWeight: 600, 
-                      fontSize: isMobile ? '0.75rem' : '0.875rem', 
-                      color: colors.text.secondary,
-                      bgcolor: colors.cardBackground,
-                      borderBottom: `1px solid ${colors.border}`,
-                      padding: isMobile ? '8px 4px' : '16px'
-                    }}
-                  >
-                    {header}
-                  </TableCell>
-                ))}
+                
+                <SortableTableCell sortKey="id">Order ID</SortableTableCell>
+                <SortableTableCell sortKey="user">User</SortableTableCell>
+                <SortableTableCell sortKey="project">Project</SortableTableCell>
+                {!isMobile && <SortableTableCell sortKey="address">Address</SortableTableCell>}
+                {!isMobile && <SortableTableCell sortKey="date">Date</SortableTableCell>}
+                <SortableTableCell sortKey="status">Status</SortableTableCell>
+                
+                <TableCell 
+                  sx={{ 
+                    fontWeight: 600, 
+                    fontSize: isMobile ? '0.75rem' : '0.875rem', 
+                    color: colors.text.secondary,
+                    bgcolor: colors.cardBackground,
+                    borderBottom: `1px solid ${colors.border}`,
+                    padding: isMobile ? '8px 4px' : '16px',
+                    width: '48px'
+                  }}
+                >
+                  {/* Actions column header - no sorting */}
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>

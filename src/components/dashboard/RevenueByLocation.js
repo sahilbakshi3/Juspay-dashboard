@@ -115,7 +115,7 @@ const RevenueByLocation = () => {
           darkMode ? 'text-gray-100' : 'text-gray-900'
         }`}
         style={{
-          fontFamily: 'Inter',
+          fontFamily: 'Inter, sans-serif',
           fontWeight: 600,
           fontStyle: 'normal',
           letterSpacing: '0%',

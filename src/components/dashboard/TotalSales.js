@@ -133,7 +133,7 @@ export default function TotalSales() {
           darkMode ? 'text-gray-100' : 'text-gray-900'
         }`}
         style={{
-          fontFamily: 'Inter',
+          fontFamily: 'Inter, sans-serif',
           fontWeight: 600,
           fontStyle: 'normal',
           letterSpacing: '0%',
@@ -225,26 +225,7 @@ export default function TotalSales() {
           </div>
         ))}
       </div>
-
-      {/* Mobile-specific: Show total sum on mobile for better context */}
-      {isMobile && (
-        <div className={`mt-4 pt-3 border-t ${
-          darkMode ? 'border-gray-600' : 'border-gray-200'
-        }`}>
-          <div className="flex justify-between items-center">
-            <span className={`text-sm font-medium ${
-              darkMode ? 'text-gray-300' : 'text-gray-700'
-            }`}>
-              Total
-            </span>
-            <span className={`text-sm font-bold ${
-              darkMode ? 'text-white' : 'text-gray-900'
-            }`}>
-              ${pieData.reduce((sum, item) => sum + item.amount, 0).toFixed(2)}
-            </span>
-          </div>
-        </div>
-      )}
+  
 
       {/* Very small screen fallback */}
       {isMobile && containerDimensions.width < 240 && (

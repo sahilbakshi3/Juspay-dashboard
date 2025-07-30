@@ -1194,7 +1194,15 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
         >
           <Table stickyHeader size={isMobile ? 'small' : 'medium'}>
             <TableHead>
-              <TableRow>
+              <TableRow 
+                sx={{
+                position: 'sticky',
+                top: 0,
+                zIndex: 10,
+                backgroundColor: colors.cardBackground,
+                borderBottom: `1px solid ${colors.border}`
+              }}
+              >
                 <TableCell 
                   padding="checkbox"
                   sx={{ 

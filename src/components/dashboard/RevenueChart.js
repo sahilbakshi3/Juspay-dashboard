@@ -148,12 +148,6 @@ const RevenueChart = ({ isMobile = false }) => {
             onMouseLeave={handleMouseLeave}
             style={{ touchAction: 'none' }}
           >
-            <defs>
-              <pattern id="grid" width="14.28" height="20" patternUnits="userSpaceOnUse">
-                <path d="M 14.28 0 L 0 0 0 20" fill="none" stroke={darkMode ? '#374151' : '#f3f4f6'} strokeWidth={isMobile ? "2" : "2.5"} opacity="0.5"/>
-              </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill="url(#grid)" />
             {/* Curvy blue line (current week) */}
             <path
               d={smoothPath(currentWeek, 100, 100, 80, 0)}

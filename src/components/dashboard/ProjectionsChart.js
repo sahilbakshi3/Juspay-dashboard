@@ -21,10 +21,10 @@ const ProjectionsChart = () => {
 
   const chartData = [
     { month: 'Jan', projection: 25, actual: 18 },
-    { month: 'Feb', projection: 22, actual: 26 },
+    { month: 'Feb', projection: 21, actual: 16 },
     { month: 'Mar', projection: 28, actual: 24 },
-    { month: 'Apr', projection: 30, actual: 20 },
-    { month: 'May', projection: 15, actual: 28 },
+    { month: 'Apr', projection: 20, actual: 10 },
+    { month: 'May', projection: 18, actual: 15 },
     { month: 'Jun', projection: 20, actual: 22 }
   ];
 

@@ -54,22 +54,34 @@ const StatCard = ({ title, value, trend, change, isMobile }) => {
       </p>
 
       <div className="flex justify-between items-center">
-        <h3 className={`font-semibold ${headingClass} ${
-          isMobile ? 'text-lg' : 'text-xl'
-        }`}>
+        <h3
+          className={`font-semibold ${headingClass}`}
+          style={{
+            fontFamily: 'Inter, sans-serif',
+            fontWeight: 600,
+            fontStyle: 'normal',
+            fontSize: 'clamp(18px, 2.2vw, 24px)',
+            lineHeight: 'clamp(22px, 2.4vw, 30px)',
+          }}
+        >
           {value}
         </h3>
         {trend && change && (
-          <div className={`flex items-center ${
-            isMobile ? 'text-xs' : 'text-xs'
-          } ${
-            trend === 'up' ? 'text-green-600' : 'text-red-600'
-          }`}>
+          <div
+            className={`flex items-center ${
+              trend === 'up' ? 'text-green-600' : 'text-red-600'
+            }`}
+            style={{
+              fontSize: 'clamp(10px, 1.1vw, 12px)',
+              lineHeight: 'clamp(12px, 1.3vw, 16px)',
+              fontWeight: 500,
+            }}
+          >
             <span className="mr-1">{change}</span>
             {trend === 'up' ? (
-              <TrendingUp className={`${isMobile ? 'w-3 h-3' : 'w-3 h-3'}`} />
+              <TrendingUp className="w-[12px] h-[12px]" />
             ) : (
-              <TrendingDown className={`${isMobile ? 'w-3 h-3' : 'w-3 h-3'}`} />
+              <TrendingDown className="w-[12px] h-[12px]" />
             )}
           </div>
         )}
@@ -85,13 +97,6 @@ const StatCards = ({ isMobile = false }) => (
     }`}>
       <StatCard
         title="Customers"
-        style={{
-          fontFamily: 'Inter, sans-serif',
-          fontWeight: 600,
-          fontStyle: 'normal',
-          fontSize: 'clamp(14px, 1.5vw, 17px)',
-          lineHeight: 'clamp(18px, 2vw, 20px)',
-        }}
         value="3,781"
         trend="up"
         change="+11.01%"

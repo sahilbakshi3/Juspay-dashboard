@@ -39,12 +39,20 @@ export default function TotalSales() {
         setIsMobile(isMobileView);
       }
     };
+    
+    // Initial measurement
     handleResize();
+    
+    // Add event listeners
     window.addEventListener('resize', handleResize);
+    
+    // Use ResizeObserver for more accurate container size tracking
     const resizeObserver = new ResizeObserver(handleResize);
     if (containerRef.current) {
       resizeObserver.observe(containerRef.current);
     }
+
+    // Cleanup
     return () => {
       window.removeEventListener('resize', handleResize);
       resizeObserver.disconnect();
@@ -53,30 +61,22 @@ export default function TotalSales() {
 
   const COLORS = darkMode ? COLORS_DARK : COLORS_LIGHT;
 
-  // Responsive layout logic (unchanged)
+  // Simplified responsive layout logic - Force full width
   const getResponsiveDimensions = () => {
+    const baseWidth = containerDimensions.width || 250; // Fallback width
+    
     if (isMobile) {
       return {
-        width: '100%',
-        minWidth: '280px',
-        maxWidth: '100%',
-        height: 'auto',
-        minHeight: '320px',
         padding: '16px',
-        chartSize: Math.min(140, containerDimensions.width - 80),
+        chartSize: Math.min(140, baseWidth - 80),
         titleSize: 'text-base',
         itemFontSize: 'text-xs',
         innerRadius: 25,
-        outerRadius: Math.min(60, (containerDimensions.width - 80) / 2.5),
+        outerRadius: Math.min(60, (baseWidth - 80) / 2.5),
         itemSpacing: 'gap-3'
       };
-    } else if (containerDimensions.width >= 480 && containerDimensions.width < 768) {
+    } else if (baseWidth >= 480 && baseWidth < 768) {
       return {
-        width: '100%',
-        minWidth: '300px',
-        maxWidth: '400px',
-        height: 'auto',
-        minHeight: '360px',
         padding: '20px',
         chartSize: 160,
         titleSize: 'text-lg',
@@ -87,17 +87,12 @@ export default function TotalSales() {
       };
     } else {
       return {
-        width: '202px',
-        minWidth: '200px',
-        maxWidth: '300px',
-        height: '344px',
-        minHeight: '344px',
         padding: '24px',
-        chartSize: 120,
+        chartSize: Math.min(120, baseWidth - 100),
         titleSize: 'text-lg',
         itemFontSize: 'text-xs',
         innerRadius: 30,
-        outerRadius: 50,
+        outerRadius: Math.min(50, (baseWidth - 100) / 2.5),
         itemSpacing: 'gap-2'
       };
     }
@@ -138,17 +133,17 @@ export default function TotalSales() {
         darkMode
           ? 'bg-gray-800 shadow-gray-900/20'
           : 'bg-white shadow-sm'
-      } rounded-xl transition-colors duration-200 w-full max-w-sm mx-auto lg:mx-0`}
+      } rounded-xl transition-colors duration-200`}
       style={{
-        width: dimensions.width,
-        height: dimensions.height,
-        minWidth: dimensions.minWidth,
-        maxWidth: dimensions.maxWidth,
-        minHeight: dimensions.minHeight,
+        width: '100%',           // Force full width
+        height: '100%',          // Force full height
+        minWidth: '200px',       // Minimum width constraint
+        minHeight: isMobile ? '320px' : '344px',
         padding: dimensions.padding,
         borderRadius: 16,
         opacity: 1,
-        position: 'relative'
+        position: 'relative',
+        boxSizing: 'border-box'  // Ensure padding is included in width/height
       }}
     >
       {/* Title */}
@@ -330,9 +325,6 @@ export default function TotalSales() {
         <div className={`text-center p-2 ${
           darkMode ? 'text-gray-400' : 'text-gray-500'
         }`}>
-          <p className="text-xs">
-            Rotate device for better view
-          </p>
         </div>
       )}
     </div>

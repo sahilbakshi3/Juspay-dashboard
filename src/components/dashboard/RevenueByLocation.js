@@ -8,21 +8,17 @@ import { ThemeContext } from '../../context/ThemeContextProvider';
 import countries from '../../data/world_countries.json'; // Add this file to your data folder
 import mapData from '../../data/mapData.js'; // The data you provided
 
-const RevenueByLocation = () => {
+const RevenueByLocation = ({ isMobile = false }) => {
   const { darkMode } = useContext(ThemeContext);
   const containerRef = useRef(null);
   const [containerDimensions, setContainerDimensions] = useState({ width: 0, height: 0 });
-  const [isMobile, setIsMobile] = useState(false);
 
   // Handle responsive sizing
   useEffect(() => {
     const handleResize = () => {
       if (containerRef.current) {
         const { offsetWidth, offsetHeight } = containerRef.current;
-        const isMobileView = offsetWidth < 480;
-        
         setContainerDimensions({ width: offsetWidth, height: offsetHeight });
-        setIsMobile(isMobileView);
       }
     };
 
@@ -68,29 +64,47 @@ const RevenueByLocation = () => {
       );
   };
 
-  // Responsive calculations
-  const isTablet = containerDimensions.width >= 480 && containerDimensions.width < 768;
-  const isDesktop = containerDimensions.width >= 768;
-  
-  // Dynamic sizing based on screen size
+  // Responsive dimensions that match TotalSales component
   const getResponsiveDimensions = () => {
     if (isMobile) {
       return {
+        width: '100%',
+        minWidth: '280px',
+        maxWidth: '100%',
+        height: 'auto',
+        minHeight: '320px',
+        padding: '16px',
         mapHeight: '140px',
         titleSize: 'text-base',
-        itemSpacing: 'space-y-3'
+        itemSpacing: 'space-y-3',
+        itemFontSize: 'text-xs'
       };
-    } else if (isTablet) {
+    } else if (containerDimensions.width >= 480 && containerDimensions.width < 768) {
       return {
+        width: '100%',
+        minWidth: '300px',
+        maxWidth: '400px',
+        height: 'auto',
+        minHeight: '360px',
+        padding: '20px',
         mapHeight: '160px',
         titleSize: 'text-lg',
-        itemSpacing: 'space-y-2'
+        itemSpacing: 'space-y-2',
+        itemFontSize: 'text-sm'
       };
     } else {
+      // Desktop - Match TotalSales exact dimensions
       return {
+        width: '202px',
+        minWidth: '200px',
+        maxWidth: '300px',
+        height: '344px',
+        minHeight: '344px',
+        padding: '24px',
         mapHeight: '120px',
         titleSize: 'text-lg',
-        itemSpacing: 'space-y-2'
+        itemSpacing: 'space-y-2',
+        itemFontSize: 'text-xs'
       };
     }
   };
@@ -100,18 +114,31 @@ const RevenueByLocation = () => {
   // Responsive projection scale
   const getProjectionScale = () => {
     if (isMobile) return 40;
-    if (isTablet) return 55;
+    if (containerDimensions.width >= 480 && containerDimensions.width < 768) return 55;
     return 50;
   };
 
   return (
     <div
       ref={containerRef}
-      className="h-full w-full flex flex-col"
-      style={{ gap: '16px' }}
+      className={`${
+        darkMode
+          ? 'bg-gray-800 shadow-gray-900/20'
+          : 'bg-white shadow-sm'
+      } rounded-xl transition-colors duration-200 w-full max-w-sm mx-auto lg:mx-0 flex flex-col`}
+      style={{
+        width: dimensions.width,
+        height: dimensions.height,
+        minWidth: dimensions.minWidth,
+        maxWidth: dimensions.maxWidth,
+        minHeight: dimensions.minHeight,
+        padding: dimensions.padding,
+        borderRadius: 16,
+        opacity: 1
+      }}
     >
       <h3
-        className={`${dimensions.titleSize} font-semibold leading-tight mb-2 transition-colors duration-200 ${
+        className={`${dimensions.titleSize} font-semibold leading-tight mb-4 transition-colors duration-200 ${
           darkMode ? 'text-gray-100' : 'text-gray-900'
         }`}
         style={{
@@ -194,12 +221,12 @@ const RevenueByLocation = () => {
               }}
             >
               <div className="flex justify-between items-center">
-                <span className={`${isMobile ? 'text-sm' : 'text-sm'} transition-colors duration-200 ${
+                <span className={`${dimensions.itemFontSize} transition-colors duration-200 ${
                   darkMode ? 'text-gray-400' : 'text-gray-600'
                 } truncate pr-2`}>
                   {location.city}
                 </span>
-                <span className={`${isMobile ? 'text-sm' : 'text-sm'} font-medium transition-colors duration-200 ${
+                <span className={`${dimensions.itemFontSize} font-medium transition-colors duration-200 ${
                   darkMode ? 'text-gray-100' : 'text-gray-900'
                 } flex-shrink-0`}>
                   {location.amount}

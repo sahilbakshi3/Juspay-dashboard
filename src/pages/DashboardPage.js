@@ -69,7 +69,7 @@ const DashboardPage = ({ refreshKey = 0, isMobile = false, isTablet = false }) =
             rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-sm transition-colors
             ${darkMode ? 'bg-gray-800' : 'bg-white'}
             min-h-[200px] sm:min-h-[318px]
-            ${isMobile ? 'w-full' : ''}
+            w-full
           `}>
             <div className="w-full h-full">
               <RevenueByLocation key={`revenue-location-${refreshKey}`} isMobile={isMobile} />
@@ -78,7 +78,7 @@ const DashboardPage = ({ refreshKey = 0, isMobile = false, isTablet = false }) =
         </div>
       </div>
 
-      {/* Top Selling Products and Total Sales - Responsive Grid */}
+      {/* Top Selling Products and Total Sales - Responsive Grid - FIXED */}
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_auto] gap-4 sm:gap-6 lg:gap-7">
         {/* Top Selling Products Container */}
         <div className={`
@@ -91,10 +91,17 @@ const DashboardPage = ({ refreshKey = 0, isMobile = false, isTablet = false }) =
           </div>
         </div>
         
-        {/* TotalSales Container - Stack on small screens */}
+        {/* TotalSales Container - FIXED: Same structure as RevenueByLocation */}
         <div className="flex justify-center xl:justify-start order-2">
-          <div className={`${isMobile ? 'w-full' : ''}`}>
-            <TotalSales key={`total-sales-${refreshKey}`} isMobile={isMobile} />
+          <div className={`
+            rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-sm transition-colors
+            ${darkMode ? 'bg-gray-800' : 'bg-white'}
+            min-h-[200px] sm:min-h-[264px]
+            w-full
+          `}>
+            <div className="w-full h-full">
+              <TotalSales key={`total-sales-${refreshKey}`} isMobile={isMobile} />
+            </div>
           </div>
         </div>
       </div>

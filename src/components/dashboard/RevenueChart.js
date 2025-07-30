@@ -38,7 +38,7 @@ const RevenueChart = ({ isMobile = false }) => {
   const chartRef = useRef(null);
 
   // Labels and data arrays
-  const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
+  const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
   const previousWeek = [51, 50, 57, 68, 60, 54, 34];
   const currentWeek =  [44, 55, 62, 37, 66, 58, 58];
 

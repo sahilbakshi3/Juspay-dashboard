@@ -17,7 +17,7 @@ const Layout = ({ children }) => {
 
   // Responsive breakpoints
   useEffect(() => {
-    const handleResize = () => {
+    const handleResize = () => {  
       const width = window.innerWidth;
       const mobile = width < 768;
       const tablet = width >= 768 && width < 1024;

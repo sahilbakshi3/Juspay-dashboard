@@ -1569,36 +1569,6 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
             </MenuItem>
           ))}
           
-          <Divider sx={{ my: 1, borderColor: colors.border }} />
-          
-          <Typography variant="subtitle2" sx={{ color: colors.text.primary, mb: 1, fontWeight: 600 }}>
-            Date Range
-          </Typography>
-          {['All Time', 'Today', 'Yesterday', 'This Week', 'This Month'].map((range) => (
-            <MenuItem
-              key={range}
-              onClick={() => {
-                handleFilterChange('dateRange', range);
-                handleFilterClose();
-              }}
-              sx={{
-                bgcolor: activeFilters.dateRange === range ? colors.hover : 'transparent',
-                borderRadius: 1,
-                mb: 0.5,
-                '&:hover': {
-                  bgcolor: colors.hover,
-                }
-              }}
-            >
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-                {range}
-                {activeFilters.dateRange === range && (
-                  <Box sx={{ color: theme.palette.primary.main }}>✓</Box>
-                )}
-              </Box>
-            </MenuItem>
-          ))}
-          
           {(activeFilters.status !== 'All' || activeFilters.dateRange !== 'All Time') && (
             <>
               <Divider sx={{ my: 1, borderColor: colors.border }} />

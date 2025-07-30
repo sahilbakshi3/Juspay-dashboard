@@ -42,7 +42,7 @@ const StatCard = ({ title, value, trend, change, isMobile }) => {
           isMobile ? 'text-sm' : 'text-base'
         }`}
         style={{
-          fontFamily: 'Inter',
+          fontFamily: 'Inter, sans-serif',
           fontWeight: 600,
           fontStyle: 'normal',
           fontSize: isMobile ? '14px' : '17px',

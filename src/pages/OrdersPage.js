@@ -57,6 +57,13 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedOrder, setSelectedOrder] = useState(null);
   
+  // Filter state
+  const [filterAnchorEl, setFilterAnchorEl] = useState(null);
+  const [activeFilters, setActiveFilters] = useState({
+    status: 'All',
+    dateRange: 'All Time'
+  });
+  
   // Responsive items per page
   const getItemsPerPage = () => {
     if (isMobile) return 5;
@@ -216,144 +223,193 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
       status: 'Approved'
     },
     {
-    id: '#CM9816',
-    user: { name: 'Brian White', avatar: '👨‍💼' },
-    project: 'Job Board App',
-    address: 'King Street Charleston',
-    date: 'Feb 13, 2023',
-    status: 'Pending'
-  },
-  {
-    id: '#CM9817',
-    user: { name: 'Olivia Moore', avatar: '👩‍🔧' },
-    project: 'HR Management Tool',
-    address: 'Queen Street Toronto',
-    date: 'Feb 14, 2023',
-    status: 'Complete'
-  },
-  {
-    id: '#CM9818',
-    user: { name: 'Ethan Taylor', avatar: '👨‍🎨' },
-    project: 'Design System',
-    address: 'Creative Avenue Atlanta',
-    date: 'Feb 15, 2023',
-    status: 'In Progress'
-  },
-  {
-    id: '#CM9819',
-    user: { name: 'Sophia Martin', avatar: '👩‍🚒' },
-    project: 'Disaster Response Portal',
-    address: 'Firehouse Road Houston',
-    date: 'Feb 16, 2023',
-    status: 'Approved'
-  },
-  {
-    id: '#CM9820',
-    user: { name: 'Daniel Walker', avatar: '👨‍🍳' },
-    project: 'Recipe App',
-    address: 'Baker Street London',
-    date: 'Feb 17, 2023',
-    status: 'Rejected'
-  },
-  {
-    id: '#CM9821',
-    user: { name: 'Ella Harris', avatar: '👩‍🔧' },
-    project: 'Customer Support Dashboard',
-    address: 'Helpdesk Lane Dallas',
-    date: 'Feb 18, 2023',
-    status: 'In Progress'
-  },
-  {
-    id: '#CM9822',
-    user: { name: 'Logan Martinez', avatar: '👨‍🎓' },
-    project: 'Student Portal',
-    address: 'Campus Circle Raleigh',
-    date: 'Feb 19, 2023',
-    status: 'Pending'
-  },
-  {
-    id: '#CM9823',
-    user: { name: 'Grace Thompson', avatar: '👩‍🌾' },
-    project: 'Farm Management System',
-    address: 'Harvest Road Boise',
-    date: 'Feb 20, 2023',
-    status: 'Complete'
-  },
-  {
-    id: '#CM9824',
-    user: { name: 'Henry Scott', avatar: '👨‍🚒' },
-    project: 'Safety Compliance App',
-    address: 'Rescue Blvd Tampa',
-    date: 'Feb 21, 2023',
-    status: 'Approved'
-  },
-  {
-    id: '#CM9825',
-    user: { name: 'Chloe Adams', avatar: '👩‍✈️' },
-    project: 'Travel Booking Platform',
-    address: 'Aviation Road Nashville',
-    date: 'Feb 22, 2023',
-    status: 'In Progress'
-  },
-  {
-    id: '#CM9826',
-    user: { name: 'Lucas Mitchell', avatar: '👨‍⚕️' },
-    project: 'Telemedicine App',
-    address: 'Wellness Drive Baltimore',
-    date: 'Feb 23, 2023',
-    status: 'Complete'
-  },
-  {
-    id: '#CM9827',
-    user: { name: 'Amelia Perez', avatar: '👩‍🚀' },
-    project: 'Space Education Portal',
-    address: 'Galaxy Street Houston',
-    date: 'Feb 24, 2023',
-    status: 'Pending'
-  },
-  {
-    id: '#CM9828',
-    user: { name: 'Jack Rivera', avatar: '👨‍🌾' },
-    project: 'AgriTech CRM',
-    address: 'Greenfield Road Fresno',
-    date: 'Feb 25, 2023',
-    status: 'Rejected'
-  },
-  {
-    id: '#CM9829',
-    user: { name: 'Zoe Cooper', avatar: '👩‍🎤' },
-    project: 'Music Collaboration App',
-    address: 'Harmony Lane Austin',
-    date: 'Feb 26, 2023',
-    status: 'Complete'
-  },
-  {
-    id: '#CM9830',
-    user: { name: 'Nathan Bell', avatar: '👨‍🔬' },
-    project: 'Lab Management System',
-    address: 'Science Park San Diego',
-    date: 'Feb 27, 2023',
-    status: 'Approved'
-  }
+      id: '#CM9816',
+      user: { name: 'Brian White', avatar: '👨‍💼' },
+      project: 'Job Board App',
+      address: 'King Street Charleston',
+      date: 'Feb 13, 2023',
+      status: 'Pending'
+    },
+    {
+      id: '#CM9817',
+      user: { name: 'Olivia Moore', avatar: '👩‍🔧' },
+      project: 'HR Management Tool',
+      address: 'Queen Street Toronto',
+      date: 'Feb 14, 2023',
+      status: 'Complete'
+    },
+    {
+      id: '#CM9818',
+      user: { name: 'Ethan Taylor', avatar: '👨‍🎨' },
+      project: 'Design System',
+      address: 'Creative Avenue Atlanta',
+      date: 'Feb 15, 2023',
+      status: 'In Progress'
+    },
+    {
+      id: '#CM9819',
+      user: { name: 'Sophia Martin', avatar: '👩‍🚒' },
+      project: 'Disaster Response Portal',
+      address: 'Firehouse Road Houston',
+      date: 'Feb 16, 2023',
+      status: 'Approved'
+    },
+    {
+      id: '#CM9820',
+      user: { name: 'Daniel Walker', avatar: '👨‍🍳' },
+      project: 'Recipe App',
+      address: 'Baker Street London',
+      date: 'Feb 17, 2023',
+      status: 'Rejected'
+    },
+    {
+      id: '#CM9821',
+      user: { name: 'Ella Harris', avatar: '👩‍🔧' },
+      project: 'Customer Support Dashboard',
+      address: 'Helpdesk Lane Dallas',
+      date: 'Feb 18, 2023',
+      status: 'In Progress'
+    },
+    {
+      id: '#CM9822',
+      user: { name: 'Logan Martinez', avatar: '👨‍🎓' },
+      project: 'Student Portal',
+      address: 'Campus Circle Raleigh',
+      date: 'Feb 19, 2023',
+      status: 'Pending'
+    },
+    {
+      id: '#CM9823',
+      user: { name: 'Grace Thompson', avatar: '👩‍🌾' },
+      project: 'Farm Management System',
+      address: 'Harvest Road Boise',
+      date: 'Feb 20, 2023',
+      status: 'Complete'
+    },
+    {
+      id: '#CM9824',
+      user: { name: 'Henry Scott', avatar: '👨‍🚒' },
+      project: 'Safety Compliance App',
+      address: 'Rescue Blvd Tampa',
+      date: 'Feb 21, 2023',
+      status: 'Approved'
+    },
+    {
+      id: '#CM9825',
+      user: { name: 'Chloe Adams', avatar: '👩‍✈️' },
+      project: 'Travel Booking Platform',
+      address: 'Aviation Road Nashville',
+      date: 'Feb 22, 2023',
+      status: 'In Progress'
+    },
+    {
+      id: '#CM9826',
+      user: { name: 'Lucas Mitchell', avatar: '👨‍⚕️' },
+      project: 'Telemedicine App',
+      address: 'Wellness Drive Baltimore',
+      date: 'Feb 23, 2023',
+      status: 'Complete'
+    },
+    {
+      id: '#CM9827',
+      user: { name: 'Amelia Perez', avatar: '👩‍🚀' },
+      project: 'Space Education Portal',
+      address: 'Galaxy Street Houston',
+      date: 'Feb 24, 2023',
+      status: 'Pending'
+    },
+    {
+      id: '#CM9828',
+      user: { name: 'Jack Rivera', avatar: '👨‍🌾' },
+      project: 'AgriTech CRM',
+      address: 'Greenfield Road Fresno',
+      date: 'Feb 25, 2023',
+      status: 'Rejected'
+    },
+    {
+      id: '#CM9829',
+      user: { name: 'Zoe Cooper', avatar: '👩‍🎤' },
+      project: 'Music Collaboration App',
+      address: 'Harmony Lane Austin',
+      date: 'Feb 26, 2023',
+      status: 'Complete'
+    },
+    {
+      id: '#CM9830',
+      user: { name: 'Nathan Bell', avatar: '👨‍🔬' },
+      project: 'Lab Management System',
+      address: 'Science Park San Diego',
+      date: 'Feb 27, 2023',
+      status: 'Approved'
+    }
   ];
 
-  // Filter orders based on search term
+  // Filter event handlers
+  const handleFilterClick = (event) => {
+    setFilterAnchorEl(event.currentTarget);
+  };
+
+  const handleFilterClose = () => {
+    setFilterAnchorEl(null);
+  };
+
+  const handleFilterChange = (filterType, value) => {
+    setActiveFilters(prev => ({
+      ...prev,
+      [filterType]: value
+    }));
+    // Reset to first page when filter changes
+    setCurrentPage(1);
+    setSelectedRows([]);
+  };
+
+  // Filter orders based on search term and active filters
   const filteredOrders = useMemo(() => {
-    if (!searchTerm.trim()) {
-      return orders;
+    let filtered = orders;
+
+    // Apply status filter
+    if (activeFilters.status !== 'All') {
+      filtered = filtered.filter(order => order.status === activeFilters.status);
     }
 
-    const searchLower = searchTerm.toLowerCase();
-    
-    return orders.filter(order =>
-      order.id.toLowerCase().includes(searchLower) ||
-      order.user.name.toLowerCase().includes(searchLower) ||
-      order.project.toLowerCase().includes(searchLower) ||
-      order.address.toLowerCase().includes(searchLower) ||
-      order.status.toLowerCase().includes(searchLower) ||
-      order.date.toLowerCase().includes(searchLower)
-    );
-  }, [orders, searchTerm]);
+    // Apply date range filter (simplified example)
+    if (activeFilters.dateRange !== 'All Time') {
+      // You can implement more sophisticated date filtering here
+      const now = new Date();
+      filtered = filtered.filter(order => {
+        switch (activeFilters.dateRange) {
+          case 'Today':
+            return order.date === 'Just now' || order.date.includes('minute') || order.date.includes('hour');
+          case 'Yesterday':
+            return order.date === 'Yesterday';
+          case 'This Week':
+            return order.date === 'Yesterday' || order.date === 'Just now' || 
+                   order.date.includes('minute') || order.date.includes('hour');
+          case 'This Month':
+            return order.date.includes('Feb') || order.date === 'Yesterday' || 
+                   order.date === 'Just now' || order.date.includes('minute') || 
+                   order.date.includes('hour');
+          default:
+            return true;
+        }
+      });
+    }
+
+    // Apply search term filter
+    if (searchTerm.trim()) {
+      const searchLower = searchTerm.toLowerCase();
+      filtered = filtered.filter(order =>
+        order.id.toLowerCase().includes(searchLower) ||
+        order.user.name.toLowerCase().includes(searchLower) ||
+        order.project.toLowerCase().includes(searchLower) ||
+        order.address.toLowerCase().includes(searchLower) ||
+        order.status.toLowerCase().includes(searchLower) ||
+        order.date.toLowerCase().includes(searchLower)
+      );
+    }
+
+    return filtered;
+  }, [orders, searchTerm, activeFilters]);
 
   // Paginate filtered orders
   const paginatedOrders = useMemo(() => {
@@ -692,6 +748,38 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
             Order List
           </Typography>
 
+          {/* Active Filters Indicator */}
+          {(activeFilters.status !== 'All' || activeFilters.dateRange !== 'All Time') && (
+            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+              {activeFilters.status !== 'All' && (
+                <Chip
+                  label={`Status: ${activeFilters.status}`}
+                  size="small"
+                  onDelete={() => handleFilterChange('status', 'All')}
+                  sx={{
+                    bgcolor: colors.cardBackground,
+                    border: `1px solid ${colors.border}`,
+                    color: colors.text.primary,
+                    fontSize: '0.75rem'
+                  }}
+                />
+              )}
+              {activeFilters.dateRange !== 'All Time' && (
+                <Chip
+                  label={`Date: ${activeFilters.dateRange}`}
+                  size="small"
+                  onDelete={() => handleFilterChange('dateRange', 'All Time')}
+                  sx={{
+                    bgcolor: colors.cardBackground,
+                    border: `1px solid ${colors.border}`,
+                    color: colors.text.primary,
+                    fontSize: '0.75rem'
+                  }}
+                />
+              )}
+            </Box>
+          )}
+
           {/* Search Results Counter */}
           {searchTerm && (
             <Typography
@@ -735,9 +823,12 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
               <Add />
             </IconButton>
             <IconButton 
+              onClick={handleFilterClick}
               sx={{ 
                 border: `1px solid ${colors.border}`,
-                color: colors.text.secondary,
+                color: activeFilters.status !== 'All' || activeFilters.dateRange !== 'All Time' 
+                  ? theme.palette.primary.main 
+                  : colors.text.secondary,
                 bgcolor: colors.cardBackground,
                 '&:hover': {
                   bgcolor: colors.hover,
@@ -1227,6 +1318,122 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
           )}
         </Box>
       )}
+
+      {/* Filter Menu */}
+      <Menu
+        anchorEl={filterAnchorEl}
+        open={Boolean(filterAnchorEl)}
+        onClose={handleFilterClose}
+        PaperProps={{
+          sx: {
+            bgcolor: colors.cardBackground,
+            border: `1px solid ${colors.border}`,
+            boxShadow: isDarkMode 
+              ? '0 4px 6px rgba(0, 0, 0, 0.3)' 
+              : '0 2px 8px rgba(0, 0, 0, 0.15)',
+            minWidth: 200,
+            '& .MuiMenuItem-root': {
+              color: colors.text.primary,
+              fontSize: '0.875rem',
+              '&:hover': {
+                bgcolor: colors.hover,
+              }
+            }
+          }
+        }}
+        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+      >
+        <Box sx={{ p: 2 }}>
+          <Typography variant="subtitle2" sx={{ color: colors.text.primary, mb: 1, fontWeight: 600 }}>
+            Filter by Status
+          </Typography>
+          {['All', 'Complete', 'In Progress', 'Pending', 'Approved', 'Rejected'].map((status) => (
+            <MenuItem
+              key={status}
+              onClick={() => {
+                handleFilterChange('status', status);
+                handleFilterClose();
+              }}
+              sx={{
+                bgcolor: activeFilters.status === status ? colors.hover : 'transparent',
+                borderRadius: 1,
+                mb: 0.5,
+                '&:hover': {
+                  bgcolor: colors.hover,
+                }
+              }}
+            >
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                {status !== 'All' && (
+                  <Box
+                    sx={{
+                      width: 8,
+                      height: 8,
+                      borderRadius: '50%',
+                      bgcolor: status === 'All' ? 'transparent' : getStatusColor(status).color
+                    }}
+                  />
+                )}
+                {status}
+                {activeFilters.status === status && (
+                  <Box sx={{ ml: 'auto', color: theme.palette.primary.main }}>✓</Box>
+                )}
+              </Box>
+            </MenuItem>
+          ))}
+          
+          <Divider sx={{ my: 1, borderColor: colors.border }} />
+          
+          <Typography variant="subtitle2" sx={{ color: colors.text.primary, mb: 1, fontWeight: 600 }}>
+            Date Range
+          </Typography>
+          {['All Time', 'Today', 'Yesterday', 'This Week', 'This Month'].map((range) => (
+            <MenuItem
+              key={range}
+              onClick={() => {
+                handleFilterChange('dateRange', range);
+                handleFilterClose();
+              }}
+              sx={{
+                bgcolor: activeFilters.dateRange === range ? colors.hover : 'transparent',
+                borderRadius: 1,
+                mb: 0.5,
+                '&:hover': {
+                  bgcolor: colors.hover,
+                }
+              }}
+            >
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                {range}
+                {activeFilters.dateRange === range && (
+                  <Box sx={{ color: theme.palette.primary.main }}>✓</Box>
+                )}
+              </Box>
+            </MenuItem>
+          ))}
+          
+          {(activeFilters.status !== 'All' || activeFilters.dateRange !== 'All Time') && (
+            <>
+              <Divider sx={{ my: 1, borderColor: colors.border }} />
+              <MenuItem
+                onClick={() => {
+                  setActiveFilters({ status: 'All', dateRange: 'All Time' });
+                  handleFilterClose();
+                }}
+                sx={{
+                  color: theme.palette.error.main + ' !important',
+                  '&:hover': {
+                    bgcolor: theme.palette.error.main + '20 !important'
+                  }
+                }}
+              >
+                Clear All Filters
+              </MenuItem>
+            </>
+          )}
+        </Box>
+      </Menu>
 
       {/* Action Menu */}
       <Menu

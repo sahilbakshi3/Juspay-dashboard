@@ -85,6 +85,13 @@ const StatCards = ({ isMobile = false }) => (
     }`}>
       <StatCard
         title="Customers"
+        style={{
+          fontFamily: 'Inter, sans-serif',
+          fontWeight: 600,
+          fontStyle: 'normal',
+          fontSize: 'clamp(14px, 1.5vw, 17px)',
+          lineHeight: 'clamp(18px, 2vw, 20px)',
+        }}
         value="3,781"
         trend="up"
         change="+11.01%"

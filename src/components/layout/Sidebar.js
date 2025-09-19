@@ -3,7 +3,7 @@ import React, { useState, useContext } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { ThemeContext } from '../../context/ThemeContextProvider';
 import {
-  BarChart3, FolderOpen, User, CreditCard, Globe, FileText, MessageSquare, ChevronDown, ChevronRight, ShoppingBag, GraduationCap, Building, ChartPie, FolderClosed, BookOpen, ContactRound, Users, MessagesSquare, X
+  BarChart3, FolderOpen, User, CreditCard, Globe, FileText, MessageSquare, ChevronDown, ChevronRight, ShoppingBag, GraduationCap, Building, ChartPie, FolderClosed, BookOpen, ContactRound, Users, MessagesSquare, X, Megaphone, Users2
 } from 'lucide-react';
 
 const CollapsibleMenuItem = ({
@@ -97,9 +97,13 @@ const Sidebar = ({ isVisible, isMobile = false, onClose }) => {
 
   const toggleSection = (name) => setExpandedSections(prev => ({ ...prev, [name]: !prev[name] }));
 
+  // Updated User Profile sub-items with all 5 components
   const userProfileSubItems = [
-    { id: 'overview', label: 'Overview', onClick: () => handleNavigation('/overview'), isActive: isActive('/overview'), disabled: false },
-    { id: 'projects', label: 'Projects', onClick: () => handleNavigation('/projects'), isActive: isActive('/projects'), disabled: false }
+    { id: 'overview', label: 'Overview', onClick: () => handleNavigation('/profile/overview'), isActive: isActive('/profile/overview'), disabled: false },
+    { id: 'projects', label: 'Projects', onClick: () => handleNavigation('/profile/projects'), isActive: isActive('/profile/projects'), disabled: false },
+    { id: 'campaigns', label: 'Campaigns', onClick: () => handleNavigation('/profile/campaigns'), isActive: isActive('/profile/campaigns'), disabled: false },
+    { id: 'documents', label: 'Documents', onClick: () => handleNavigation('/profile/documents'), isActive: isActive('/profile/documents'), disabled: false },
+    { id: 'followers', label: 'Followers', onClick: () => handleNavigation('/profile/followers'), isActive: isActive('/profile/followers'), disabled: false }
   ];
 
   const favoritesList = [

@@ -1,4 +1,4 @@
-// src/App.js - Updated with SearchProvider
+// src/App.js - Updated with SearchProvider and New Routes
 import React, { useContext, useState, useCallback, useEffect } from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 
@@ -10,11 +10,12 @@ import RightSidebar from './components/layout/RightSidebar';
 // Context Providers
 import ThemeContextProvider, { ThemeContext } from "./context/ThemeContextProvider";
 import { ToastProvider } from './context/ToastContext';
-import { SearchProvider } from './context/SearchContext'; // Add this import
+import { SearchProvider } from './context/SearchContext';
 
 // Pages
 import DashboardPage from './pages/DashboardPage';
 import OrdersPage from './pages/OrdersPage';
+import PageNotFound from './pages/PageNotFound';
 
 const AppContent = () => {
   const { darkMode } = useContext(ThemeContext);
@@ -128,6 +129,7 @@ const AppContent = () => {
           <main className="flex-1 overflow-x-hidden overflow-y-auto">
             <div className="p-3 sm:p-4 lg:p-6" style={{ background: 'transparent' }}>
               <Switch>
+                {/* Main Dashboard Route */}
                 <Route
                   exact
                   path="/"
@@ -139,6 +141,8 @@ const AppContent = () => {
                     />
                   )}
                 />
+                
+                {/* Overview Route */}
                 <Route
                   path="/overview"
                   render={() => (
@@ -148,6 +152,8 @@ const AppContent = () => {
                     />
                   )}
                 />
+                
+                {/* Projects Route */}
                 <Route
                   path="/projects"
                   render={() => (
@@ -157,6 +163,39 @@ const AppContent = () => {
                       isTablet={windowWidth < 1024}
                     />
                   )}
+                />
+
+                {/* User Profile Routes - All show "Page Not Found" */}
+                <Route 
+                  path="/profile/overview" 
+                  render={() => <PageNotFound />} 
+                />
+                <Route 
+                  path="/profile/projects" 
+                  render={() => <PageNotFound />} 
+                />
+                <Route 
+                  path="/profile/campaigns" 
+                  render={() => <PageNotFound />} 
+                />
+                <Route 
+                  path="/profile/documents" 
+                  render={() => <PageNotFound />} 
+                />
+                <Route 
+                  path="/profile/followers" 
+                  render={() => <PageNotFound />} 
+                />
+                
+                {/* Other "Page Not Found" routes */}
+                <Route 
+                  path="/recently" 
+                  render={() => <PageNotFound />} 
+                />
+                
+                {/* Fallback for any unmatched routes */}
+                <Route 
+                  render={() => <PageNotFound />} 
                 />
               </Switch>
             </div>
@@ -186,7 +225,7 @@ const AppContent = () => {
 
 const App = () => {
   return (
-    <SearchProvider> {/* Add SearchProvider as the outermost provider */}
+    <SearchProvider>
       <ThemeContextProvider>
         <ToastProvider>
           <Router>

@@ -147,7 +147,17 @@ const Sidebar = ({ isVisible, isMobile = false, onClose }) => {
         <nav style={{ padding: isMobile ? 16 : 24, display: 'flex', flexDirection: 'column', gap: 12, height: 'calc(100% - 96px)', overflowY: 'auto' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 1.5, color: darkMode ? '#9ca3af' : '#6b7280' }}>FAVORITES</div>
-            <button onClick={() => handleNavigation('/recently')} style={{ fontSize: 12, fontWeight: 700, color: darkMode ? 'rgba(255,255,255,0.25)' : 'rgba(17,24,39,0.25)', background: 'transparent', border: 'none', cursor: 'pointer' }}>Recently</button>
+            <button onClick={() => handleNavigation('/recently')} style={{ 
+              fontSize: 12, 
+              fontWeight: 700, 
+              letterSpacing: 1.5, 
+              color: darkMode ? '#9ca3af' : '#6b7280', 
+              background: 'transparent', 
+              border: 'none', 
+              cursor: 'pointer' 
+            }}>
+              RECENTLY
+            </button>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>

@@ -60,16 +60,26 @@ const RevenueChart = ({ isMobile = false }) => {
 
   const CHART_W = 100, CHART_H = 100, Y_MAX = 80, Y_MIN = 0;
   
+  // Calculate totals for legend
+  const currentWeekTotal = currentWeek.reduce((sum, val) => sum + val, 0) * 1000; // Convert to actual values
+  const previousWeekTotal = previousWeek.reduce((sum, val) => sum + val, 0) * 1000; // Convert to actual values
+  
+  // Format numbers with commas
+  const formatCurrency = (num) => {
+    return `$${num.toLocaleString()}`;
+  };
+  
   // Consistent theme colors
   const theme = {
     text: darkMode ? '#ffffff' : '#1f2937',
     textSecondary: darkMode ? '#9ca3af' : '#6b7280',
     border: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
-    gridLine: darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)',
-    currentWeekColor: 'var(--Secondary-Cyan, #A8C5DA)', // Cyan color
-    previousWeekColor: darkMode ? 'var(--Primary-Brand, #C6C7F8)' : '#000000', // Brand color in dark mode, black in light mode
+    gridLine: darkMode ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)', // Darker grid lines
+    currentWeekColor: darkMode ? 'var(--Primary-Brand, #C6C7F8)' : '#1F2937', // Primary Brand in dark mode, dark in light mode
+    previousWeekColor: '#A8C5DA', // Cyan color works in both modes
     tooltipBg: darkMode ? 'rgba(17,24,39,0.95)' : 'rgba(255,255,255,0.95)',
-    tooltipBorder: darkMode ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)'
+    tooltipBorder: darkMode ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)',
+    partition: 'var(--black-20, #1C1C1C33)' // Partition line color
   };
 
   const handleMouseMove = (e) => {
@@ -151,46 +161,60 @@ const RevenueChart = ({ isMobile = false }) => {
       ref={chartRef}
     >
       {/* Header Section */}
-      <div className={`flex ${isMobile ? 'flex-col space-y-3' : 'items-center justify-between'} mb-6`}>
+      <div className={`flex items-center ${isMobile ? 'flex-col space-y-3' : 'space-x-4'} mb-6`}>
         <h3 
-          className={`font-semibold ${isMobile ? 'text-lg' : 'text-xl'}`}
+          className={`font-semibold ${isMobile ? 'text-lg self-start' : 'text-xl'}`}
           style={{ color: theme.text, margin: 0 }}
         >
           Revenue
         </h3>
-        <div className={`flex ${isMobile ? 'flex-row justify-start space-x-6' : 'items-center space-x-6'}`}>
+        
+        {/* Partition Line - Only show on desktop */}
+        {!isMobile && (
+          <div 
+            style={{ 
+              width: '1px', 
+              height: '20px', 
+              backgroundColor: theme.partition,
+              flexShrink: 0
+            }} 
+          />
+        )}
+        
+        {/* Legends - Left aligned and inline */}
+        <div className={`flex items-center ${isMobile ? 'self-start space-x-6' : 'space-x-6'}`}>
           <div className="flex items-center space-x-2">
             <div 
               style={{ 
-                width: 12, 
-                height: 12, 
-                borderRadius: 6, 
+                width: 8, 
+                height: 8, 
+                borderRadius: '50%', 
                 background: theme.currentWeekColor,
                 flexShrink: 0
               }} 
             />
             <span 
-              className={isMobile ? 'text-sm' : 'text-sm'}
-              style={{ color: theme.textSecondary }}
+              className="text-sm"
+              style={{ color: darkMode ? '#ffffff' : '#000000', fontWeight: 400 }}
             >
-              Current Week
+              Current Week <span style={{ fontWeight: 700 }}>{formatCurrency(currentWeekTotal)}</span>
             </span>
           </div>
           <div className="flex items-center space-x-2">
             <div 
               style={{ 
-                width: 12, 
-                height: 12, 
-                borderRadius: 6, 
+                width: 8, 
+                height: 8, 
+                borderRadius: '50%', 
                 background: theme.previousWeekColor,
                 flexShrink: 0
               }} 
             />
             <span 
-              className={isMobile ? 'text-sm' : 'text-sm'}
-              style={{ color: theme.textSecondary }}
+              className="text-sm"
+              style={{ color: darkMode ? '#ffffff' : '#000000', fontWeight: 400 }}
             >
-              Previous Week
+              Previous Week <span style={{ fontWeight: 700 }}>{formatCurrency(previousWeekTotal)}</span>
             </span>
           </div>
         </div>
@@ -259,7 +283,7 @@ const RevenueChart = ({ isMobile = false }) => {
               d={currentPath} 
               fill="none" 
               stroke={theme.currentWeekColor} 
-              strokeWidth="2.5" 
+              strokeWidth={darkMode ? "3" : "2.5"} // Thicker line in dark mode
               vectorEffect="non-scaling-stroke"
               style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))' }}
             />

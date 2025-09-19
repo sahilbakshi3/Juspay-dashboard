@@ -146,7 +146,7 @@ const ProjectionsChart = () => {
               borderBottom: `1px solid ${darkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.06)'}`
             }}
           >
-            {/* Horizontal grid lines */}
+            {/* Horizontal grid lines - DARKER */}
             {yAxisValues.map((value, index) => {
               const positionFromBottom = (chartHeight - 1) * (index / (yAxisValues.length - 1));
               return (
@@ -155,8 +155,8 @@ const ProjectionsChart = () => {
                   className="absolute left-0 w-full"
                   style={{
                     bottom: `${positionFromBottom}px`,
-                    opacity: 0.4,
-                    borderTop: `1px solid ${darkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.04)'}`
+                    opacity: 0.6, // Increased from 0.4 to 0.6
+                    borderTop: `1px solid ${darkMode ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)'}`  // Increased opacity
                   }}
                 />
               );

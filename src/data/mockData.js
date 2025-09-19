@@ -1,5 +1,3 @@
-// src/data/mockData.js
-
 export const topSellingProducts = [
   { name: 'ASOS Ridley High Waist', price: '$79.49', quantity: 82, amount: '$6,518.18' },
   { name: 'Marco Lightweight Shirt', price: '$128.50', quantity: 37, amount: '$4,754.50' },
@@ -8,10 +6,10 @@ export const topSellingProducts = [
 ];
 
 export const revenueByLocation = [
-  { city: 'New York', amount: '72K' },
-  { city: 'San Francisco', amount: '39K' },
-  { city: 'Sydney', amount: '25K' },
-  { city: 'Singapore', amount: '61K' }
+  { city: 'New York', amount: 72000 },
+  { city: 'San Francisco', amount: 39000 },
+  { city: 'Sydney', amount: 25000 },
+  { city: 'Singapore', amount: 61000 },
 ];
 
 export const totalSalesData = [

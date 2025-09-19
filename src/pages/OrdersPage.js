@@ -82,6 +82,9 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
   const itemsPerPage = getItemsPerPage();
   const isDarkMode = theme.palette.mode === 'dark';
 
+  // tick color for checkboxes (the checkmark)
+  const tickColor = isDarkMode ? '#C6C7F8' : '#1C1C1C';
+
   // Dashboard theme colors
   const dashboardColors = {
     light: {
@@ -744,8 +747,11 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
                 size="small"
                 sx={{
                   color: colors.text.secondary,
+                  '& .MuiSvgIcon-root': { color: colors.text.secondary },
+                  '&.Mui-checked, &.Mui-checked .MuiSvgIcon-root': { color: tickColor },
                   '&.Mui-checked': {
-                    color: theme.palette.primary.main,
+                    // keep background subtle; change or remove as needed
+                    bgcolor: 'transparent'
                   }
                 }}
               />
@@ -1217,9 +1223,8 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
                     disabled={paginatedOrders.length === 0}
                     sx={{
                       color: colors.text.secondary,
-                      '&.Mui-checked': {
-                        color: theme.palette.primary.main,
-                      }
+                      '& .MuiSvgIcon-root': { color: colors.text.secondary },
+                      '&.Mui-checked, &.Mui-checked .MuiSvgIcon-root': { color: tickColor },
                     }}
                     size={isMobile ? 'small' : 'medium'}
                   />
@@ -1277,9 +1282,8 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
                       onChange={handleSelectRow(index)}
                       sx={{
                         color: colors.text.secondary,
-                        '&.Mui-checked': {
-                          color: theme.palette.primary.main,
-                        }
+                        '& .MuiSvgIcon-root': { color: colors.text.secondary },
+                        '&.Mui-checked, &.Mui-checked .MuiSvgIcon-root': { color: tickColor },
                       }}
                       size={isMobile ? 'small' : 'medium'}
                     />

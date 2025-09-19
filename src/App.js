@@ -1,3 +1,4 @@
+// src/App.js
 import React, { useContext, useState, useCallback, useEffect } from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 
@@ -16,11 +17,11 @@ import OrdersPage from './pages/OrdersPage';
 
 const AppContent = () => {
   const { darkMode } = useContext(ThemeContext);
-  
-  // Responsive state management
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  const [leftSidebarVisible, setLeftSidebarVisible] = useState(window.innerWidth >= 1024);
-  const [rightSidebarVisible, setRightSidebarVisible] = useState(window.innerWidth >= 1280);
+
+  // Responsive state
+  const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
+  const [leftSidebarVisible, setLeftSidebarVisible] = useState(typeof window !== 'undefined' ? window.innerWidth >= 1024 : true);
+  const [rightSidebarVisible, setRightSidebarVisible] = useState(typeof window !== 'undefined' ? window.innerWidth >= 1280 : true);
   const [dashboardRefreshKey, setDashboardRefreshKey] = useState(0);
 
   // Handle window resize
@@ -28,16 +29,14 @@ const AppContent = () => {
     const handleResize = () => {
       const width = window.innerWidth;
       setWindowWidth(width);
-      
-      // Auto-hide sidebars on smaller screens
+
       if (width < 1024) {
         setLeftSidebarVisible(false);
       }
       if (width < 1280) {
         setRightSidebarVisible(false);
       }
-      
-      // Auto-show sidebars on larger screens when appropriate
+
       if (width >= 1024 && width < 1280) {
         setLeftSidebarVisible(true);
         setRightSidebarVisible(false);
@@ -48,56 +47,66 @@ const AppContent = () => {
       }
     };
 
+    handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   // Toggle functions
-  const toggleLeftSidebar = () => {
-    setLeftSidebarVisible(prev => !prev);
-  };
+  const toggleLeftSidebar = () => setLeftSidebarVisible(prev => !prev);
+  const toggleRightSidebar = () => setRightSidebarVisible(prev => !prev);
 
-  const toggleRightSidebar = () => {
-    setRightSidebarVisible(prev => !prev);
-  };
-
-  // Dashboard refresh function
+  // Dashboard refresh
   const handleDashboardRefresh = useCallback(() => {
     setDashboardRefreshKey(prev => prev + 1);
   }, []);
 
   // Close sidebars when clicking overlay on mobile
   const handleOverlayClick = () => {
-    if (windowWidth < 1024) {
-      setLeftSidebarVisible(false);
-    }
-    if (windowWidth < 1280) {
-      setRightSidebarVisible(false);
-    }
+    if (windowWidth < 1024) setLeftSidebarVisible(false);
+    if (windowWidth < 1280) setRightSidebarVisible(false);
   };
 
+  // App-level styles for dark/light
+  const appBg = darkMode ? '#000000' : undefined; // true black for dark
+  const contentSurface = darkMode ? '#0a0a0a' : undefined; // slightly off-black surfaces
+  const textColor = darkMode ? '#FFFFFF' : '#111827';
+
   return (
-    <div className={`${darkMode ? 'dark' : ''}`}>
-      <div className="min-h-screen flex transition-colors duration-300 bg-gray-50 dark:bg-gray-900 text-black dark:text-white relative overflow-hidden">
-        
-        {/* Mobile/Tablet Overlay */}
+    <div style={{ background: appBg, color: textColor, minHeight: '100vh' }}>
+      <div
+        className="min-h-screen flex transition-colors duration-300 relative overflow-hidden"
+        style={{
+          background: appBg ?? undefined,
+          color: textColor,
+        }}
+      >
+        {/* Mobile/Tablet Overlay (shown when sidebars are visible on small screens) */}
         {((leftSidebarVisible && windowWidth < 1024) || (rightSidebarVisible && windowWidth < 1280)) && (
-          <div 
-            className="fixed inset-0 bg-black bg-opacity-50 z-30 transition-opacity duration-300"
+          <div
             onClick={handleOverlayClick}
+            role="button"
+            aria-label="Close overlays"
+            tabIndex={0}
+            className="fixed inset-0 z-30 transition-opacity duration-300"
+            style={{
+              backgroundColor: 'rgba(0,0,0,0.6)'
+            }}
           />
         )}
 
         {/* Left Sidebar - Responsive positioning */}
-        <div className={`
-          ${windowWidth < 1024 ? 'fixed' : 'relative'} 
-          inset-y-0 left-0 z-40 
-          transform transition-transform duration-300 ease-in-out
-          ${leftSidebarVisible ? 'translate-x-0' : '-translate-x-full'}
-          ${windowWidth >= 1024 ? (leftSidebarVisible ? 'block' : 'hidden') : ''}
-        `}>
-          <Sidebar 
-            isVisible={leftSidebarVisible} 
+        <div
+          className={`
+            ${windowWidth < 1024 ? 'fixed' : 'relative'}
+            inset-y-0 left-0 z-40
+            transform transition-transform duration-300 ease-in-out
+            ${leftSidebarVisible ? 'translate-x-0' : '-translate-x-full'}
+            ${windowWidth >= 1024 ? (leftSidebarVisible ? 'block' : 'hidden') : ''}
+          `}
+        >
+          <Sidebar
+            isVisible={leftSidebarVisible}
             isMobile={windowWidth < 1024}
             onClose={() => setLeftSidebarVisible(false)}
           />
@@ -105,8 +114,7 @@ const AppContent = () => {
 
         {/* Main Content */}
         <div className="flex-1 flex flex-col overflow-hidden min-w-0">
-          {/* Header with responsive props */}
-          <Header 
+          <Header
             leftSidebarVisible={leftSidebarVisible}
             rightSidebarVisible={rightSidebarVisible}
             toggleLeftSidebar={toggleLeftSidebar}
@@ -116,34 +124,33 @@ const AppContent = () => {
             isTablet={windowWidth < 1280}
           />
 
-          {/* Page Routes */}
           <main className="flex-1 overflow-x-hidden overflow-y-auto">
-            <div className="p-3 sm:p-4 lg:p-6">
+            <div className="p-3 sm:p-4 lg:p-6" style={{ background: 'transparent' }}>
               <Switch>
-                <Route 
-                  exact 
-                  path="/" 
+                <Route
+                  exact
+                  path="/"
                   render={() => (
-                    <DashboardPage 
-                      refreshKey={dashboardRefreshKey} 
+                    <DashboardPage
+                      refreshKey={dashboardRefreshKey}
                       isMobile={windowWidth < 768}
                       isTablet={windowWidth < 1024}
                     />
                   )}
                 />
-                <Route 
-                  path="/overview" 
+                <Route
+                  path="/overview"
                   render={() => (
-                    <OrdersPage 
+                    <OrdersPage
                       isMobile={windowWidth < 768}
                       isTablet={windowWidth < 1024}
                     />
                   )}
                 />
-                <Route 
-                  path="/projects" 
+                <Route
+                  path="/projects"
                   render={() => (
-                    <DashboardPage 
+                    <DashboardPage
                       refreshKey={dashboardRefreshKey}
                       isMobile={windowWidth < 768}
                       isTablet={windowWidth < 1024}
@@ -156,15 +163,17 @@ const AppContent = () => {
         </div>
 
         {/* Right Sidebar - Responsive positioning */}
-        <div className={`
-          ${windowWidth < 1280 ? 'fixed' : 'relative'} 
-          inset-y-0 right-0 z-40 
-          transform transition-transform duration-300 ease-in-out
-          ${rightSidebarVisible ? 'translate-x-0' : 'translate-x-full'}
-          ${windowWidth >= 1280 ? (rightSidebarVisible ? 'block' : 'hidden') : ''}
-        `}>
-          <RightSidebar 
-            isVisible={rightSidebarVisible} 
+        <div
+          className={`
+            ${windowWidth < 1280 ? 'fixed' : 'relative'}
+            inset-y-0 right-0 z-40
+            transform transition-transform duration-300 ease-in-out
+            ${rightSidebarVisible ? 'translate-x-0' : 'translate-x-full'}
+            ${windowWidth >= 1280 ? (rightSidebarVisible ? 'block' : 'hidden') : ''}
+          `}
+        >
+          <RightSidebar
+            isVisible={rightSidebarVisible}
             isMobile={windowWidth < 1024}
             onClose={() => setRightSidebarVisible(false)}
           />

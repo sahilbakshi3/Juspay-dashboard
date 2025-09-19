@@ -1,3 +1,4 @@
+// src/pages/OrdersPage.js
 import React, { useState, useMemo } from 'react';
 import {
   Avatar,
@@ -70,6 +71,7 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
   const isDarkMode = theme.palette.mode === 'dark';
   const tickColor = isDarkMode ? '#C6C7F8' : '#1C1C1C';
 
+  // === color tokens, dark mode uses true black + near-black surfaces ===
   const dashboardColors = {
     light: {
       background: '#fafafa',
@@ -79,11 +81,12 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
       hover: '#f9fafb'
     },
     dark: {
-      background: '#0f172a',
-      cardBackground: '#1e293b',
-      border: '#334155',
-      text: { primary: '#f8fafc', secondary: '#cbd5e1' },
-      hover: '#334155'
+      // True black background & near-black surfaces
+      background: '#000000',
+      cardBackground: '#0a0a0a', // near-black for cards/surfaces
+      border: '#111111',
+      text: { primary: '#ffffff', secondary: '#cbd5e1' },
+      hover: '#111111'
     }
   };
   const colors = isDarkMode ? dashboardColors.dark : dashboardColors.light;
@@ -110,281 +113,41 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
   };
   // ----------------------------------------
 
-  // Full orders list (exactly as you provided)
+  // Full orders list (as provided)
   const orders = [
-    {
-      id: '#CM9801',
-      user: { name: 'Natali Craig', avatar: '👩‍💼' },
-      project: 'Landing Page',
-      address: 'Meadow Lane Oakland',
-      date: 'Just now',
-      status: 'In Progress',
-      dateSort: new Date('2024-02-28T10:00:00')
-    },
-    {
-      id: '#CM9802',
-      user: { name: 'Kate Morrison', avatar: '👩‍🦰' },
-      project: 'CRM Admin pages',
-      address: 'Larry San Francisco',
-      date: 'A minute ago',
-      status: 'Complete',
-      dateSort: new Date('2024-02-28T09:59:00')
-    },
-    {
-      id: '#CM9803',
-      user: { name: 'Drew Cano', avatar: '👨‍🦱' },
-      project: 'Client Project',
-      address: 'Bagwell Avenue Ocala',
-      date: '1 hour ago',
-      status: 'Pending',
-      dateSort: new Date('2024-02-28T09:00:00')
-    },
-    {
-      id: '#CM9804',
-      user: { name: 'Orlando Diggs', avatar: '👨‍💼' },
-      project: 'Admin Dashboard',
-      address: 'Washburn Baton Rouge',
-      date: 'Yesterday',
-      status: 'Approved',
-      dateSort: new Date('2024-02-27T10:00:00')
-    },
-    {
-      id: '#CM9805',
-      user: { name: 'Andi Lane', avatar: '👩‍🦳' },
-      project: 'App Landing Page',
-      address: 'Nest Lane Olivette',
-      date: 'Feb 2, 2023',
-      status: 'Rejected',
-      dateSort: new Date('2023-02-02T10:00:00')
-    },
-    {
-      id: '#CM9806',
-      user: { name: 'John Smith', avatar: '👨‍💻' },
-      project: 'E-commerce Site',
-      address: 'Broadway New York',
-      date: 'Feb 3, 2023',
-      status: 'In Progress',
-      dateSort: new Date('2023-02-03T10:00:00')
-    },
-    {
-      id: '#CM9807',
-      user: { name: 'Sarah Johnson', avatar: '👩‍🎨' },
-      project: 'Portfolio Website',
-      address: 'Sunset Boulevard LA',
-      date: 'Feb 4, 2023',
-      status: 'Complete',
-      dateSort: new Date('2023-02-04T10:00:00')
-    },
-    {
-      id: '#CM9808',
-      user: { name: 'Mike Davis', avatar: '👨‍🔧' },
-      project: 'Mobile App',
-      address: 'Michigan Avenue Chicago',
-      date: 'Feb 5, 2023',
-      status: 'Pending',
-      dateSort: new Date('2023-02-05T10:00:00')
-    },
-    {
-      id: '#CM9809',
-      user: { name: 'Emma Wilson', avatar: '👩‍💻' },
-      project: 'Dashboard Redesign',
-      address: 'Pine Street Seattle',
-      date: 'Feb 6, 2023',
-      status: 'Approved',
-      dateSort: new Date('2023-02-06T10:00:00')
-    },
-    {
-      id: '#CM9810',
-      user: { name: 'Alex Brown', avatar: '👨‍🎯' },
-      project: 'Marketing Site',
-      address: 'Oak Street Portland',
-      date: 'Feb 7, 2023',
-      status: 'Complete',
-      dateSort: new Date('2023-02-07T10:00:00')
-    },
-    {
-      id: '#CM9811',
-      user: { name: 'Lisa Garcia', avatar: '👩‍🔬' },
-      project: 'Data Analytics Platform',
-      address: 'Main Street Boston',
-      date: 'Feb 8, 2023',
-      status: 'In Progress',
-      dateSort: new Date('2023-02-08T10:00:00')
-    },
-    {
-      id: '#CM9812',
-      user: { name: 'David Miller', avatar: '👨‍🏫' },
-      project: 'Learning Management System',
-      address: 'University Avenue Austin',
-      date: 'Feb 9, 2023',
-      status: 'Pending',
-      dateSort: new Date('2023-02-09T10:00:00')
-    },
-    {
-      id: '#CM9813',
-      user: { name: 'Rachel Green', avatar: '👩‍🎭' },
-      project: 'Event Management App',
-      address: 'Festival Street Miami',
-      date: 'Feb 10, 2023',
-      status: 'Rejected',
-      dateSort: new Date('2023-02-10T10:00:00')
-    },
-    {
-      id: '#CM9814',
-      user: { name: 'Tom Anderson', avatar: '👨‍🚀' },
-      project: 'Inventory System',
-      address: 'Industrial Park Denver',
-      date: 'Feb 11, 2023',
-      status: 'Complete',
-      dateSort: new Date('2023-02-11T10:00:00')
-    },
-    {
-      id: '#CM9815',
-      user: { name: 'Jennifer Lee', avatar: '👩‍⚕️' },
-      project: 'Healthcare Portal',
-      address: 'Medical Center Phoenix',
-      date: 'Feb 12, 2023',
-      status: 'Approved',
-      dateSort: new Date('2023-02-12T10:00:00')
-    },
-    {
-      id: '#CM9816',
-      user: { name: 'Brian White', avatar: '👨‍💼' },
-      project: 'Job Board App',
-      address: 'King Street Charleston',
-      date: 'Feb 13, 2023',
-      status: 'Pending',
-      dateSort: new Date('2023-02-13T10:00:00')
-    },
-    {
-      id: '#CM9817',
-      user: { name: 'Olivia Moore', avatar: '👩‍🔧' },
-      project: 'HR Management Tool',
-      address: 'Queen Street Toronto',
-      date: 'Feb 14, 2023',
-      status: 'Complete',
-      dateSort: new Date('2023-02-14T10:00:00')
-    },
-    {
-      id: '#CM9818',
-      user: { name: 'Ethan Taylor', avatar: '👨‍🎨' },
-      project: 'Design System',
-      address: 'Creative Avenue Atlanta',
-      date: 'Feb 15, 2023',
-      status: 'In Progress',
-      dateSort: new Date('2023-02-15T10:00:00')
-    },
-    {
-      id: '#CM9819',
-      user: { name: 'Sophia Martin', avatar: '👩‍🚒' },
-      project: 'Disaster Response Portal',
-      address: 'Firehouse Road Houston',
-      date: 'Feb 16, 2023',
-      status: 'Approved',
-      dateSort: new Date('2023-02-16T10:00:00')
-    },
-    {
-      id: '#CM9820',
-      user: { name: 'Daniel Walker', avatar: '👨‍🍳' },
-      project: 'Recipe App',
-      address: 'Baker Street London',
-      date: 'Feb 17, 2023',
-      status: 'Rejected',
-      dateSort: new Date('2023-02-17T10:00:00')
-    },
-    {
-      id: '#CM9821',
-      user: { name: 'Ella Harris', avatar: '👩‍🔧' },
-      project: 'Customer Support Dashboard',
-      address: 'Helpdesk Lane Dallas',
-      date: 'Feb 18, 2023',
-      status: 'In Progress',
-      dateSort: new Date('2023-02-18T10:00:00')
-    },
-    {
-      id: '#CM9822',
-      user: { name: 'Logan Martinez', avatar: '👨‍🎓' },
-      project: 'Student Portal',
-      address: 'Campus Circle Raleigh',
-      date: 'Feb 19, 2023',
-      status: 'Pending',
-      dateSort: new Date('2023-02-19T10:00:00')
-    },
-    {
-      id: '#CM9823',
-      user: { name: 'Grace Thompson', avatar: '👩‍🌾' },
-      project: 'Farm Management System',
-      address: 'Harvest Road Boise',
-      date: 'Feb 20, 2023',
-      status: 'Complete',
-      dateSort: new Date('2023-02-20T10:00:00')
-    },
-    {
-      id: '#CM9824',
-      user: { name: 'Henry Scott', avatar: '👨‍🚒' },
-      project: 'Safety Compliance App',
-      address: 'Rescue Blvd Tampa',
-      date: 'Feb 21, 2023',
-      status: 'Approved',
-      dateSort: new Date('2023-02-21T10:00:00')
-    },
-    {
-      id: '#CM9825',
-      user: { name: 'Chloe Adams', avatar: '👩‍✈️' },
-      project: 'Travel Booking Platform',
-      address: 'Aviation Road Nashville',
-      date: 'Feb 22, 2023',
-      status: 'In Progress',
-      dateSort: new Date('2023-02-22T10:00:00')
-    },
-    {
-      id: '#CM9826',
-      user: { name: 'Lucas Mitchell', avatar: '👨‍⚕️' },
-      project: 'Telemedicine App',
-      address: 'Wellness Drive Baltimore',
-      date: 'Feb 23, 2023',
-      status: 'Complete',
-      dateSort: new Date('2023-02-23T10:00:00')
-    },
-    {
-      id: '#CM9827',
-      user: { name: 'Amelia Perez', avatar: '👩‍🚀' },
-      project: 'Space Education Portal',
-      address: 'Galaxy Street Houston',
-      date: 'Feb 24, 2023',
-      status: 'Pending',
-      dateSort: new Date('2023-02-24T10:00:00')
-    },
-    {
-      id: '#CM9828',
-      user: { name: 'Jack Rivera', avatar: '👨‍🌾' },
-      project: 'AgriTech CRM',
-      address: 'Greenfield Road Fresno',
-      date: 'Feb 25, 2023',
-      status: 'Rejected',
-      dateSort: new Date('2023-02-25T10:00:00')
-    },
-    {
-      id: '#CM9829',
-      user: { name: 'Zoe Cooper', avatar: '👩‍🎤' },
-      project: 'Music Collaboration App',
-      address: 'Harmony Lane Austin',
-      date: 'Feb 26, 2023',
-      status: 'Complete',
-      dateSort: new Date('2023-02-26T10:00:00')
-    },
-    {
-      id: '#CM9830',
-      user: { name: 'Nathan Bell', avatar: '👨‍🔬' },
-      project: 'Lab Management System',
-      address: 'Science Park San Diego',
-      date: 'Feb 27, 2023',
-      status: 'Approved',
-      dateSort: new Date('2023-02-27T10:00:00')
-    }
+    { id: '#CM9801', user: { name: 'Natali Craig', avatar: '👩‍💼' }, project: 'Landing Page', address: 'Meadow Lane Oakland', date: 'Just now', status: 'In Progress', dateSort: new Date('2024-02-28T10:00:00') },
+    { id: '#CM9802', user: { name: 'Kate Morrison', avatar: '👩‍🦰' }, project: 'CRM Admin pages', address: 'Larry San Francisco', date: 'A minute ago', status: 'Complete', dateSort: new Date('2024-02-28T09:59:00') },
+    { id: '#CM9803', user: { name: 'Drew Cano', avatar: '👨‍🦱' }, project: 'Client Project', address: 'Bagwell Avenue Ocala', date: '1 hour ago', status: 'Pending', dateSort: new Date('2024-02-28T09:00:00') },
+    { id: '#CM9804', user: { name: 'Orlando Diggs', avatar: '👨‍💼' }, project: 'Admin Dashboard', address: 'Washburn Baton Rouge', date: 'Yesterday', status: 'Approved', dateSort: new Date('2024-02-27T10:00:00') },
+    { id: '#CM9805', user: { name: 'Andi Lane', avatar: '👩‍🦳' }, project: 'App Landing Page', address: 'Nest Lane Olivette', date: 'Feb 2, 2023', status: 'Rejected', dateSort: new Date('2023-02-02T10:00:00') },
+    { id: '#CM9806', user: { name: 'John Smith', avatar: '👨‍💻' }, project: 'E-commerce Site', address: 'Broadway New York', date: 'Feb 3, 2023', status: 'In Progress', dateSort: new Date('2023-02-03T10:00:00') },
+    { id: '#CM9807', user: { name: 'Sarah Johnson', avatar: '👩‍🎨' }, project: 'Portfolio Website', address: 'Sunset Boulevard LA', date: 'Feb 4, 2023', status: 'Complete', dateSort: new Date('2023-02-04T10:00:00') },
+    { id: '#CM9808', user: { name: 'Mike Davis', avatar: '👨‍🔧' }, project: 'Mobile App', address: 'Michigan Avenue Chicago', date: 'Feb 5, 2023', status: 'Pending', dateSort: new Date('2023-02-05T10:00:00') },
+    { id: '#CM9809', user: { name: 'Emma Wilson', avatar: '👩‍💻' }, project: 'Dashboard Redesign', address: 'Pine Street Seattle', date: 'Feb 6, 2023', status: 'Approved', dateSort: new Date('2023-02-06T10:00:00') },
+    { id: '#CM9810', user: { name: 'Alex Brown', avatar: '👨‍🎯' }, project: 'Marketing Site', address: 'Oak Street Portland', date: 'Feb 7, 2023', status: 'Complete', dateSort: new Date('2023-02-07T10:00:00') },
+    { id: '#CM9811', user: { name: 'Lisa Garcia', avatar: '👩‍🔬' }, project: 'Data Analytics Platform', address: 'Main Street Boston', date: 'Feb 8, 2023', status: 'In Progress', dateSort: new Date('2023-02-08T10:00:00') },
+    { id: '#CM9812', user: { name: 'David Miller', avatar: '👨‍🏫' }, project: 'Learning Management System', address: 'University Avenue Austin', date: 'Feb 9, 2023', status: 'Pending', dateSort: new Date('2023-02-09T10:00:00') },
+    { id: '#CM9813', user: { name: 'Rachel Green', avatar: '👩‍🎭' }, project: 'Event Management App', address: 'Festival Street Miami', date: 'Feb 10, 2023', status: 'Rejected', dateSort: new Date('2023-02-10T10:00:00') },
+    { id: '#CM9814', user: { name: 'Tom Anderson', avatar: '👨‍🚀' }, project: 'Inventory System', address: 'Industrial Park Denver', date: 'Feb 11, 2023', status: 'Complete', dateSort: new Date('2023-02-11T10:00:00') },
+    { id: '#CM9815', user: { name: 'Jennifer Lee', avatar: '👩‍⚕️' }, project: 'Healthcare Portal', address: 'Medical Center Phoenix', date: 'Feb 12, 2023', status: 'Approved', dateSort: new Date('2023-02-12T10:00:00') },
+    { id: '#CM9816', user: { name: 'Brian White', avatar: '👨‍💼' }, project: 'Job Board App', address: 'King Street Charleston', date: 'Feb 13, 2023', status: 'Pending', dateSort: new Date('2023-02-13T10:00:00') },
+    { id: '#CM9817', user: { name: 'Olivia Moore', avatar: '👩‍🔧' }, project: 'HR Management Tool', address: 'Queen Street Toronto', date: 'Feb 14, 2023', status: 'Complete', dateSort: new Date('2023-02-14T10:00:00') },
+    { id: '#CM9818', user: { name: 'Ethan Taylor', avatar: '👨‍🎨' }, project: 'Design System', address: 'Creative Avenue Atlanta', date: 'Feb 15, 2023', status: 'In Progress', dateSort: new Date('2023-02-15T10:00:00') },
+    { id: '#CM9819', user: { name: 'Sophia Martin', avatar: '👩‍🚒' }, project: 'Disaster Response Portal', address: 'Firehouse Road Houston', date: 'Feb 16, 2023', status: 'Approved', dateSort: new Date('2023-02-16T10:00:00') },
+    { id: '#CM9820', user: { name: 'Daniel Walker', avatar: '👨‍🍳' }, project: 'Recipe App', address: 'Baker Street London', date: 'Feb 17, 2023', status: 'Rejected', dateSort: new Date('2023-02-17T10:00:00') },
+    { id: '#CM9821', user: { name: 'Ella Harris', avatar: '👩‍🔧' }, project: 'Customer Support Dashboard', address: 'Helpdesk Lane Dallas', date: 'Feb 18, 2023', status: 'In Progress', dateSort: new Date('2023-02-18T10:00:00') },
+    { id: '#CM9822', user: { name: 'Logan Martinez', avatar: '👨‍🎓' }, project: 'Student Portal', address: 'Campus Circle Raleigh', date: 'Feb 19, 2023', status: 'Pending', dateSort: new Date('2023-02-19T10:00:00') },
+    { id: '#CM9823', user: { name: 'Grace Thompson', avatar: '👩‍🌾' }, project: 'Farm Management System', address: 'Harvest Road Boise', date: 'Feb 20, 2023', status: 'Complete', dateSort: new Date('2023-02-20T10:00:00') },
+    { id: '#CM9824', user: { name: 'Henry Scott', avatar: '👨‍🚒' }, project: 'Safety Compliance App', address: 'Rescue Blvd Tampa', date: 'Feb 21, 2023', status: 'Approved', dateSort: new Date('2023-02-21T10:00:00') },
+    { id: '#CM9825', user: { name: 'Chloe Adams', avatar: '👩‍✈️' }, project: 'Travel Booking Platform', address: 'Aviation Road Nashville', date: 'Feb 22, 2023', status: 'In Progress', dateSort: new Date('2023-02-22T10:00:00') },
+    { id: '#CM9826', user: { name: 'Lucas Mitchell', avatar: '👨‍⚕️' }, project: 'Telemedicine App', address: 'Wellness Drive Baltimore', date: 'Feb 23, 2023', status: 'Complete', dateSort: new Date('2023-02-23T10:00:00') },
+    { id: '#CM9827', user: { name: 'Amelia Perez', avatar: '👩‍🚀' }, project: 'Space Education Portal', address: 'Galaxy Street Houston', date: 'Feb 24, 2023', status: 'Pending', dateSort: new Date('2023-02-24T10:00:00') },
+    { id: '#CM9828', user: { name: 'Jack Rivera', avatar: '👨‍🌾' }, project: 'AgriTech CRM', address: 'Greenfield Road Fresno', date: 'Feb 25, 2023', status: 'Rejected', dateSort: new Date('2023-02-25T10:00:00') },
+    { id: '#CM9829', user: { name: 'Zoe Cooper', avatar: '👩‍🎤' }, project: 'Music Collaboration App', address: 'Harmony Lane Austin', date: 'Feb 26, 2023', status: 'Complete', dateSort: new Date('2023-02-26T10:00:00') },
+    { id: '#CM9830', user: { name: 'Nathan Bell', avatar: '👨‍🔬' }, project: 'Lab Management System', address: 'Science Park San Diego', date: 'Feb 27, 2023', status: 'Approved', dateSort: new Date('2023-02-27T10:00:00') }
   ];
 
-  // Sorting, filtering, pagination, handlers (same logic as before)
+  // Sorting, filtering, pagination, handlers (same logic)
   const handleSort = (key) => {
     let direction = 'asc';
     if (sortConfig.key === key && sortConfig.direction === 'asc') direction = 'desc';
@@ -633,7 +396,7 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
                 bgcolor: stringToColor(order.user.name),
                 opacity: 1,
                 transform: 'rotate(0deg)',
-                borderRadius: '50%' // Radius/8 equivalent
+                borderRadius: '50%'
               }}
             >
               {getInitials(order.user.name)}
@@ -795,7 +558,7 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
                           bgcolor: stringToColor(order.user.name),
                           opacity: 1,
                           transform: 'rotate(0deg)',
-                          borderRadius: '50%' // Radius/8 equivalent
+                          borderRadius: '50%'
                         }}
                       >
                         {getInitials(order.user.name)}

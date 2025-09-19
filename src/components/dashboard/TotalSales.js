@@ -1,12 +1,8 @@
 import React, { useContext, useRef, useEffect, useState } from 'react';
-import { PieChart } from '@mui/x-charts/PieChart';
-import { useTheme } from '@mui/material/styles';
 import { ThemeContext } from '../../context/ThemeContextProvider';
 import { createPortal } from 'react-dom';
 
-const COLORS_LIGHT = ['#1F2937', '#BBF7D0', '#BAE6FD', '#A5B4FC'];
-const COLORS_DARK = ['#C6C7F8', '#BBF7D0', '#BAE6FD', '#A5B4FC'];
-
+// small in-component pie renderer (keeps dependency count low)
 const pieData = [
   { type: 'Direct', amount: 300.56 },
   { type: 'Affiliate', amount: 135.18 },
@@ -14,319 +10,149 @@ const pieData = [
   { type: 'E-mail', amount: 48.96 }
 ];
 
+const COLORS_LIGHT = ['#1F2937', '#BBF7D0', '#BAE6FD', '#A5B4FC'];
+const COLORS_DARK = ['#C6C7F8', '#BBF7D0', '#BAE6FD', '#A5B4FC'];
+
+function createArcPath(startAngle, endAngle, radius, center) {
+  const rad = Math.PI / 180;
+  const startX = center + radius * Math.cos(rad * (startAngle - 90));
+  const startY = center + radius * Math.sin(rad * (startAngle - 90));
+  const endX = center + radius * Math.cos(rad * (endAngle - 90));
+  const endY = center + radius * Math.sin(rad * (endAngle - 90));
+  const largeArcFlag = endAngle - startAngle <= 180 ? 0 : 1;
+  return `M${center},${center} L${startX},${startY} A${radius},${radius} 0 ${largeArcFlag} 1 ${endX},${endY} Z`;
+}
+
 export default function TotalSales() {
-  const theme = useTheme();
   const { darkMode } = useContext(ThemeContext);
   const containerRef = useRef(null);
-  const [containerDimensions, setContainerDimensions] = useState({ width: 0, height: 0 });
+  const [containerDimensions, setContainerDimensions] = useState({ width: 300, height: 300 });
   const [isMobile, setIsMobile] = useState(false);
+  const [tooltip, setTooltip] = useState({ visible: false, clientX: 0, clientY: 0, data: null });
 
-  // Tooltip state
-  const [tooltip, setTooltip] = useState({
-    visible: false,
-    clientX: 0,
-    clientY: 0,
-    data: null
-  });
-
-  // Responsive sizing and updates
   useEffect(() => {
     const handleResize = () => {
-      if (containerRef.current) {
-        const { offsetWidth, offsetHeight } = containerRef.current;
-        const isMobileView = offsetWidth < 480;
-        setContainerDimensions({ width: offsetWidth, height: offsetHeight });
-        setIsMobile(isMobileView);
-      }
+      if (!containerRef.current) return;
+      const { offsetWidth } = containerRef.current;
+      setContainerDimensions({ width: offsetWidth, height: offsetWidth });
+      setIsMobile(offsetWidth < 480);
     };
-    
-    // Initial measurement
     handleResize();
-    
-    // Add event listeners
     window.addEventListener('resize', handleResize);
-    
-    // Use ResizeObserver for more accurate container size tracking
-    const resizeObserver = new ResizeObserver(handleResize);
-    if (containerRef.current) {
-      resizeObserver.observe(containerRef.current);
-    }
-
-    // Cleanup
+    const ro = new ResizeObserver(handleResize);
+    if (containerRef.current) ro.observe(containerRef.current);
     return () => {
       window.removeEventListener('resize', handleResize);
-      resizeObserver.disconnect();
+      ro.disconnect();
     };
   }, []);
 
   const COLORS = darkMode ? COLORS_DARK : COLORS_LIGHT;
-
-  // Simplified responsive layout logic - Force full width
-  const getResponsiveDimensions = () => {
-    const baseWidth = containerDimensions.width || 250; // Fallback width
-    
-    if (isMobile) {
-      return {
-        padding: '16px',
-        chartSize: Math.min(140, baseWidth - 80),
-        titleSize: 'text-base',
-        itemFontSize: 'text-xs',
-        innerRadius: 25,
-        outerRadius: Math.min(60, (baseWidth - 80) / 2.5),
-        itemSpacing: 'gap-3'
-      };
-    } else if (baseWidth >= 480 && baseWidth < 768) {
-      return {
-        padding: '20px',
-        chartSize: 160,
-        titleSize: 'text-lg',
-        itemFontSize: 'text-sm',
-        innerRadius: 35,
-        outerRadius: 65,
-        itemSpacing: 'gap-2'
-      };
-    } else {
-      return {
-        padding: '24px',
-        chartSize: Math.min(120, baseWidth - 100),
-        titleSize: 'text-lg',
-        itemFontSize: 'text-xs',
-        innerRadius: 30,
-        outerRadius: Math.min(50, (baseWidth - 100) / 2.5),
-        itemSpacing: 'gap-2'
-      };
-    }
-  };
-
-  const dimensions = getResponsiveDimensions();
-  const chartSize = dimensions.chartSize;
+  const baseWidth = containerDimensions.width || 240;
+  const chartSize = Math.min(160, baseWidth - 80);
   const center = chartSize / 2;
-  const radius = dimensions.outerRadius - 2;
-  const totalAmount = pieData.reduce((sum, item) => sum + item.amount, 0);
+  const outerRadius = Math.max(24, Math.min(60, chartSize / 2));
+  const innerRadius = Math.max(10, Math.min(36, outerRadius - 12));
+  const totalAmount = pieData.reduce((s, p) => s + p.amount, 0);
 
-  // Compute start/end angles for each slice in degrees (full circle 360deg)
-  const angles = [];
+  // compute angles
   let acc = 0;
-  for (let i = 0; i < pieData.length; i++) {
-    const slice = pieData[i];
-    const start = acc;
-    const end = acc + (slice.amount / totalAmount) * 360;
-    angles.push([start, end]);
-    acc = end;
-  }
+  const angles = pieData.map(p => {
+    const s = acc;
+    const e = acc + (p.amount / totalAmount) * 360;
+    acc = e;
+    return [s, e];
+  });
 
-  // Function to generate the SVG arc path for each slice
-  function createArcPath(startAngle, endAngle, radius, center) {
-    const rad = Math.PI / 180;
-    const startX = center + radius * Math.cos(rad * (startAngle - 90));
-    const startY = center + radius * Math.sin(rad * (startAngle - 90));
-    const endX = center + radius * Math.cos(rad * (endAngle - 90));
-    const endY = center + radius * Math.sin(rad * (endAngle - 90));
-    const largeArcFlag = endAngle - startAngle <= 180 ? 0 : 1;
-    return `M${center},${center} L${startX},${startY} A${radius},${radius} 0 ${largeArcFlag} 1 ${endX},${endY} Z`;
-  }
+  const onSliceEnter = (e, item) => setTooltip({ visible: true, clientX: e.clientX, clientY: e.clientY, data: item });
+  const onSliceMove = (e) => setTooltip(t => t.visible ? ({ ...t, clientX: e.clientX, clientY: e.clientY }) : t);
+  const onSliceLeave = () => setTooltip({ visible: false, clientX: 0, clientY: 0, data: null });
 
   return (
-    <div
-      ref={containerRef}
-      className={`${
-        darkMode
-          ? 'bg-gray-800 shadow-gray-900/20'
-          : 'bg-white shadow-sm'
-      } rounded-xl transition-colors duration-200`}
-      style={{
-        width: '100%',           // Force full width
-        height: '100%',          // Force full height
-        minWidth: '200px',       // Minimum width constraint
-        minHeight: isMobile ? '320px' : '344px',
-        padding: dimensions.padding,
-        borderRadius: 16,
-        opacity: 1,
-        position: 'relative',
-        boxSizing: 'border-box'  // Ensure padding is included in width/height
-      }}
-    >
-      {/* Title */}
-      <h3
-        className={`${dimensions.titleSize} font-semibold leading-tight mb-4 transition-colors duration-200 ${
-          darkMode ? 'text-gray-100' : 'text-gray-900'
-        }`}
-        style={{
-          fontFamily: 'Inter, sans-serif',
-          fontWeight: 600,
-          fontStyle: 'normal',
-          letterSpacing: '0%'
-        }}
-      >
+    <div ref={containerRef} className="rounded-xl transition-colors duration-200" style={{
+      width: '100%',
+      height: '100%',
+      minWidth: '200px',
+      minHeight: isMobile ? '320px' : '344px',
+      padding: 24,
+      borderRadius: 16,
+      background: darkMode ? 'var(--Primary-Light, #FFFFFF0D)' : '#ffffff',
+      border: darkMode ? '1px solid rgba(255,255,255,0.04)' : '1px solid rgba(0,0,0,0.06)',
+      boxSizing: 'border-box'
+    }}>
+      <h3 style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600, marginBottom: 12, color: darkMode ? '#F3F4F6' : '#111827' }}>
         Total Sales
       </h3>
 
-      {/* Chart wrapper is relative; events layer is absolute */}
-      <div className="flex justify-center mb-4" style={{ position: 'relative' }}>
-        <div
-          style={{
-            width: chartSize,
-            height: chartSize,
-            minWidth: isMobile ? '120px' : '100px',
-            minHeight: isMobile ? '120px' : '100px',
-            position: 'relative',
-          }}
-        >
-          {containerDimensions.width > 0 && (
-            <>
-              <PieChart
-                series={[
-                  {
-                    data: pieData.map((item) => ({
-                      id: item.type,
-                      value: item.amount,
-                      label: ''
-                    })),
-                    innerRadius: dimensions.innerRadius,
-                    outerRadius: dimensions.outerRadius,
-                    paddingAngle: isMobile ? 1 : 2,
-                    cornerRadius: isMobile ? 2 : 4
-                  }
-                ]}
-                width={chartSize}
-                height={chartSize}
-                colors={COLORS}
-                slotProps={{
-                  legend: { hidden: true }
-                }}
-                sx={{
-                  '& .MuiChartsLegend-root': { display: 'none' },
-                  '& .MuiChartsLegend-mark': { display: 'none' },
-                  '& .MuiChartsArc-arc': {
-                    transition: 'all 0.2s ease-in-out',
-                    '&:hover': {
-                      filter: 'brightness(1.1)',
-                      cursor: 'pointer'
-                    }
-                  }
-                }}
+      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
+        <div style={{ width: chartSize, height: chartSize, position: 'relative' }}>
+          <svg width={chartSize} height={chartSize} viewBox={`0 0 ${chartSize} ${chartSize}`} style={{ display: 'block' }}>
+            {angles.map(([start, end], i) => (
+              <path
+                key={i}
+                d={createArcPath(start, end, outerRadius, center)}
+                fill={COLORS[i % COLORS.length]}
+                stroke={darkMode ? 'var(--Primary-Light, #FFFFFF0D)' : '#ffffff'}
+                strokeWidth={1}
               />
+            ))}
+            {/* center */}
+            <circle cx={center} cy={center} r={innerRadius} fill={darkMode ? 'var(--Primary-Light, #FFFFFF0D)' : '#ffffff'} stroke={darkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.04)'} strokeWidth={1} />
+          </svg>
 
-              {/* Transparent event layer for tooltip capture */}
-              <svg 
-                width={chartSize} 
-                height={chartSize} 
-                style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'auto' }} 
-                aria-hidden="true"
-              >
-                {pieData.map((slice, i) => {
-                  const [startAngle, endAngle] = angles[i];
-                  const d = createArcPath(startAngle, endAngle, radius, center);
-                  return (
-                    <path
-                      key={slice.type}
-                      d={d}
-                      fill="transparent"
-                      stroke="transparent"
-                      strokeWidth={1}
-                      style={{ cursor: 'pointer' }}
-                      onMouseEnter={e => {
-                        setTooltip({
-                          visible: true,
-                          clientX: e.clientX,
-                          clientY: e.clientY,
-                          data: {
-                            label: slice.type,
-                            amount: slice.amount.toFixed(2),
-                            pct: ((slice.amount / totalAmount) * 100).toFixed(1)
-                          }
-                        });
-                      }}
-                      onMouseMove={e => {
-                        setTooltip(t => ({
-                          ...t,
-                          clientX: e.clientX,
-                          clientY: e.clientY
-                        }));
-                      }}
-                      onMouseLeave={() => setTooltip({
-                        visible: false,
-                        clientX: 0,
-                        clientY: 0,
-                        data: null
-                      })}
-                    />
-                  );
-                })}
-              </svg>
-            </>
-          )}
+          {/* invisible interactive arcs for pointer events */}
+          <svg width={chartSize} height={chartSize} style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'auto' }}>
+            {angles.map(([start, end], i) => (
+              <path
+                key={`hit-${i}`}
+                d={createArcPath(start, end, outerRadius, center)}
+                fill="transparent"
+                stroke="transparent"
+                strokeWidth={10}
+                style={{ cursor: 'pointer' }}
+                onMouseEnter={(e) => onSliceEnter(e, { label: pieData[i].type, amount: pieData[i].amount })}
+                onMouseMove={onSliceMove}
+                onMouseLeave={onSliceLeave}
+              />
+            ))}
+          </svg>
         </div>
 
-        {/* Tooltip portal */}
         {tooltip.visible && tooltip.data && createPortal(
-          <div
-            style={{
-              position: 'fixed',
-              left: tooltip.clientX + 12,
-              top: tooltip.clientY - 35,
-              pointerEvents: 'none',
-              background: darkMode ? '#24293f' : '#fff',
-              color: darkMode ? '#fff' : '#222',
-              border: '1px solid #ccc',
-              borderRadius: 4,
-              padding: '7px 13px',
-              fontSize: '0.96em',
-              minWidth: 100,
-              boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
-              zIndex: 99999,
-              fontFamily: 'Inter, sans-serif',
-              whiteSpace: 'nowrap',
-              userSelect: 'none'
-            }}
-          >
-            <div style={{ fontWeight: 600 }}>{tooltip.data.label}</div>
-            <div>Amount: ${tooltip.data.amount}</div>
-            <div>Percent: {tooltip.data.pct}%</div>
+          <div style={{
+            position: 'fixed',
+            left: tooltip.clientX + 12,
+            top: tooltip.clientY - 35,
+            pointerEvents: 'none',
+            background: darkMode ? 'var(--Primary-Light, #FFFFFF0D)' : '#fff',
+            color: darkMode ? '#fff' : '#222',
+            border: darkMode ? '1px solid rgba(255,255,255,0.04)' : '1px solid rgba(0,0,0,0.08)',
+            borderRadius: 6,
+            padding: '8px 12px',
+            fontSize: 13,
+            boxShadow: '0 8px 24px rgba(0,0,0,0.24)',
+            zIndex: 99999,
+            whiteSpace: 'nowrap'
+          }}>
+            <div style={{ fontWeight: 700 }}>{tooltip.data.label}</div>
+            <div>Amount: ${tooltip.data.amount.toFixed(2)}</div>
+            <div>Percent: {((tooltip.data.amount / totalAmount) * 100).toFixed(1)}%</div>
           </div>,
           document.body
         )}
       </div>
 
-      {/* Data Legend */}
-      <div className={`flex flex-col ${dimensions.itemSpacing}`}>
-        {pieData.map((item, index) => (
+      <div className="flex flex-col gap-2">
+        {pieData.map((item, i) => (
           <div key={item.type} className="flex items-center justify-between">
-            <div className="flex items-center gap-2 min-w-0 flex-1">
-              <div
-                className={`${isMobile ? 'w-2 h-2' : 'w-2 h-2'} rounded-full flex-shrink-0`}
-                style={{ backgroundColor: COLORS[index] }}
-                aria-hidden="true"
-              ></div>
-              <span
-                className={`${dimensions.itemFontSize} transition-colors duration-200 truncate ${
-                  darkMode ? 'text-gray-400' : 'text-gray-600'
-                }`}
-                style={{ fontFamily: 'Inter' }}
-                title={item.type}
-              >
-                {item.type}
-              </span>
+            <div className="flex items-center gap-2 min-w-0">
+              <div style={{ width: 10, height: 10, borderRadius: 999, backgroundColor: (darkMode ? COLORS_DARK : COLORS_LIGHT)[i] }} />
+              <span style={{ color: darkMode ? '#cfcfcf' : '#374151', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.type}</span>
             </div>
-            <span
-              className={`${dimensions.itemFontSize} font-semibold transition-colors duration-200 flex-shrink-0 ml-2 ${
-                darkMode ? 'text-gray-100' : 'text-gray-900'
-              }`}
-              style={{ fontFamily: 'Inter', fontWeight: 600 }}
-            >
-              ${item.amount.toFixed(2)}
-            </span>
+            <span style={{ fontWeight: 600, color: darkMode ? '#F3F4F6' : '#111827' }}>${item.amount.toFixed(2)}</span>
           </div>
         ))}
       </div>
-
-      {/* Very small screen fallback */}
-      {isMobile && containerDimensions.width < 240 && (
-        <div className={`text-center p-2 ${
-          darkMode ? 'text-gray-400' : 'text-gray-500'
-        }`}>
-        </div>
-      )}
     </div>
   );
 }

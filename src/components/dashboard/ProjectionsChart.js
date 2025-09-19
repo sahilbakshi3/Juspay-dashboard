@@ -68,9 +68,9 @@ const ProjectionsChart = () => {
           left: tooltip.clientX + 10,
           top: tooltip.clientY - 30,
           pointerEvents: 'none',
-          background: darkMode ? '#24293f' : '#fff',
+          background: darkMode ? 'var(--Primary-Light, #FFFFFF0D)' : '#fff',
           color: darkMode ? '#fff' : '#222',
-          border: '1px solid #ccc',
+          border: darkMode ? '1px solid rgba(255,255,255,0.04)' : '1px solid #ccc',
           borderRadius: '4px',
           padding: '7px 13px',
           fontSize: '0.95em',
@@ -128,8 +128,12 @@ const ProjectionsChart = () => {
         <div className="flex flex-col flex-1 min-w-0">
           {/* Bars container */}
           <div
-            className={`flex items-end justify-between ${barSpacing} border-l border-b border-gray-300 relative overflow-visible`}
-            style={{ height: `${chartHeight}px` }}
+            className={`flex items-end justify-between ${barSpacing} border-l border-b relative overflow-visible`}
+            style={{
+              height: `${chartHeight}px`,
+              borderLeft: `1px solid ${darkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.06)'}`,
+              borderBottom: `1px solid ${darkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.06)'}`
+            }}
           >
             {/* Horizontal grid lines */}
             {yAxisValues.map((value, index) => {
@@ -137,14 +141,13 @@ const ProjectionsChart = () => {
               return (
                 <div
                   key={value}
-                  className={`absolute left-0 w-full border-t ${
-                    darkMode ? 'border-gray-700' : 'border-gray-200'
-                  }`}
+                  className="absolute left-0 w-full"
                   style={{
                     bottom: `${positionFromBottom}px`,
-                    opacity: 0.4  // Light opacity for subtle appearance
+                    opacity: 0.4,
+                    borderTop: `1px solid ${darkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.04)'}`
                   }}
-                ></div>
+                />
               );
             })}
 
@@ -181,13 +184,13 @@ const ProjectionsChart = () => {
                   <div className={`flex flex-col mx-auto ${barWidth} min-w-[16px] max-w-[40px]`}>
                     <div
                       className={`w-full transition-colors ${
-                        darkMode ? 'bg-gray-600' : 'bg-slate-300'
+                        darkMode ? 'bg-gray-700' : 'bg-slate-300'
                       }`}
                       style={{
                         height: `${Math.max(projectionHeight - actualHeight, 0)}px`,
                         minHeight: Math.max(projectionHeight - actualHeight, 0) > 0 ? '2px' : '0px'
                       }}
-                    ></div>
+                    />
                     <div
                       className={`w-full transition-colors ${
                         darkMode ? 'bg-blue-500' : 'bg-blue-400'
@@ -196,7 +199,7 @@ const ProjectionsChart = () => {
                         height: `${actualHeight}px`,
                         minHeight: actualHeight > 0 ? '2px' : '0px'
                       }}
-                    ></div>
+                    />
                   </div>
                 </div>
               );

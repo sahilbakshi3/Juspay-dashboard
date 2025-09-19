@@ -1,3 +1,4 @@
+// src/components/dashboard/RevenueChart.js
 import React, { useContext, useRef, useState, useMemo } from 'react';
 import { ThemeContext } from '../../context/ThemeContextProvider';
 import { createPortal } from 'react-dom';
@@ -58,6 +59,19 @@ const RevenueChart = ({ isMobile = false }) => {
   const [tooltip, setTooltip] = useState({ visible: false, clientX: 0, clientY: 0, data: null });
 
   const CHART_W = 100, CHART_H = 100, Y_MAX = 80, Y_MIN = 0;
+  
+  // Consistent theme colors
+  const theme = {
+    text: darkMode ? '#ffffff' : '#1f2937',
+    textSecondary: darkMode ? '#9ca3af' : '#6b7280',
+    border: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
+    gridLine: darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)',
+    currentWeekColor: darkMode ? '#3b82f6' : '#2563eb',
+    previousWeekColor: darkMode ? '#6b7280' : '#374151',
+    tooltipBg: darkMode ? 'rgba(17,24,39,0.95)' : 'rgba(255,255,255,0.95)',
+    tooltipBorder: darkMode ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)'
+  };
+
   const handleMouseMove = (e) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const x = ((e.clientX - rect.left) / rect.width) * CHART_W;
@@ -83,22 +97,26 @@ const RevenueChart = ({ isMobile = false }) => {
       <div style={{
         position: 'fixed',
         left: tooltip.clientX + 12,
-        top: tooltip.clientY - 35,
+        top: tooltip.clientY - 45,
         pointerEvents: 'none',
-        background: darkMode ? 'var(--Primary-Light, #FFFFFF0D)' : '#fff',
-        color: darkMode ? '#fff' : '#222',
-        border: darkMode ? '1px solid rgba(255,255,255,0.04)' : '1px solid rgba(0,0,0,0.08)',
-        borderRadius: 6,
-        padding: '7px 12px',
-        fontSize: '0.95em',
-        boxShadow: '0 6px 20px rgba(0,0,0,0.22)',
+        background: theme.tooltipBg,
+        color: theme.text,
+        border: `1px solid ${theme.tooltipBorder}`,
+        borderRadius: 8,
+        padding: '8px 12px',
+        fontSize: isMobile ? '12px' : '13px',
+        boxShadow: darkMode 
+          ? '0 8px 24px rgba(0,0,0,0.4), 0 4px 8px rgba(0,0,0,0.2)' 
+          : '0 8px 24px rgba(0,0,0,0.15), 0 4px 8px rgba(0,0,0,0.1)',
         zIndex: 99999,
-        whiteSpace: 'nowrap'
+        whiteSpace: 'nowrap',
+        backdropFilter: 'blur(8px)',
+        lineHeight: 1.4
       }}>
-        <div style={{ fontWeight: 600 }}>{label}</div>
-        <div>Previous week: {previous}M</div>
-        <div>Current week: {current}M</div>
-        <div>Diff: {pct}%</div>
+        <div style={{ fontWeight: 600, marginBottom: '2px' }}>{label}</div>
+        <div style={{ color: theme.textSecondary }}>Previous: {previous}M</div>
+        <div style={{ color: theme.textSecondary }}>Current: {current}M</div>
+        <div style={{ color: theme.textSecondary }}>Change: {pct}%</div>
       </div>,
       document.body
     );
@@ -121,41 +139,167 @@ const RevenueChart = ({ isMobile = false }) => {
   }, [prevPts]);
 
   return (
-    <div className="w-full h-full" style={{ minWidth: isMobile ? '300px' : '600px', position: 'relative' }} ref={chartRef}>
-      <div className={`flex ${isMobile ? 'flex-col' : 'items-center'} mb-2 ${isMobile ? 'space-y-2' : 'space-x-8'}`}>
-        <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'} ${isMobile ? 'text-base' : 'text-lg'}`}>Revenue</h3>
-        <div className={`flex ${isMobile ? 'flex-col space-y-2' : 'items-center gap-6'} ${isMobile ? 'text-xs' : 'text-sm'}`}>
-          <div className="flex items-center gap-2">
-            <div style={{ width: 12, height: 12, borderRadius: 6, background: darkMode ? '#3B82F6' : '#60a5fa' }} />
-            <span style={{ color: darkMode ? '#cfcfcf' : '#374151' }}>Current Week</span>
+    <div 
+      className="w-full h-full" 
+      style={{ 
+        minWidth: isMobile ? '300px' : '600px', 
+        position: 'relative',
+        padding: isMobile ? '16px' : '20px',
+        background: 'var(--Primary-Light, #FFFFFF0D)',
+        borderRadius: '8px'
+      }} 
+      ref={chartRef}
+    >
+      {/* Header Section */}
+      <div className={`flex ${isMobile ? 'flex-col space-y-3' : 'items-center justify-between'} mb-6`}>
+        <h3 
+          className={`font-semibold ${isMobile ? 'text-lg' : 'text-xl'}`}
+          style={{ color: theme.text, margin: 0 }}
+        >
+          Revenue
+        </h3>
+        <div className={`flex ${isMobile ? 'flex-row justify-start space-x-6' : 'items-center space-x-6'}`}>
+          <div className="flex items-center space-x-2">
+            <div 
+              style={{ 
+                width: 12, 
+                height: 12, 
+                borderRadius: 6, 
+                background: theme.currentWeekColor,
+                flexShrink: 0
+              }} 
+            />
+            <span 
+              className={isMobile ? 'text-sm' : 'text-sm'}
+              style={{ color: theme.textSecondary }}
+            >
+              Current Week
+            </span>
           </div>
-          <div className="flex items-center gap-2">
-            <div style={{ width: 12, height: 12, borderRadius: 6, background: darkMode ? '#111827' : '#111827' }} />
-            <span style={{ color: darkMode ? '#cfcfcf' : '#374151' }}>Previous Week</span>
+          <div className="flex items-center space-x-2">
+            <div 
+              style={{ 
+                width: 12, 
+                height: 12, 
+                borderRadius: 6, 
+                background: theme.previousWeekColor,
+                flexShrink: 0
+              }} 
+            />
+            <span 
+              className={isMobile ? 'text-sm' : 'text-sm'}
+              style={{ color: theme.textSecondary }}
+            >
+              Previous Week
+            </span>
           </div>
         </div>
       </div>
 
-      <div className={`flex mt-auto ${isMobile ? 'h-[200px]' : 'h-[240px]'}`}>
-        <div className={`flex flex-col justify-between items-end h-full py-2`} style={{ paddingRight: isMobile ? 8 : 12 }}>
+      {/* Chart Section */}
+      <div className={`flex ${isMobile ? 'h-[220px]' : 'h-[280px]'}`}>
+        {/* Y-axis labels */}
+        <div 
+          className="flex flex-col justify-between items-end h-full"
+          style={{ 
+            paddingRight: isMobile ? 12 : 16,
+            paddingTop: isMobile ? 8 : 12,
+            paddingBottom: isMobile ? 24 : 32
+          }}
+        >
           {['80M', '60M', '40M', '20M', '0'].map(v => (
-            <span key={v} className={`text-xs`} style={{ color: darkMode ? '#9ca3af' : '#6b7280' }}>{v}</span>
+            <span 
+              key={v} 
+              className="text-xs"
+              style={{ color: theme.textSecondary, fontWeight: 500 }}
+            >
+              {v}
+            </span>
           ))}
         </div>
 
-        <div className="relative flex-1 border-l border-b min-w-0" style={{ borderLeft: `1px solid ${darkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.06)'}`, borderBottom: `1px solid ${darkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.06)'}` }}>
+        {/* Chart container */}
+        <div
+          className="relative flex-1 min-w-0"
+          style={{
+            borderLeft: `1px solid ${theme.border}`,
+            borderBottom: `1px solid ${theme.border}`,
+            paddingTop: isMobile ? 8 : 12,
+            paddingBottom: isMobile ? 24 : 32,
+            paddingLeft: 1,
+            boxSizing: 'border-box'
+          }}
+        >
+          {/* Grid lines */}
           {['20%', '40%', '60%', '80%'].map((top, idx) => (
-            <div key={idx} style={{ position: 'absolute', left: 0, right: 0, top, height: 1, backgroundColor: darkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.04)' }} />
+            <div 
+              key={idx} 
+              style={{ 
+                position: 'absolute', 
+                left: 0, 
+                right: 0, 
+                top, 
+                height: 1, 
+                backgroundColor: theme.gridLine 
+              }} 
+            />
           ))}
 
-          <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none" onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave} style={{ touchAction: 'none' }}>
-            <path d={currentPath} fill="none" stroke={darkMode ? '#3B82F6' : '#60A5FA'} strokeWidth={isMobile ? 2 : 2.5} vectorEffect="non-scaling-stroke" />
-            {prevSolidPath && <path d={prevSolidPath} fill="none" stroke={darkMode ? '#C6C7F8' : '#111827'} strokeWidth={isMobile ? 2 : 2.5} vectorEffect="non-scaling-stroke" />}
-            {prevDottedPath && <path d={prevDottedPath} fill="none" stroke={darkMode ? '#C6C7F8' : '#111827'} strokeWidth={isMobile ? 2 : 2.5} strokeDasharray="4 4" vectorEffect="non-scaling-stroke" />}
+          {/* SVG Chart */}
+          <svg 
+            className="w-full h-full" 
+            viewBox="0 0 100 100" 
+            preserveAspectRatio="none" 
+            onMouseMove={handleMouseMove} 
+            onMouseLeave={handleMouseLeave} 
+            style={{ touchAction: 'none' }}
+          >
+            {/* Current week line */}
+            <path 
+              d={currentPath} 
+              fill="none" 
+              stroke={theme.currentWeekColor} 
+              strokeWidth="2.5" 
+              vectorEffect="non-scaling-stroke"
+              style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))' }}
+            />
+            {/* Previous week solid line */}
+            {prevSolidPath && (
+              <path 
+                d={prevSolidPath} 
+                fill="none" 
+                stroke={theme.previousWeekColor} 
+                strokeWidth="2.5" 
+                vectorEffect="non-scaling-stroke" 
+              />
+            )}
+            {/* Previous week dotted line */}
+            {prevDottedPath && (
+              <path 
+                d={prevDottedPath} 
+                fill="none" 
+                stroke={theme.previousWeekColor} 
+                strokeWidth="2.5" 
+                strokeDasharray="4 4" 
+                vectorEffect="non-scaling-stroke" 
+              />
+            )}
           </svg>
 
-          <div className={`absolute left-0 right-0 flex justify-between ${isMobile ? '-bottom-5 px-1' : '-bottom-6 px-2'}`}>
-            {labels.map(l => <span key={l} className="text-xs" style={{ color: darkMode ? '#9ca3af' : '#6b7280' }}>{l}</span>)}
+          {/* X-axis labels */}
+          <div 
+            className={`absolute left-0 right-0 flex justify-between ${isMobile ? '-bottom-6' : '-bottom-8'}`}
+            style={{ paddingLeft: 2, paddingRight: 2 }}
+          >
+            {labels.map(l => (
+              <span 
+                key={l} 
+                className="text-xs"
+                style={{ color: theme.textSecondary, fontWeight: 500 }}
+              >
+                {l}
+              </span>
+            ))}
           </div>
 
           {renderTooltip()}

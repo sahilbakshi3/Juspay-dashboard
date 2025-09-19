@@ -1,4 +1,4 @@
-// Fixed StatsCards.js - Consistent spacing and styling
+// src/components/dashboard/StatsCards.js
 import React, { useContext } from 'react';
 import { TrendingUp, TrendingDown } from 'lucide-react';
 import { ThemeContext } from '../../context/ThemeContextProvider';
@@ -6,28 +6,47 @@ import { ThemeContext } from '../../context/ThemeContextProvider';
 const StatCard = ({ title, value, trend, change, isMobile }) => {
   const { darkMode } = useContext(ThemeContext);
 
-  // Consistent card styling - remove special background colors
+  // Determine special cards
+  const isCustomers = title === 'Customers';
+  const isGrowth = title === 'Growth';
+
+  // Background: special for Customers and Growth only (always light)
+  let background;
+  if (isCustomers) background = 'var(--Primary-Blue, #E3F5FF)';
+  else if (isGrowth) background = 'var(--Primary-Purple, #E5ECF6)';
+  else background = darkMode ? 'var(--Primary-Light, #FFFFFF0D)' : '#ffffff';
+
+  // Text color:
+  // - For special (Customers/Growth) cards we want dark text so they read nicely even on dark page background (per your screenshot).
+  // - For other cards, follow darkMode/lightMode behavior.
+  const titleColor = isCustomers || isGrowth
+    ? '#111827' // dark text for the light accent cards
+    : (darkMode ? '#9CA3AF' : '#6B7280');
+
+  const valueColor = isCustomers || isGrowth
+    ? '#111827'
+    : (darkMode ? '#FFFFFF' : '#111827');
+
   const cardStyle = {
-    background: darkMode ? 'var(--Primary-Light, #FFFFFF0D)' : '#ffffff',
+    background,
     border: darkMode ? '1px solid rgba(255,255,255,0.04)' : '1px solid rgba(0,0,0,0.06)',
-    borderRadius: '16px',
-    padding: isMobile ? '16px' : '24px',
-    height: isMobile ? '100px' : '112px',
+    borderRadius: 16,
+    padding: 24,               // consistent 24px padding
+    height: isMobile ? 100 : 112,
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
+    boxSizing: 'border-box',
   };
-
-  const textColor = darkMode ? '#FFFFFF' : '#111827';
 
   return (
     <div className="w-full shadow-sm transition-colors" style={cardStyle}>
       <div className="flex-shrink-0 mb-2">
-        <p 
-          className="font-semibold truncate" 
-          style={{ 
-            fontSize: isMobile ? '14px' : '16px', 
-            color: darkMode ? '#9CA3AF' : '#6B7280'
+        <p
+          className="font-semibold truncate"
+          style={{
+            fontSize: isMobile ? 14 : 16,
+            color: titleColor
           }}
         >
           {title}
@@ -37,12 +56,12 @@ const StatCard = ({ title, value, trend, change, isMobile }) => {
       <div className="flex-1 flex justify-end flex-col">
         <div className="flex flex-wrap items-end justify-between gap-x-2 gap-y-1">
           <div className="flex-shrink-0">
-            <h3 
-              className="font-bold leading-none" 
-              style={{ 
-                fontSize: isMobile ? '20px' : '24px', 
-                whiteSpace: 'nowrap', 
-                color: textColor 
+            <h3
+              className="font-bold leading-none"
+              style={{
+                fontSize: isMobile ? 20 : 24,
+                whiteSpace: 'nowrap',
+                color: valueColor
               }}
             >
               {value}
@@ -50,11 +69,11 @@ const StatCard = ({ title, value, trend, change, isMobile }) => {
           </div>
 
           {trend && change && (
-            <div 
-              className="flex items-center gap-1 font-medium flex-shrink-0" 
-              style={{ 
-                color: trend === 'up' ? '#16A34A' : '#EF4444', 
-                fontSize: '12px' 
+            <div
+              className="flex items-center gap-1 font-medium flex-shrink-0"
+              style={{
+                color: trend === 'up' ? '#16A34A' : '#EF4444',
+                fontSize: 12
               }}
             >
               <span className="whitespace-nowrap">{change}</span>
@@ -69,7 +88,8 @@ const StatCard = ({ title, value, trend, change, isMobile }) => {
 
 const StatCards = ({ isMobile = false }) => (
   <div className="w-full h-full">
-    <div className={`grid grid-cols-2 ${isMobile ? 'gap-4' : 'gap-6'} h-full`}>
+    {/* gap-4 = 16px */}
+    <div className={`grid grid-cols-2 gap-4 h-full`}>
       <StatCard title="Customers" value="3,781" trend="up" change="+11.01%" isMobile={isMobile} />
       <StatCard title="Orders" value="1,209" trend="down" change="-0.03%" isMobile={isMobile} />
       <StatCard title="Revenue" value="$695" trend="up" change="+15.03%" isMobile={isMobile} />

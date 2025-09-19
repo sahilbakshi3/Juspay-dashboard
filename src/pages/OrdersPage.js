@@ -577,29 +577,29 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
   const getStatusColor = (status) => {
     const statusColors = {
       'Complete': { 
-        light: { color: '#059669', bgcolor: '#d1fae5', border: '#a7f3d0' },
-        dark: { color: '#6ee7b7', bgcolor: '#064e3b', border: '#065f46' }
+        light: { color: '#10b981', bgcolor: 'transparent', border: 'none' },
+        dark: { color: '#34d399', bgcolor: 'transparent', border: 'none' }
       },
       'In Progress': { 
-        light: { color: '#2563eb', bgcolor: '#dbeafe', border: '#93c5fd' },
-        dark: { color: '#60a5fa', bgcolor: '#1e3a8a', border: '#1d4ed8' }
+        light: { color: '#3b82f6', bgcolor: 'transparent', border: 'none' },
+        dark: { color: '#60a5fa', bgcolor: 'transparent', border: 'none' }
       },
       'Pending': { 
-        light: { color: '#d97706', bgcolor: '#fef3c7', border: '#fcd34d' },
-        dark: { color: '#fbbf24', bgcolor: '#451a03', border: '#92400e' }
+        light: { color: '#06b6d4', bgcolor: 'transparent', border: 'none' },
+        dark: { color: '#22d3ee', bgcolor: 'transparent', border: 'none' }
       },
       'Approved': { 
-        light: { color: '#7c3aed', bgcolor: '#ede9fe', border: '#c4b5fd' },
-        dark: { color: '#a78bfa', bgcolor: '#4c1d95', border: '#5b21b6' }
+        light: { color: '#f59e0b', bgcolor: 'transparent', border: 'none' },
+        dark: { color: '#fbbf24', bgcolor: 'transparent', border: 'none' }
       },
       'Rejected': { 
-        light: { color: '#dc2626', bgcolor: '#fee2e2', border: '#fca5a5' },
-        dark: { color: '#f87171', bgcolor: '#7f1d1d', border: '#991b1b' }
+        light: { color: '#9ca3af', bgcolor: 'transparent', border: 'none' },
+        dark: { color: '#6b7280', bgcolor: 'transparent', border: 'none' }
       }
-    };
+  };
     
     return statusColors[status]?.[isDarkMode ? 'dark' : 'light'] || 
-           { color: colors.text.secondary, bgcolor: colors.background, border: colors.border };
+           { color: colors.text.secondary, bgcolor: 'transparent', border: 'none' };
   };
 
   const handleSelectAll = (event) => {
@@ -779,7 +779,6 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
                   </Box>
                 }
                 size="small"
-                variant="outlined"
                 sx={{
                   fontSize: '0.75rem',
                   fontWeight: 500,
@@ -1379,7 +1378,6 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
                         </Box>
                       }
                       size="small"
-                      variant="outlined"
                       sx={{
                         fontSize: isMobile ? '0.6rem' : '0.75rem',
                         fontWeight: 500,
@@ -1680,7 +1678,6 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
             width: isMobile ? '100%' : 'auto'
           }}>
             <Button
-              variant="outlined"
               size="small"
               onClick={() => setSelectedRows([])}
               sx={{

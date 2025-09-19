@@ -278,26 +278,35 @@ const RevenueChart = ({ isMobile = false }) => {
             onMouseLeave={handleMouseLeave} 
             style={{ touchAction: 'none' }}
           >
-            {/* Current week line */}
+            {/* Current week line with enhanced glow */}
             <path 
               d={currentPath} 
               fill="none" 
               stroke={theme.currentWeekColor} 
-              strokeWidth={darkMode ? "3" : "2.5"} // Thicker line in dark mode
+              strokeWidth={darkMode ? "3" : "2.5"}
               vectorEffect="non-scaling-stroke"
-              style={{ filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))' }}
+              style={{ 
+                filter: darkMode 
+                  ? 'drop-shadow(0 0 4px rgba(198, 199, 248, 0.8)) drop-shadow(0 0 12px rgba(198, 199, 248, 0.6)) drop-shadow(0 0 20px rgba(198, 199, 248, 0.4)) drop-shadow(0 0 32px rgba(198, 199, 248, 0.2))'
+                  : 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))'
+              }}
             />
-            {/* Previous week solid line */}
+            {/* Previous week solid line with enhanced glow */}
             {prevSolidPath && (
               <path 
                 d={prevSolidPath} 
                 fill="none" 
                 stroke={theme.previousWeekColor} 
                 strokeWidth="2.5" 
-                vectorEffect="non-scaling-stroke" 
+                vectorEffect="non-scaling-stroke"
+                style={{ 
+                  filter: darkMode 
+                    ? 'drop-shadow(0 0 4px rgba(168, 197, 218, 0.8)) drop-shadow(0 0 12px rgba(168, 197, 218, 0.6)) drop-shadow(0 0 20px rgba(168, 197, 218, 0.4)) drop-shadow(0 0 32px rgba(168, 197, 218, 0.2))'
+                    : 'none'
+                }}
               />
             )}
-            {/* Previous week dotted line */}
+            {/* Previous week dotted line with enhanced glow */}
             {prevDottedPath && (
               <path 
                 d={prevDottedPath} 
@@ -305,7 +314,12 @@ const RevenueChart = ({ isMobile = false }) => {
                 stroke={theme.previousWeekColor} 
                 strokeWidth="2.5" 
                 strokeDasharray="4 4" 
-                vectorEffect="non-scaling-stroke" 
+                vectorEffect="non-scaling-stroke"
+                style={{ 
+                  filter: darkMode 
+                    ? 'drop-shadow(0 0 4px rgba(168, 197, 218, 0.8)) drop-shadow(0 0 12px rgba(168, 197, 218, 0.6)) drop-shadow(0 0 20px rgba(168, 197, 218, 0.4)) drop-shadow(0 0 32px rgba(168, 197, 218, 0.2))'
+                    : 'none'
+                }}
               />
             )}
           </svg>

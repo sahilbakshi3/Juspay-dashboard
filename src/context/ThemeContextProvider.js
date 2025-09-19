@@ -14,7 +14,7 @@ export const useTheme = () => {
 };
 
 const ThemeContextProvider = ({ children }) => {
-  const [darkMode, setDarkMode] = useState(false); // Changed from isDarkMode to darkMode
+  const [darkMode, setDarkMode] = useState(false);
 
   // Load theme preference from localStorage on mount
   useEffect(() => {
@@ -27,10 +27,10 @@ const ThemeContextProvider = ({ children }) => {
     }
   }, []);
 
-  // Save theme preference to localStorage and apply to document
+  // Save theme preference to localStorage and toggle `dark` class on <html>
   useEffect(() => {
     localStorage.setItem('theme', darkMode ? 'dark' : 'light');
-    
+
     if (darkMode) {
       document.documentElement.classList.add('dark');
     } else {
@@ -39,39 +39,124 @@ const ThemeContextProvider = ({ children }) => {
   }, [darkMode]);
 
   const toggleTheme = () => {
-    console.log('Toggling theme from:', darkMode);
-    setDarkMode(prevMode => !prevMode);
+    setDarkMode(prev => !prev);
   };
 
-  // Create MUI theme based on darkMode
+  // Create MUI theme based on darkMode (dark = black)
   const muiTheme = useMemo(() => {
-    console.log('Creating MUI theme with mode:', darkMode ? 'dark' : 'light');
-    
+    const isDark = darkMode === true;
+
     return createTheme({
       palette: {
-        mode: darkMode ? 'dark' : 'light',
+        mode: isDark ? 'dark' : 'light',
         primary: {
-          main: darkMode ? '#90caf9' : '#1976d2',
+          main: isDark ? '#90caf9' : '#1976d2',
         },
         secondary: {
-          main: darkMode ? '#ce93d8' : '#dc004e',
+          main: isDark ? '#ce93d8' : '#dc004e',
         },
         background: {
-          default: darkMode ? '#121212' : '#fafafa',
-          paper: darkMode ? '#1e1e1e' : '#ffffff',
+          // full black page background
+          default: isDark ? '#000000' : '#fafafa',
+          // slightly off-black for cards / surfaces so elements have a subtle separation
+          // change to '#000000' if you want absolutely no contrast between body and cards
+          paper: isDark ? '#0a0a0a' : '#ffffff',
         },
         text: {
-          primary: darkMode ? '#ffffff' : '#000000',
-          secondary: darkMode ? '#b3b3b3' : '#666666',
+          primary: isDark ? '#FFFFFF' : '#111827',
+          secondary: isDark ? '#cfcfcf' : '#6b7280',
         },
-        divider: darkMode ? '#333333' : '#e0e0e0',
+        divider: isDark ? 'rgba(255,255,255,0.06)' : '#e0e0e0',
+      },
+
+      // component overrides so MUI built-in components respect the black backgrounds
+      components: {
+        MuiCssBaseline: {
+          styleOverrides: {
+            body: {
+              backgroundColor: isDark ? '#000000' : undefined,
+            },
+          },
+        },
+        MuiPaper: {
+          styleOverrides: {
+            root: {
+              backgroundColor: isDark ? '#0a0a0a' : undefined,
+            },
+          },
+        },
+        MuiCard: {
+          styleOverrides: {
+            root: {
+              backgroundColor: isDark ? '#0a0a0a' : undefined,
+            },
+          },
+        },
+        MuiDrawer: {
+          styleOverrides: {
+            paper: {
+              backgroundColor: isDark ? '#0a0a0a' : undefined,
+            },
+          },
+        },
+        MuiPopover: {
+          styleOverrides: {
+            paper: {
+              backgroundColor: isDark ? '#0a0a0a' : undefined,
+              boxShadow: isDark ? '0 6px 24px rgba(0,0,0,0.6)' : undefined,
+            },
+          },
+        },
+        MuiTooltip: {
+          styleOverrides: {
+            tooltip: {
+              backgroundColor: isDark ? '#111111' : undefined,
+              color: isDark ? '#FFFFFF' : undefined,
+              boxShadow: isDark ? '0 4px 14px rgba(0,0,0,0.6)' : undefined,
+              fontSize: '0.75rem',
+            },
+            arrow: {
+              color: isDark ? '#111111' : undefined,
+            },
+          },
+          defaultProps: {
+            // Tooltips render in a portal by default, but ensure high zIndex so they sit above sidebars
+            PopperProps: {
+              modifiers: [
+                {
+                  name: 'preventOverflow',
+                  options: {
+                    altAxis: true,
+                    altBoundary: true,
+                    tether: false,
+                  },
+                },
+              ],
+            },
+          },
+        },
+        MuiBackdrop: {
+          styleOverrides: {
+            root: {
+              backgroundColor: isDark ? 'rgba(0,0,0,0.6)' : undefined,
+            },
+          },
+        },
+      },
+
+      // global z-index guidance (optional — you can tune to your layout)
+      zIndex: {
+        appBar: 1300,
+        drawer: 1200,
+        modal: 1400,
+        tooltip: 2000, // ensure tooltips are above sidebars
       },
     });
   }, [darkMode]);
 
   const value = {
-    darkMode,        // Match your App.js expectation
-    isDarkMode: darkMode, // Keep for backward compatibility
+    darkMode,
+    isDarkMode: darkMode, // backward compatibility
     toggleTheme,
     muiTheme,
   };

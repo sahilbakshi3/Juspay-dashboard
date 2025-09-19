@@ -1,3 +1,4 @@
+// Fixed StatsCards.js - Consistent spacing and styling
 import React, { useContext } from 'react';
 import { TrendingUp, TrendingDown } from 'lucide-react';
 import { ThemeContext } from '../../context/ThemeContextProvider';
@@ -5,23 +6,30 @@ import { ThemeContext } from '../../context/ThemeContextProvider';
 const StatCard = ({ title, value, trend, change, isMobile }) => {
   const { darkMode } = useContext(ThemeContext);
 
-  let inlineBackground = null;
-  if (title === 'Customers') inlineBackground = { backgroundColor: '#E3F5FF' };
-  else if (title === 'Growth') inlineBackground = { backgroundColor: '#E5ECF6' };
+  // Consistent card styling - remove special background colors
+  const cardStyle = {
+    background: darkMode ? 'var(--Primary-Light, #FFFFFF0D)' : '#ffffff',
+    border: darkMode ? '1px solid rgba(255,255,255,0.04)' : '1px solid rgba(0,0,0,0.06)',
+    borderRadius: '16px',
+    padding: isMobile ? '16px' : '24px',
+    height: isMobile ? '100px' : '112px',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between'
+  };
 
-  const isSpecialCard = title === 'Customers' || title === 'Growth';
-  const headingColor = darkMode ? (isSpecialCard ? '#000000' : '#FFFFFF') : '#111827';
+  const textColor = darkMode ? '#FFFFFF' : '#111827';
 
   return (
-    <div
-      className={`w-full p-4 sm:p-6 rounded-xl sm:rounded-2xl shadow-sm flex flex-col justify-between transition-colors ${isMobile ? 'h-[100px]' : 'h-[112px]'}`}
-      style={{
-        background: inlineBackground ? inlineBackground.backgroundColor : (darkMode ? 'var(--Primary-Light, #FFFFFF0D)' : '#ffffff'),
-        border: darkMode && !inlineBackground ? '1px solid rgba(255,255,255,0.04)' : undefined
-      }}
-    >
+    <div className="w-full shadow-sm transition-colors" style={cardStyle}>
       <div className="flex-shrink-0 mb-2">
-        <p className="font-semibold truncate" style={{ fontSize: 'clamp(12px, 2.5vw, 16px)', color: headingColor }}>
+        <p 
+          className="font-semibold truncate" 
+          style={{ 
+            fontSize: isMobile ? '14px' : '16px', 
+            color: darkMode ? '#9CA3AF' : '#6B7280'
+          }}
+        >
           {title}
         </p>
       </div>
@@ -29,13 +37,26 @@ const StatCard = ({ title, value, trend, change, isMobile }) => {
       <div className="flex-1 flex justify-end flex-col">
         <div className="flex flex-wrap items-end justify-between gap-x-2 gap-y-1">
           <div className="flex-shrink-0">
-            <h3 className="font-bold leading-none" style={{ fontSize: 'clamp(18px, 3.5vw, 24px)', whiteSpace: 'nowrap', color: headingColor }}>
+            <h3 
+              className="font-bold leading-none" 
+              style={{ 
+                fontSize: isMobile ? '20px' : '24px', 
+                whiteSpace: 'nowrap', 
+                color: textColor 
+              }}
+            >
               {value}
             </h3>
           </div>
 
           {trend && change && (
-            <div className="flex items-center gap-1 font-medium flex-shrink-0" style={{ color: trend === 'up' ? '#16A34A' : '#EF4444', fontSize: 'clamp(10px, 2vw, 12px)' }}>
+            <div 
+              className="flex items-center gap-1 font-medium flex-shrink-0" 
+              style={{ 
+                color: trend === 'up' ? '#16A34A' : '#EF4444', 
+                fontSize: '12px' 
+              }}
+            >
               <span className="whitespace-nowrap">{change}</span>
               {trend === 'up' ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
             </div>
@@ -47,8 +68,8 @@ const StatCard = ({ title, value, trend, change, isMobile }) => {
 };
 
 const StatCards = ({ isMobile = false }) => (
-  <div className="w-full">
-    <div className={`grid grid-cols-1 sm:grid-cols-2 ${isMobile ? 'gap-4' : 'gap-7'}`}>
+  <div className="w-full h-full">
+    <div className={`grid grid-cols-2 ${isMobile ? 'gap-4' : 'gap-6'} h-full`}>
       <StatCard title="Customers" value="3,781" trend="up" change="+11.01%" isMobile={isMobile} />
       <StatCard title="Orders" value="1,209" trend="down" change="-0.03%" isMobile={isMobile} />
       <StatCard title="Revenue" value="$695" trend="up" change="+15.03%" isMobile={isMobile} />

@@ -1,8 +1,8 @@
+// Fixed TotalSales.js - Consistent styling with other cards
 import React, { useContext, useRef, useEffect, useState } from 'react';
 import { ThemeContext } from '../../context/ThemeContextProvider';
 import { createPortal } from 'react-dom';
 
-// small in-component pie renderer (keeps dependency count low)
 const pieData = [
   { type: 'Direct', amount: 300.56 },
   { type: 'Affiliate', amount: 135.18 },
@@ -23,19 +23,17 @@ function createArcPath(startAngle, endAngle, radius, center) {
   return `M${center},${center} L${startX},${startY} A${radius},${radius} 0 ${largeArcFlag} 1 ${endX},${endY} Z`;
 }
 
-export default function TotalSales() {
+export default function TotalSales({ isMobile = false }) {
   const { darkMode } = useContext(ThemeContext);
   const containerRef = useRef(null);
   const [containerDimensions, setContainerDimensions] = useState({ width: 300, height: 300 });
-  const [isMobile, setIsMobile] = useState(false);
   const [tooltip, setTooltip] = useState({ visible: false, clientX: 0, clientY: 0, data: null });
 
   useEffect(() => {
     const handleResize = () => {
       if (!containerRef.current) return;
-      const { offsetWidth } = containerRef.current;
-      setContainerDimensions({ width: offsetWidth, height: offsetWidth });
-      setIsMobile(offsetWidth < 480);
+      const { offsetWidth, offsetHeight } = containerRef.current;
+      setContainerDimensions({ width: offsetWidth, height: offsetHeight });
     };
     handleResize();
     window.addEventListener('resize', handleResize);
@@ -49,13 +47,12 @@ export default function TotalSales() {
 
   const COLORS = darkMode ? COLORS_DARK : COLORS_LIGHT;
   const baseWidth = containerDimensions.width || 240;
-  const chartSize = Math.min(160, baseWidth - 80);
+  const chartSize = Math.min(160, Math.max(120, baseWidth - 80));
   const center = chartSize / 2;
-  const outerRadius = Math.max(24, Math.min(60, chartSize / 2));
-  const innerRadius = Math.max(10, Math.min(36, outerRadius - 12));
+  const outerRadius = Math.max(48, Math.min(65, chartSize / 2 - 10));
+  const innerRadius = Math.max(24, Math.min(32, outerRadius - 16));
   const totalAmount = pieData.reduce((s, p) => s + p.amount, 0);
 
-  // compute angles
   let acc = 0;
   const angles = pieData.map(p => {
     const s = acc;
@@ -64,29 +61,38 @@ export default function TotalSales() {
     return [s, e];
   });
 
-  const onSliceEnter = (e, item) => setTooltip({ visible: true, clientX: e.clientX, clientY: e.clientY, data: item });
-  const onSliceMove = (e) => setTooltip(t => t.visible ? ({ ...t, clientX: e.clientX, clientY: e.clientY }) : t);
-  const onSliceLeave = () => setTooltip({ visible: false, clientX: 0, clientY: 0, data: null });
+  const onSliceEnter = (e, item) => setTooltip({ 
+    visible: true, 
+    clientX: e.clientX, 
+    clientY: e.clientY, 
+    data: item 
+  });
+  
+  const onSliceMove = (e) => setTooltip(t => t.visible ? ({ 
+    ...t, 
+    clientX: e.clientX, 
+    clientY: e.clientY 
+  }) : t);
+  
+  const onSliceLeave = () => setTooltip({ 
+    visible: false, 
+    clientX: 0, 
+    clientY: 0, 
+    data: null 
+  });
 
   return (
-    <div ref={containerRef} className="rounded-xl transition-colors duration-200" style={{
-      width: '100%',
-      height: '100%',
-      minWidth: '200px',
-      minHeight: isMobile ? '320px' : '344px',
-      padding: 24,
-      borderRadius: 16,
-      background: darkMode ? 'var(--Primary-Light, #FFFFFF0D)' : '#ffffff',
-      border: darkMode ? '1px solid rgba(255,255,255,0.04)' : '1px solid rgba(0,0,0,0.06)',
-      boxSizing: 'border-box'
-    }}>
-      <h3 style={{ fontFamily: 'Inter, sans-serif', fontWeight: 600, marginBottom: 12, color: darkMode ? '#F3F4F6' : '#111827' }}>
+    <div ref={containerRef} className="w-full h-full flex flex-col">
+      <h3 
+        className={`font-semibold mb-4 ${isMobile ? 'text-base' : 'text-lg'}`}
+        style={{ color: darkMode ? '#F9FAFB' : '#111827' }}
+      >
         Total Sales
       </h3>
 
-      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 12 }}>
+      <div className="flex justify-center mb-6 flex-1">
         <div style={{ width: chartSize, height: chartSize, position: 'relative' }}>
-          <svg width={chartSize} height={chartSize} viewBox={`0 0 ${chartSize} ${chartSize}`} style={{ display: 'block' }}>
+          <svg width={chartSize} height={chartSize} viewBox={`0 0 ${chartSize} ${chartSize}`}>
             {angles.map(([start, end], i) => (
               <path
                 key={i}
@@ -96,12 +102,21 @@ export default function TotalSales() {
                 strokeWidth={1}
               />
             ))}
-            {/* center */}
-            <circle cx={center} cy={center} r={innerRadius} fill={darkMode ? 'var(--Primary-Light, #FFFFFF0D)' : '#ffffff'} stroke={darkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.04)'} strokeWidth={1} />
+            <circle 
+              cx={center} 
+              cy={center} 
+              r={innerRadius} 
+              fill={darkMode ? 'var(--Primary-Light, #FFFFFF0D)' : '#ffffff'} 
+              stroke={darkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.04)'} 
+              strokeWidth={1} 
+            />
           </svg>
 
-          {/* invisible interactive arcs for pointer events */}
-          <svg width={chartSize} height={chartSize} style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'auto' }}>
+          <svg 
+            width={chartSize} 
+            height={chartSize} 
+            style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'auto' }}
+          >
             {angles.map(([start, end], i) => (
               <path
                 key={`hit-${i}`}
@@ -127,9 +142,9 @@ export default function TotalSales() {
             background: darkMode ? 'var(--Primary-Light, #FFFFFF0D)' : '#fff',
             color: darkMode ? '#fff' : '#222',
             border: darkMode ? '1px solid rgba(255,255,255,0.04)' : '1px solid rgba(0,0,0,0.08)',
-            borderRadius: 6,
+            borderRadius: '6px',
             padding: '8px 12px',
-            fontSize: 13,
+            fontSize: '13px',
             boxShadow: '0 8px 24px rgba(0,0,0,0.24)',
             zIndex: 99999,
             whiteSpace: 'nowrap'
@@ -142,35 +157,37 @@ export default function TotalSales() {
         )}
       </div>
 
-      <div className="flex flex-col gap-2">
+      <div className="space-y-3">
         {pieData.map((item, i) => (
           <div key={item.type} className="flex items-center justify-between">
-            <div className="flex items-center gap-2 min-w-0">
+            <div className="flex items-center gap-3 min-w-0 flex-1">
               <div
                 style={{
-                  width: 10,
-                  height: 10,
-                  borderRadius: 999,
-                  backgroundColor: (darkMode ? COLORS_DARK : COLORS_LIGHT)[i],
+                  width: '12px',
+                  height: '12px',
+                  borderRadius: '50%',
+                  backgroundColor: COLORS[i],
+                  flexShrink: 0
                 }}
               />
               <span
+                className={`${isMobile ? 'text-sm' : 'text-base'} font-medium`}
                 style={{
-                  fontSize: '12px', // ✅ smaller font size
-                  color: darkMode ? '#cfcfcf' : '#374151',
-                  whiteSpace: 'nowrap',
+                  color: darkMode ? '#E5E7EB' : '#374151',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
                 }}
               >
                 {item.type}
               </span>
             </div>
             <span
+              className={`${isMobile ? 'text-sm' : 'text-base'} font-semibold`}
               style={{
-                fontSize: '12px', // ✅ smaller for value as well
-                fontWeight: 600,
-                color: darkMode ? '#F3F4F6' : '#111827',
+                color: darkMode ? '#F9FAFB' : '#111827',
+                flexShrink: 0,
+                marginLeft: '12px'
               }}
             >
               ${item.amount.toFixed(2)}

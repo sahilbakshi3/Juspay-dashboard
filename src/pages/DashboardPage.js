@@ -16,6 +16,7 @@ const DashboardPage = ({ refreshKey = 0, isMobile = false, isTablet = false }) =
   // Background colors for dashboard and cards
   const surfaceBg = darkMode ? '#000000' : '#ffffff';
   const cardBg = darkMode ? 'var(--Primary-Light, #FFFFFF0D)' : 'var(--Primary-Light, #F7F9FB)';
+  const statsCardBg = darkMode ? 'var(--Primary-Light, #FFFFFF0D)' : '#ffffff'; // Special white background for StatsCards
   const borderColor = darkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.1)';
   const textColor = darkMode ? '#FFFFFF' : '#111827';
 
@@ -40,8 +41,8 @@ const DashboardPage = ({ refreshKey = 0, isMobile = false, isTablet = false }) =
         <div
           className="rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-sm transition-colors w-full order-1 min-h-[200px] sm:min-h-[252px]"
           style={{ 
-            background: cardBg, 
-            border: `1px solid ${borderColor}`,
+            background: statsCardBg, // Using white background for StatsCards
+            border: 'none', // Removed border for StatsCards
             boxShadow: darkMode ? 'none' : '0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06)'
           }}
         >

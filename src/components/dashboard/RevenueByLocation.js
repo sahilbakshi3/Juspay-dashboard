@@ -76,6 +76,17 @@ const RevenueByLocation = ({ isMobile = false }) => {
 
   const canRenderMap = !!mapAssets && containerDimensions.width > 0;
 
+  // Helper function to get a darker shade of the background color
+  const getDarkerBackground = () => {
+    if (darkMode) {
+      // For dark mode, make the background slightly lighter than pure black
+      return 'rgba(255, 255, 255, 0.08)'; // Slightly lighter than the card background
+    } else {
+      // For light mode, use a darker shade of the light background
+      return 'rgba(0, 0, 0, 0.08)'; // Slightly darker than white
+    }
+  };
+
   return (
     <div 
       ref={containerRef} 
@@ -170,14 +181,14 @@ const RevenueByLocation = ({ isMobile = false }) => {
                 className="w-full bg-gray-200 rounded-full overflow-hidden"
                 style={{ 
                   height: '6px',
-                  background: darkMode ? '#1F2937' : '#E5E7EB'
+                  background: getDarkerBackground()
                 }}
               >
                 <div 
                   className="h-full rounded-full transition-all duration-300"
                   style={{ 
                     width: `${percentage}%`,
-                    background: darkMode ? '#60A5FA' : '#3B82F6'
+                    background: 'var(--Secondary-Cyan, #A8C5DA)'
                   }}
                 />
               </div>

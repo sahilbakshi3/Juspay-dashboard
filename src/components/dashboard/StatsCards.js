@@ -86,16 +86,23 @@ const StatCard = ({ title, value, trend, change, isMobile }) => {
   );
 };
 
-const StatCards = ({ isMobile = false }) => (
-  <div className="w-full h-full">
-    {/* gap-4 = 16px */}
-    <div className={`grid grid-cols-2 gap-4 h-full`}>
-      <StatCard title="Customers" value="3,781" trend="up" change="+11.01%" isMobile={isMobile} />
-      <StatCard title="Orders" value="1,209" trend="down" change="-0.03%" isMobile={isMobile} />
-      <StatCard title="Revenue" value="$695" trend="up" change="+15.03%" isMobile={isMobile} />
-      <StatCard title="Growth" value="30.1%" trend="up" change="+6.08%" isMobile={isMobile} />
+const StatCards = ({ isMobile = false }) => {
+  const { darkMode } = useContext(ThemeContext);
+  
+  return (
+    <div 
+      className="w-full h-full"
+      // No background color set here - the parent card container will handle it
+    >
+      {/* gap-4 = 16px */}
+      <div className={`grid grid-cols-2 gap-4 h-full`}>
+        <StatCard title="Customers" value="3,781" trend="up" change="+11.01%" isMobile={isMobile} />
+        <StatCard title="Orders" value="1,209" trend="down" change="-0.03%" isMobile={isMobile} />
+        <StatCard title="Revenue" value="$695" trend="up" change="+15.03%" isMobile={isMobile} />
+        <StatCard title="Growth" value="30.1%" trend="up" change="+6.08%" isMobile={isMobile} />
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 export default StatCards;

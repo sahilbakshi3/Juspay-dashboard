@@ -66,8 +66,8 @@ const RevenueChart = ({ isMobile = false }) => {
     textSecondary: darkMode ? '#9ca3af' : '#6b7280',
     border: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
     gridLine: darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)',
-    currentWeekColor: darkMode ? '#3b82f6' : '#2563eb',
-    previousWeekColor: darkMode ? '#6b7280' : '#374151',
+    currentWeekColor: 'var(--Secondary-Cyan, #A8C5DA)', // Cyan color
+    previousWeekColor: darkMode ? 'var(--Primary-Brand, #C6C7F8)' : '#000000', // Brand color in dark mode, black in light mode
     tooltipBg: darkMode ? 'rgba(17,24,39,0.95)' : 'rgba(255,255,255,0.95)',
     tooltipBorder: darkMode ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)'
   };

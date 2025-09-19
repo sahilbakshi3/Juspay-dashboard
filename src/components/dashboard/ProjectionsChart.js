@@ -53,6 +53,17 @@ const ProjectionsChart = () => {
   const barWidth = isMobile ? 'w-6' : isTablet ? 'w-7' : 'w-8';
   const barSpacing = isMobile ? 'space-x-2' : isTablet ? 'space-x-3' : 'space-x-4';
 
+  // Helper function to get a darker background color
+  const getDarkerBackground = () => {
+    if (darkMode) {
+      // For dark mode, make slightly lighter than pure black
+      return 'rgba(255, 255, 255, 0.08)';
+    } else {
+      // For light mode, use a darker shade
+      return 'rgba(0, 0, 0, 0.08)';
+    }
+  };
+
   const renderTooltip = () => {
     if (!(tooltip.visible && tooltip.data)) return null;
 
@@ -182,22 +193,24 @@ const ProjectionsChart = () => {
                   style={{ zIndex: 10, position: 'relative' }}
                 >
                   <div className={`flex flex-col mx-auto ${barWidth} min-w-[16px] max-w-[40px]`}>
+                    {/* Incomplete/Projection portion */}
                     <div
-                      className={`w-full transition-colors ${
-                        darkMode ? 'bg-gray-700' : 'bg-slate-300'
-                      }`}
+                      className="w-full transition-colors"
                       style={{
                         height: `${Math.max(projectionHeight - actualHeight, 0)}px`,
-                        minHeight: Math.max(projectionHeight - actualHeight, 0) > 0 ? '2px' : '0px'
+                        minHeight: Math.max(projectionHeight - actualHeight, 0) > 0 ? '2px' : '0px',
+                        background: getDarkerBackground(),
+                        borderRadius: Math.max(projectionHeight - actualHeight, 0) > 0 ? '6px 6px 0 0' : '0'
                       }}
                     />
+                    {/* Completed/Actual portion */}
                     <div
-                      className={`w-full transition-colors ${
-                        darkMode ? 'bg-blue-500' : 'bg-blue-400'
-                      }`}
+                      className="w-full transition-colors"
                       style={{
                         height: `${actualHeight}px`,
-                        minHeight: actualHeight > 0 ? '2px' : '0px'
+                        minHeight: actualHeight > 0 ? '2px' : '0px',
+                        background: 'var(--Secondary-Cyan, #A8C5DA)',
+                        borderRadius: projectionHeight - actualHeight <= 0 && actualHeight > 0 ? '6px 6px 0 0' : '0'
                       }}
                     />
                   </div>

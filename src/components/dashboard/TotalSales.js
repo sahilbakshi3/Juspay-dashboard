@@ -146,10 +146,35 @@ export default function TotalSales() {
         {pieData.map((item, i) => (
           <div key={item.type} className="flex items-center justify-between">
             <div className="flex items-center gap-2 min-w-0">
-              <div style={{ width: 10, height: 10, borderRadius: 999, backgroundColor: (darkMode ? COLORS_DARK : COLORS_LIGHT)[i] }} />
-              <span style={{ color: darkMode ? '#cfcfcf' : '#374151', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.type}</span>
+              <div
+                style={{
+                  width: 10,
+                  height: 10,
+                  borderRadius: 999,
+                  backgroundColor: (darkMode ? COLORS_DARK : COLORS_LIGHT)[i],
+                }}
+              />
+              <span
+                style={{
+                  fontSize: '12px', // ✅ smaller font size
+                  color: darkMode ? '#cfcfcf' : '#374151',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                }}
+              >
+                {item.type}
+              </span>
             </div>
-            <span style={{ fontWeight: 600, color: darkMode ? '#F3F4F6' : '#111827' }}>${item.amount.toFixed(2)}</span>
+            <span
+              style={{
+                fontSize: '12px', // ✅ smaller for value as well
+                fontWeight: 600,
+                color: darkMode ? '#F3F4F6' : '#111827',
+              }}
+            >
+              ${item.amount.toFixed(2)}
+            </span>
           </div>
         ))}
       </div>

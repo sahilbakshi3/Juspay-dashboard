@@ -1,7 +1,4 @@
-// src/pages/DashboardPage.js
 import React, { useContext } from 'react';
-
-// Dashboard Components
 import StatsCards from '../components/dashboard/StatsCards';
 import ProjectionsChart from '../components/dashboard/ProjectionsChart';
 import RevenueChart from '../components/dashboard/RevenueChart';
@@ -9,16 +6,25 @@ import RevenueByLocation from '../components/dashboard/RevenueByLocation';
 import TopSellingProducts from '../components/dashboard/TopSellingProducts';
 import TotalSales from '../components/dashboard/TotalSales';
 import { ThemeContext } from '../context/ThemeContextProvider';
+import { useSearch } from '../context/SearchContext';
+import { X } from 'lucide-react';
 
 const DashboardPage = ({ refreshKey = 0, isMobile = false, isTablet = false }) => {
   const { darkMode } = useContext(ThemeContext);
+  const { shouldShowCard, hasActiveSearch, searchQuery, clearSearch, updateSearch } = useSearch();
 
-  // Background colors for dashboard and cards
   const surfaceBg = darkMode ? '#000000' : '#ffffff';
   const cardBg = darkMode ? 'var(--Primary-Light, #FFFFFF0D)' : 'var(--Primary-Light, #F7F9FB)';
-  const statsCardBg = darkMode ? 'var(--Primary-Light, #FFFFFF0D)' : '#ffffff'; // Special white background for StatsCards
+  const statsCardBg = darkMode ? 'var(--Primary-Light, #FFFFFF0D)' : '#ffffff';
   const borderColor = darkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.1)';
   const textColor = darkMode ? '#FFFFFF' : '#111827';
+
+  // Check if any cards should be shown
+  const hasVisibleCards = shouldShowCard('Customers') || shouldShowCard('Orders') || 
+                         shouldShowCard('Revenue') || shouldShowCard('Growth') || 
+                         shouldShowCard('Projections vs Actuals') || shouldShowCard('Revenue Chart') || 
+                         shouldShowCard('Revenue by Location') || shouldShowCard('Top Selling Products') || 
+                         shouldShowCard('Total Sales');
 
   return (
     <div 
@@ -26,7 +32,7 @@ const DashboardPage = ({ refreshKey = 0, isMobile = false, isTablet = false }) =
       key={refreshKey}
       style={{ backgroundColor: surfaceBg, minHeight: '100vh' }}
     >
-      {/* Page Title */}
+      {/* Page Title with search indicator */}
       <div className="flex justify-between items-center">
         <h1
           className="text-lg sm:text-xl lg:text-2xl font-semibold"
@@ -34,98 +40,210 @@ const DashboardPage = ({ refreshKey = 0, isMobile = false, isTablet = false }) =
         >
           eCommerce
         </h1>
+        {hasActiveSearch && (
+          <div className="flex items-center space-x-2">
+            <span 
+              className="text-sm px-3 py-1 rounded-full flex items-center space-x-2"
+              style={{ 
+                color: darkMode ? '#90caf9' : '#1976d2',
+                backgroundColor: darkMode ? 'rgba(144, 202, 249, 0.1)' : 'rgba(25, 118, 210, 0.1)',
+                border: `1px solid ${darkMode ? 'rgba(144, 202, 249, 0.2)' : 'rgba(25, 118, 210, 0.2)'}`
+              }}
+            >
+              <span>Searching: "{searchQuery}"</span>
+              <button
+                onClick={clearSearch}
+                className="hover:opacity-80 transition-opacity"
+                style={{ color: 'inherit' }}
+              >
+                <X className="w-3 h-3" />
+              </button>
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Stats Cards and Projections Chart */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6 lg:gap-7">
-        <div
-          className="rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-sm transition-colors w-full order-1 min-h-[200px] sm:min-h-[252px]"
-          style={{ 
-            background: statsCardBg, // Using white background for StatsCards
-            border: 'none', // Removed border for StatsCards
-            boxShadow: darkMode ? 'none' : '0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06)'
-          }}
-        >
-          <div className="w-full h-full">
-            <StatsCards key={`stats-${refreshKey}`} isMobile={isMobile} />
-          </div>
-        </div>
+      {(shouldShowCard('Customers') || shouldShowCard('Orders') || shouldShowCard('Revenue') || shouldShowCard('Growth') || shouldShowCard('Projections vs Actuals')) && (
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6 lg:gap-7">
+          {/* Stats Cards */}
+          {(shouldShowCard('Customers') || shouldShowCard('Orders') || shouldShowCard('Revenue') || shouldShowCard('Growth')) && (
+            <div
+              className="rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-sm transition-all duration-300 w-full order-1 min-h-[200px] sm:min-h-[252px]"
+              style={{ 
+                background: statsCardBg,
+                border: 'none',
+                boxShadow: darkMode ? 'none' : '0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06)',
+                transform: hasActiveSearch ? 'scale(1.01)' : 'scale(1)',
+                opacity: hasActiveSearch ? 0.98 : 1
+              }}
+            >
+              <div className="w-full h-full">
+                <StatsCards key={`stats-${refreshKey}`} isMobile={isMobile} />
+              </div>
+            </div>
+          )}
 
-        <div
-          className="rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-sm transition-colors w-full order-2 min-h-[200px] sm:min-h-[252px]"
-          style={{ 
-            background: cardBg, 
-            border: `1px solid ${borderColor}`,
-            boxShadow: darkMode ? 'none' : '0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06)'
-          }}
-        >
-          <div className="w-full h-full">
-            <ProjectionsChart key={`projections-${refreshKey}`} isMobile={isMobile} />
-          </div>
+          {/* Projections Chart */}
+          {shouldShowCard('Projections vs Actuals') && (
+            <div
+              className="rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-sm transition-all duration-300 w-full order-2 min-h-[200px] sm:min-h-[252px]"
+              style={{ 
+                background: cardBg, 
+                border: `1px solid ${borderColor}`,
+                boxShadow: darkMode ? 'none' : '0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06)',
+                transform: hasActiveSearch ? 'scale(1.01)' : 'scale(1)',
+                opacity: hasActiveSearch ? 0.98 : 1
+              }}
+            >
+              <div className="w-full h-full">
+                <ProjectionsChart key={`projections-${refreshKey}`} isMobile={isMobile} />
+              </div>
+            </div>
+          )}
         </div>
-      </div>
+      )}
 
       {/* Revenue Chart and Revenue by Location */}
-      <div className="grid grid-cols-1 xl:grid-cols-[1fr_auto] gap-4 sm:gap-6 lg:gap-7">
-        <div
-          className="rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-sm transition-colors w-full min-w-0 order-1 min-h-[200px] sm:min-h-[318px]"
-          style={{ 
-            background: cardBg, 
-            border: `1px solid ${borderColor}`,
-            boxShadow: darkMode ? 'none' : '0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06)'
-          }}
-        >
-          <div className="w-full h-full min-w-[320px] overflow-x-auto">
-            <RevenueChart key={`revenue-chart-${refreshKey}`} isMobile={isMobile} />
-          </div>
-        </div>
-
-        <div className="flex justify-center xl:justify-start order-2">
-          <div
-            className="rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-sm transition-colors min-h-[200px] sm:min-h-[318px] w-full"
-            style={{ 
-              background: cardBg, 
-              border: `1px solid ${borderColor}`,
-              boxShadow: darkMode ? 'none' : '0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06)'
-            }}
-          >
-            <div className="w-full h-full">
-              <RevenueByLocation key={`revenue-location-${refreshKey}`} isMobile={isMobile} />
+      {(shouldShowCard('Revenue Chart') || shouldShowCard('Revenue by Location') || shouldShowCard('Revenue')) && (
+        <div className="grid grid-cols-1 xl:grid-cols-[1fr_auto] gap-4 sm:gap-6 lg:gap-7">
+          {(shouldShowCard('Revenue Chart') || shouldShowCard('Revenue')) && (
+            <div
+              className="rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-sm transition-all duration-300 w-full min-w-0 order-1 min-h-[200px] sm:min-h-[318px]"
+              style={{ 
+                background: cardBg, 
+                border: `1px solid ${borderColor}`,
+                boxShadow: darkMode ? 'none' : '0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06)',
+                transform: hasActiveSearch ? 'scale(1.01)' : 'scale(1)',
+                opacity: hasActiveSearch ? 0.98 : 1
+              }}
+            >
+              <div className="w-full h-full min-w-[320px] overflow-x-auto">
+                <RevenueChart key={`revenue-chart-${refreshKey}`} isMobile={isMobile} />
+              </div>
             </div>
-          </div>
+          )}
+
+          {shouldShowCard('Revenue by Location') && (
+            <div className="flex justify-center xl:justify-start order-2">
+              <div
+                className="rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-sm transition-all duration-300 min-h-[200px] sm:min-h-[318px] w-full"
+                style={{ 
+                  background: cardBg, 
+                  border: `1px solid ${borderColor}`,
+                  boxShadow: darkMode ? 'none' : '0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06)',
+                  transform: hasActiveSearch ? 'scale(1.01)' : 'scale(1)',
+                  opacity: hasActiveSearch ? 0.98 : 1
+                }}
+              >
+                <div className="w-full h-full">
+                  <RevenueByLocation key={`revenue-location-${refreshKey}`} isMobile={isMobile} />
+                </div>
+              </div>
+            </div>
+          )}
         </div>
-      </div>
+      )}
 
       {/* Top Selling Products and Total Sales */}
-      <div className="grid grid-cols-1 xl:grid-cols-[1fr_auto] gap-4 sm:gap-6 lg:gap-7">
-        <div
-          className="rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-sm transition-colors w-full min-w-0 order-1 min-h-[200px] sm:min-h-[264px]"
+      {(shouldShowCard('Top Selling Products') || shouldShowCard('Total Sales')) && (
+        <div className="grid grid-cols-1 xl:grid-cols-[1fr_auto] gap-4 sm:gap-6 lg:gap-7">
+          {shouldShowCard('Top Selling Products') && (
+            <div
+              className="rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-sm transition-all duration-300 w-full min-w-0 order-1 min-h-[200px] sm:min-h-[264px]"
+              style={{ 
+                background: cardBg, 
+                border: `1px solid ${borderColor}`,
+                boxShadow: darkMode ? 'none' : '0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06)',
+                transform: hasActiveSearch ? 'scale(1.01)' : 'scale(1)',
+                opacity: hasActiveSearch ? 0.98 : 1
+              }}
+            >
+              <div className="min-w-[300px] overflow-x-auto">
+                <TopSellingProducts key={`top-products-${refreshKey}`} isMobile={isMobile} />
+              </div>
+            </div>
+          )}
+
+          {shouldShowCard('Total Sales') && (
+            <div className="flex justify-center xl:justify-start order-2">
+              <div
+                className="rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-sm transition-all duration-300 min-h-[200px] sm:min-h-[264px] w-full"
+                style={{ 
+                  background: cardBg, 
+                  border: `1px solid ${borderColor}`,
+                  boxShadow: darkMode ? 'none' : '0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06)',
+                  transform: hasActiveSearch ? 'scale(1.01)' : 'scale(1)',
+                  opacity: hasActiveSearch ? 0.98 : 1
+                }}
+              >
+                <div className="w-full h-full">
+                  <TotalSales key={`total-sales-${refreshKey}`} isMobile={isMobile} />
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* No Results Message */}
+      {hasActiveSearch && !hasVisibleCards && (
+        <div 
+          className="text-center py-16 rounded-xl"
           style={{ 
-            background: cardBg, 
-            border: `1px solid ${borderColor}`,
-            boxShadow: darkMode ? 'none' : '0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06)'
+            backgroundColor: darkMode ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)',
+            border: `1px dashed ${darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}`
           }}
         >
-          <div className="min-w-[300px] overflow-x-auto">
-            <TopSellingProducts key={`top-products-${refreshKey}`} isMobile={isMobile} />
-          </div>
-        </div>
-
-        <div className="flex justify-center xl:justify-start order-2">
-          <div
-            className="rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-sm transition-colors min-h-[200px] sm:min-h-[264px] w-full"
-            style={{ 
-              background: cardBg, 
-              border: `1px solid ${borderColor}`,
-              boxShadow: darkMode ? 'none' : '0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06)'
-            }}
-          >
-            <div className="w-full h-full">
-              <TotalSales key={`total-sales-${refreshKey}`} isMobile={isMobile} />
+          <div className="max-w-md mx-auto">
+            <div 
+              className="text-4xl mb-4"
+              style={{ opacity: 0.5 }}
+            >
+              🔍
             </div>
+            <div 
+              className="text-xl font-medium mb-3"
+              style={{ color: darkMode ? '#E5E7EB' : '#374151' }}
+            >
+              No cards found for "{searchQuery}"
+            </div>
+            <div 
+              className="text-sm mb-6"
+              style={{ color: darkMode ? '#9CA3AF' : '#6B7280' }}
+            >
+              Try searching for one of these terms:
+            </div>
+            <div className="flex flex-wrap justify-center gap-2 text-xs mb-6">
+              {['Revenue', 'Sales', 'Products', 'Customers', 'Orders', 'Growth', 'Projections', 'Location'].map(term => (
+                <button 
+                  key={term}
+                  className="px-3 py-2 rounded-full cursor-pointer transition-all hover:scale-105"
+                  style={{ 
+                    backgroundColor: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)',
+                    color: darkMode ? '#E5E7EB' : '#374151',
+                    border: `1px solid ${darkMode ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)'}`
+                  }}
+                  onClick={() => updateSearch(term)}
+                >
+                  {term}
+                </button>
+              ))}
+            </div>
+            <button
+              onClick={clearSearch}
+              className="px-4 py-2 rounded-lg transition-colors"
+              style={{
+                backgroundColor: darkMode ? '#1f2937' : '#f3f4f6',
+                color: darkMode ? '#e5e7eb' : '#374151',
+                border: `1px solid ${darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}`
+              }}
+            >
+              Show all cards
+            </button>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

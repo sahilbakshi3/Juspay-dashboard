@@ -3,9 +3,9 @@ import ReactDOM from 'react-dom';
 import { Bell, Search, Notebook, SunMedium, History, Star, X, Check, Trash2, Menu } from 'lucide-react';
 import { ThemeContext } from '../../context/ThemeContextProvider';
 import { useToast } from '../../context/ToastContext';
+import { useSearch } from '../../context/SearchContext';
 
-// PortalTooltip: positions relative to anchor and renders to body with high z-index.
-// Uses pure black for dark mode and enforces z-index above sidebars.
+// PortalTooltip component remains the same
 const PortalTooltip = ({ anchorRef, visible, text, isDarkMode }) => {
   const [pos, setPos] = useState({ top: 0, left: 0 });
   const tooltipRef = useRef(null);
@@ -35,7 +35,7 @@ const PortalTooltip = ({ anchorRef, visible, text, isDarkMode }) => {
 
   if (!visible) return null;
 
-  const bg = '#000000'; // tooltip background: pure black
+  const bg = '#000000';
   return ReactDOM.createPortal(
     <div
       ref={tooltipRef}
@@ -95,6 +95,7 @@ const Header = ({
 }) => {
   const { isDarkMode, toggleTheme } = useContext(ThemeContext);
   const { showRefreshToast, showFavoriteAddedToast, showFavoriteRemovedToast } = useToast();
+  const { searchQuery, updateSearch, clearSearch } = useSearch();
 
   const [isFavorite, setIsFavorite] = useState(false);
   const [showMobileSearch, setShowMobileSearch] = useState(false);
@@ -139,6 +140,30 @@ const Header = ({
     if (showMobileSearch && searchInputRef.current) searchInputRef.current.focus();
   }, [showMobileSearch]);
 
+  // Add keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === '/') {
+        e.preventDefault();
+        const searchInput = document.querySelector('input[placeholder*="Search"]');
+        if (searchInput) {
+          searchInput.focus();
+        }
+      }
+      if (e.key === 'Escape') {
+        clearSearch();
+        setSearchValue('');
+        const searchInput = document.querySelector('input[placeholder*="Search"]');
+        if (searchInput) {
+          searchInput.blur();
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [clearSearch]);
+
   const handleRefresh = () => {
     if (onRefreshDashboard) {
       const refreshIcon = document.querySelector('.refresh-icon');
@@ -177,14 +202,16 @@ const Header = ({
 
   const toggleMobileSearch = () => {
     setShowMobileSearch(v => !v);
-    if (showMobileSearch) setSearchValue('');
+    if (showMobileSearch) {
+      setSearchValue('');
+      clearSearch();
+    }
   };
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
-    console.log('Search submitted:', searchValue);
+    updateSearch(searchValue);
     setShowMobileSearch(false);
-    setSearchValue('');
   };
 
   const onEnter = (key) => () => setHoverTooltip(key);
@@ -256,6 +283,8 @@ const Header = ({
                 <input
                   type="text"
                   placeholder="Search"
+                  value={searchQuery}
+                  onChange={(e) => updateSearch(e.target.value)}
                   className={`pl-9 pr-12 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors w-32 sm:w-40 lg:w-64`}
                   style={{
                     backgroundColor: isDarkMode ? '#0a0a0a' : undefined,
@@ -412,9 +441,12 @@ const Header = ({
               <input
                 ref={searchInputRef}
                 type="text"
-                placeholder="Search..."
+                placeholder="Search cards..."
                 value={searchValue}
-                onChange={(e) => setSearchValue(e.target.value)}
+                onChange={(e) => {
+                  setSearchValue(e.target.value);
+                  updateSearch(e.target.value);
+                }}
                 className="w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 style={{
                   backgroundColor: isDarkMode ? '#0a0a0a' : undefined,
@@ -430,7 +462,6 @@ const Header = ({
         </div>
       )}
 
-      {/* Portal tooltips - anchored to corresponding refs */}
       <PortalTooltip anchorRef={leftToggleRef} visible={hoverTooltip === 'left'} text={`${leftSidebarVisible ? 'Hide' : 'Show'} left sidebar`} isDarkMode={isDarkMode} />
       <PortalTooltip anchorRef={starButtonRef} visible={hoverTooltip === 'star'} text={isFavorite ? 'Remove from favorites' : 'Add to favorites'} isDarkMode={isDarkMode} />
       <PortalTooltip anchorRef={themeButtonRef} visible={hoverTooltip === 'theme'} text={`Switch to ${isDarkMode ? 'light' : 'dark'} mode`} isDarkMode={isDarkMode} />

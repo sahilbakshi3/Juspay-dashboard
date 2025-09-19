@@ -1,4 +1,4 @@
-// src/App.js
+// src/App.js - Updated with SearchProvider
 import React, { useContext, useState, useCallback, useEffect } from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 
@@ -10,6 +10,7 @@ import RightSidebar from './components/layout/RightSidebar';
 // Context Providers
 import ThemeContextProvider, { ThemeContext } from "./context/ThemeContextProvider";
 import { ToastProvider } from './context/ToastContext';
+import { SearchProvider } from './context/SearchContext'; // Add this import
 
 // Pages
 import DashboardPage from './pages/DashboardPage';
@@ -185,13 +186,15 @@ const AppContent = () => {
 
 const App = () => {
   return (
-    <ThemeContextProvider>
-      <ToastProvider>
-        <Router>
-          <AppContent />
-        </Router>
-      </ToastProvider>
-    </ThemeContextProvider>
+    <SearchProvider> {/* Add SearchProvider as the outermost provider */}
+      <ThemeContextProvider>
+        <ToastProvider>
+          <Router>
+            <AppContent />
+          </Router>
+        </ToastProvider>
+      </ThemeContextProvider>
+    </SearchProvider>
   );
 };
 

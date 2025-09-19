@@ -53,14 +53,18 @@ const ProjectionsChart = () => {
   const barWidth = isMobile ? 'w-6' : isTablet ? 'w-7' : 'w-8';
   const barSpacing = isMobile ? 'space-x-2' : isTablet ? 'space-x-3' : 'space-x-4';
 
-  // Helper function to get a darker background color
-  const getDarkerBackground = () => {
+  // Helper function to get colors for complete and incomplete portions
+  const getBarColors = () => {
     if (darkMode) {
-      // For dark mode, make slightly lighter than pure black
-      return 'rgba(255, 255, 255, 0.08)';
+      return {
+        complete: 'var(--Secondary-Cyan, #A8C5DA)', // Completed portion - current cyan color
+        incomplete: 'rgba(168, 197, 218, 0.3)' // Incomplete portion - lighter version (30% opacity)
+      };
     } else {
-      // For light mode, use a darker shade
-      return 'rgba(0, 0, 0, 0.08)';
+      return {
+        complete: 'var(--Secondary-Cyan, #A8C5DA)', // Completed portion - same cyan
+        incomplete: 'rgba(0, 0, 0, 0.08)' // Incomplete portion - original light mode color
+      };
     }
   };
 
@@ -98,6 +102,8 @@ const ProjectionsChart = () => {
       document.body
     );
   };
+
+  const barColors = getBarColors();
 
   return (
     <div className="h-full w-full flex flex-col" ref={chartRef} style={{ position: 'relative' }}>
@@ -146,7 +152,7 @@ const ProjectionsChart = () => {
               borderBottom: `1px solid ${darkMode ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.06)'}`
             }}
           >
-            {/* Horizontal grid lines - DARKER */}
+            {/* Horizontal grid lines - Lower z-index so bars hide them */}
             {yAxisValues.map((value, index) => {
               const positionFromBottom = (chartHeight - 1) * (index / (yAxisValues.length - 1));
               return (
@@ -155,14 +161,15 @@ const ProjectionsChart = () => {
                   className="absolute left-0 w-full"
                   style={{
                     bottom: `${positionFromBottom}px`,
-                    opacity: 0.6, // Increased from 0.4 to 0.6
-                    borderTop: `1px solid ${darkMode ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)'}`  // Increased opacity
+                    opacity: 0.6,
+                    borderTop: `1px solid ${darkMode ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)'}`,
+                    zIndex: 1 // Lower z-index so bars appear above grid lines
                   }}
                 />
               );
             })}
 
-            {/* Bars */}
+            {/* Bars - Higher z-index to appear above grid lines */}
             {chartData.map((data) => {
               const availableHeight = chartHeight - 20;
               const projectionHeight = Math.min((data.projection / maxValue) * availableHeight, availableHeight);
@@ -190,27 +197,31 @@ const ProjectionsChart = () => {
                   onMouseLeave={() =>
                     setTooltip({ visible: false, clientX: 0, clientY: 0, data: null })
                   }
-                  style={{ zIndex: 10, position: 'relative' }}
+                  style={{ zIndex: 10, position: 'relative' }} // Higher z-index for bars
                 >
                   <div className={`flex flex-col mx-auto ${barWidth} min-w-[16px] max-w-[40px]`}>
-                    {/* Incomplete/Projection portion */}
+                    {/* Incomplete/Projection portion - Lighter color in dark mode */}
                     <div
                       className="w-full transition-colors"
                       style={{
                         height: `${Math.max(projectionHeight - actualHeight, 0)}px`,
                         minHeight: Math.max(projectionHeight - actualHeight, 0) > 0 ? '2px' : '0px',
-                        background: getDarkerBackground(),
-                        borderRadius: Math.max(projectionHeight - actualHeight, 0) > 0 ? '6px 6px 0 0' : '0'
+                        background: barColors.incomplete,
+                        borderRadius: Math.max(projectionHeight - actualHeight, 0) > 0 ? '6px 6px 0 0' : '0',
+                        position: 'relative',
+                        zIndex: 2 // Ensure bar portion is above grid lines
                       }}
                     />
-                    {/* Completed/Actual portion */}
+                    {/* Completed/Actual portion - Full cyan color */}
                     <div
                       className="w-full transition-colors"
                       style={{
                         height: `${actualHeight}px`,
                         minHeight: actualHeight > 0 ? '2px' : '0px',
-                        background: 'var(--Secondary-Cyan, #A8C5DA)',
-                        borderRadius: projectionHeight - actualHeight <= 0 && actualHeight > 0 ? '6px 6px 0 0' : '0'
+                        background: barColors.complete,
+                        borderRadius: projectionHeight - actualHeight <= 0 && actualHeight > 0 ? '6px 6px 0 0' : '0',
+                        position: 'relative',
+                        zIndex: 2 // Ensure bar portion is above grid lines
                       }}
                     />
                   </div>

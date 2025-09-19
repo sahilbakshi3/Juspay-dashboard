@@ -824,8 +824,28 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
                     <Chip label={<Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}><Box sx={{ width: 6, height: 6, borderRadius: '50%', bgcolor: getStatusColor(order.status).color }} /><span style={{ fontSize: isMobile ? '0.6rem' : '0.75rem' }}>{isMobile ? order.status.slice(0, 3) + (order.status.length > 3 ? '.' : '') : order.status}</span></Box>} size="small" sx={{ fontSize: isMobile ? '0.6rem' : '0.75rem', fontWeight: 500, bgcolor: getStatusColor(order.status).bgcolor, borderColor: getStatusColor(order.status).border, color: getStatusColor(order.status).color, '& .MuiChip-label': { px: isMobile ? 0.5 : 1 } }} />
                   </TableCell>
 
-                  <TableCell>
-                    <IconButton size="small" onClick={(e) => handleMenuClick(e, order)} sx={{ color: colors.text.secondary, '&:hover': { bgcolor: colors.hover, color: colors.text.primary } }}><MoreHoriz fontSize={isMobile ? 'small' : 'medium'} /></IconButton>
+                  <TableCell
+                    sx={{
+                      position: 'relative',
+                      width: '48px',
+                    }}
+                  >
+                    <IconButton
+                      size="small"
+                      onClick={(e) => handleMenuClick(e, order)}
+                      sx={{
+                        color: colors.text.secondary,
+                        opacity: 0, // hidden by default
+                        transition: 'opacity 0.2s ease',
+                        '&:hover': {
+                          bgcolor: colors.hover,
+                          color: colors.text.primary
+                        },
+                        '.MuiTableRow-root:hover &': { opacity: 1 } // show only on row hover
+                      }}
+                    >
+                      <MoreHoriz fontSize={isMobile ? 'small' : 'medium'} />
+                    </IconButton>
                   </TableCell>
                 </TableRow>
               ))}

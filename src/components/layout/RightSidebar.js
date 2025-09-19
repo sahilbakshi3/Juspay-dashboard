@@ -29,7 +29,7 @@ const RightSidebar = ({ isVisible, isMobile = false, onClose }) => {
                   <Bug className={`w-5 h-5 flex-shrink-0 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
                   <div style={{ color: darkMode ? '#cfcfcf' : '#111827' }}>
                     <p style={{ color: darkMode ? '#fff' : '#111827' }}>You have a bug that needs...</p>
-                    <p style={{ fontSize: 12, color: darkMode ? '#9CA3AF' : '#6b7280' }}>12 hours ago</p>
+                    <p style={{ fontSize: 12, color: darkMode ? '#9CA3AF' : '#6b7280' }}>Just now</p>
                   </div>
                 </div>
 
@@ -40,6 +40,22 @@ const RightSidebar = ({ isVisible, isMobile = false, onClose }) => {
                     <p style={{ fontSize: 12, color: darkMode ? '#9CA3AF' : '#6b7280' }}>59 minutes ago</p>
                   </div>
                 </div>
+
+                <div className="flex items-start space-x-3">
+                  <Bug className={`w-5 h-5 flex-shrink-0 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
+                  <div style={{ color: darkMode ? '#cfcfcf' : '#111827' }}>
+                    <p style={{ color: darkMode ? '#fff' : '#111827' }}>You have a bug that needs...</p>
+                    <p style={{ fontSize: 12, color: darkMode ? '#9CA3AF' : '#6b7280' }}>12 hours ago</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start space-x-3">
+                  <User className={`w-5 h-5 flex-shrink-0 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
+                  <div style={{ color: darkMode ? '#cfcfcf' : '#111827' }}>
+                    <p style={{ color: darkMode ? '#fff' : '#111827' }}>New user registered</p>
+                    <p style={{ fontSize: 12, color: darkMode ? '#9CA3AF' : '#6b7280' }}>Today, 11:59 AM</p>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -48,8 +64,25 @@ const RightSidebar = ({ isVisible, isMobile = false, onClose }) => {
               <div className="space-y-3">
                 {activities.map((activity, index) => (
                   <div key={index} className="flex items-start space-x-3">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs flex-shrink-0`} style={{ backgroundColor: darkMode ? '#111111' : '#f3f4f6' }}>
-                      {activity.avatar}
+                    <img 
+                      src={activity.avatar} 
+                      alt={activity.user}
+                      className="w-8 h-8 rounded-full object-cover flex-shrink-0"
+                      onError={(e) => {
+                        // Fallback to initials if image fails to load
+                        e.target.style.display = 'none';
+                        e.target.nextSibling.style.display = 'flex';
+                      }}
+                    />
+                    <div 
+                      className="w-8 h-8 rounded-full flex items-center justify-center text-xs flex-shrink-0" 
+                      style={{ 
+                        backgroundColor: darkMode ? '#111111' : '#f3f4f6',
+                        color: darkMode ? '#ffffff' : '#111827',
+                        display: 'none' // Hidden by default, shown if image fails
+                      }}
+                    >
+                      {activity.user.charAt(0).toUpperCase()}
                     </div>
                     <div style={{ color: darkMode ? '#cfcfcf' : '#111827' }}>
                       <p style={{ color: darkMode ? '#fff' : '#111827' }}>{activity.user} {activity.action}</p>
@@ -65,8 +98,25 @@ const RightSidebar = ({ isVisible, isMobile = false, onClose }) => {
               <div className="space-y-3">
                 {contacts.map((contact, index) => (
                   <div key={index} className="flex items-center space-x-3">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium flex-shrink-0`} style={{ backgroundColor: darkMode ? '#071029' : '#e6f0ff', color: darkMode ? '#60a5fa' : '#1e40af' }}>
-                      {contact.avatar}
+                    <img 
+                      src={contact.avatar} 
+                      alt={contact.name}
+                      className="w-8 h-8 rounded-full object-cover flex-shrink-0"
+                      onError={(e) => {
+                        // Fallback to initials if image fails to load
+                        e.target.style.display = 'none';
+                        e.target.nextSibling.style.display = 'flex';
+                      }}
+                    />
+                    <div 
+                      className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium flex-shrink-0" 
+                      style={{ 
+                        backgroundColor: darkMode ? '#071029' : '#e6f0ff', 
+                        color: darkMode ? '#60a5fa' : '#1e40af',
+                        display: 'none' // Hidden by default, shown if image fails
+                      }}
+                    >
+                      {contact.name.split(' ').map(n => n.charAt(0)).join('')}
                     </div>
                     <span style={{ color: darkMode ? '#fff' : '#111827' }}>{contact.name}</span>
                   </div>
@@ -101,6 +151,8 @@ const RightSidebar = ({ isVisible, isMobile = false, onClose }) => {
                 <div>
                   <p style={{ color: darkMode ? '#fff' : '#111827' }}>You have a bug that needs...</p>
                   <p style={{ fontSize: 12, color: darkMode ? '#9CA3AF' : '#6b7280' }}>12 hours ago</p>
+                  <p style={{ color: darkMode ? '#fff' : '#111827' }}>You have a bug that needs...</p>
+                  <p style={{ fontSize: 12, color: darkMode ? '#9CA3AF' : '#6b7280' }}>12 hours ago</p>
                 </div>
               </div>
               <div className="flex items-start space-x-3">
@@ -118,8 +170,24 @@ const RightSidebar = ({ isVisible, isMobile = false, onClose }) => {
             <div className="space-y-3">
               {activities.map((activity, index) => (
                 <div key={index} className="flex items-start space-x-3">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs flex-shrink-0`} style={{ backgroundColor: darkMode ? '#111111' : '#f3f4f6' }}>
-                    {activity.avatar}
+                  <img 
+                    src={activity.avatar} 
+                    alt={activity.user}
+                    className="w-8 h-8 rounded-full object-cover flex-shrink-0"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      e.target.nextSibling.style.display = 'flex';
+                    }}
+                  />
+                  <div 
+                    className="w-8 h-8 rounded-full flex items-center justify-center text-xs flex-shrink-0" 
+                    style={{ 
+                      backgroundColor: darkMode ? '#111111' : '#f3f4f6',
+                      color: darkMode ? '#ffffff' : '#111827',
+                      display: 'none'
+                    }}
+                  >
+                    {activity.user.charAt(0).toUpperCase()}
                   </div>
                   <div>
                     <p style={{ color: darkMode ? '#fff' : '#111827' }}>{activity.user} {activity.action}</p>
@@ -135,8 +203,24 @@ const RightSidebar = ({ isVisible, isMobile = false, onClose }) => {
             <div className="space-y-3">
               {contacts.map((contact, index) => (
                 <div key={index} className="flex items-center space-x-3">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium flex-shrink-0`} style={{ backgroundColor: darkMode ? '#071029' : '#e6f0ff', color: darkMode ? '#60a5fa' : '#1e40af' }}>
-                    {contact.avatar}
+                  <img 
+                    src={contact.avatar} 
+                    alt={contact.name}
+                    className="w-8 h-8 rounded-full object-cover flex-shrink-0"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      e.target.nextSibling.style.display = 'flex';
+                    }}
+                  />
+                  <div 
+                    className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium flex-shrink-0" 
+                    style={{ 
+                      backgroundColor: darkMode ? '#071029' : '#e6f0ff', 
+                      color: darkMode ? '#60a5fa' : '#1e40af',
+                      display: 'none'
+                    }}
+                  >
+                    {contact.name.split(' ').map(n => n.charAt(0)).join('')}
                   </div>
                   <span style={{ color: darkMode ? '#fff' : '#111827' }}>{contact.name}</span>
                 </div>

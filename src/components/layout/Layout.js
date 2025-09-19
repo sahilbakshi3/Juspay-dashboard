@@ -70,7 +70,7 @@ const Layout = ({ children }) => {
   return (
     <div
       className="flex h-screen transition-colors duration-200 overflow-hidden"
-      style={{ backgroundColor: darkMode ? '#000000' : '#f8fafc' }}
+      style={{ backgroundColor: darkMode ? '#000000' : '#ffffff' }}
     >
       {(leftSidebarOverlay || rightSidebarOverlay) && (
         <div

@@ -68,8 +68,8 @@ const AppContent = () => {
   };
 
   // App-level styles for dark/light
-  const appBg = darkMode ? '#000000' : undefined; // true black for dark
-  const contentSurface = darkMode ? '#0a0a0a' : undefined; // slightly off-black surfaces
+  const appBg = darkMode ? '#000000' : '#ffffff';
+  const contentSurface = darkMode ? '#0a0a0a' : '#ffffff';
   const textColor = darkMode ? '#FFFFFF' : '#111827';
 
   return (
@@ -77,7 +77,7 @@ const AppContent = () => {
       <div
         className="min-h-screen flex transition-colors duration-300 relative overflow-hidden"
         style={{
-          background: appBg ?? undefined,
+          background: appBg,
           color: textColor,
         }}
       >

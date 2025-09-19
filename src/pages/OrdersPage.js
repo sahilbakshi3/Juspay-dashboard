@@ -71,24 +71,24 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
   const isDarkMode = theme.palette.mode === 'dark';
   const tickColor = isDarkMode ? '#C6C7F8' : '#1C1C1C';
 
-  // === color tokens, dark mode uses true black + near-black surfaces ===
+  // === Updated color tokens with white/black table backgrounds ===
   const dashboardColors = {
     light: {
-      background: '#fafafa',
-      cardBackground: '#ffffff',
-      border: '#e5e7eb',
+      background: '#ffffff', // White page background
+      cardBackground: '#ffffff', // White table/card background
+      border: 'rgba(0,0,0,0.1)', 
       text: { primary: '#111827', secondary: '#6b7280' },
       hover: '#f9fafb'
     },
     dark: {
-      // True black background & near-black surfaces
-      background: '#000000',
-      cardBackground: '#0a0a0a', // near-black for cards/surfaces
-      border: '#111111',
+      background: '#000000', // Black page background
+      cardBackground: '#000000', // Changed to black for table/card background
+      border: 'rgba(255,255,255,0.04)',
       text: { primary: '#ffffff', secondary: '#cbd5e1' },
       hover: '#111111'
     }
   };
+
   const colors = isDarkMode ? dashboardColors.dark : dashboardColors.light;
 
   // --- Helpers for initials avatar ---

@@ -69,10 +69,14 @@ const RevenueByLocation = ({ isMobile = false }) => {
 
   const maxRevenue = Math.max(...revenueByLocation.map((l) => l.amount), 1);
 
+  // Updated color scale with darker cyan colors
   const getColorScale = () =>
     scaleQuantize()
       .domain([0, maxRevenue])
-      .range(darkMode ? ['#374151', '#60A5FA', '#3B82F6', '#1D4ED8'] : ['#F3F4F6', '#93C5FD', '#60A5FA', '#3B82F6']);
+      .range(darkMode 
+        ? ['#374151', '#7A98B3', '#5F8AA8', '#4A7B9D'] // Darker cyan variations for dark mode
+        : ['#F3F4F6', '#8FA8BD', '#7A98B3', '#5F8AA8'] // Darker cyan variations for light mode
+      );
 
   const canRenderMap = !!mapAssets && containerDimensions.width > 0;
 

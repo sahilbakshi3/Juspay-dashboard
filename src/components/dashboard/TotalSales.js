@@ -10,8 +10,13 @@ const pieData = [
   { type: 'E-mail', amount: 48.96 }
 ];
 
-const COLORS_LIGHT = ['#1F2937', '#BBF7D0', '#BAE6FD', '#A5B4FC'];
-const COLORS_DARK = ['#C6C7F8', '#BBF7D0', '#BAE6FD', '#A5B4FC'];
+// Define colors with conditional Direct color for dark mode
+const getColors = (darkMode) => [
+  darkMode ? 'var(--Primary-Brand, #C6C7F8)' : '#1F2937', // Direct - brand color in dark mode, dark gray in light mode
+  '#BBF7D0', // Affiliate - light green
+  '#BAE6FD', // Sponsored - light blue
+  '#A5B4FC'  // E-mail - light purple
+];
 
 function createArcPath(startAngle, endAngle, radius, center) {
   const rad = Math.PI / 180;
@@ -45,7 +50,7 @@ export default function TotalSales({ isMobile = false }) {
     };
   }, []);
 
-  const COLORS = darkMode ? COLORS_DARK : COLORS_LIGHT;
+  const COLORS = getColors(darkMode);
   const baseWidth = containerDimensions.width || 240;
   const chartSize = Math.min(160, Math.max(120, baseWidth - 80));
   const center = chartSize / 2;
@@ -97,8 +102,8 @@ export default function TotalSales({ isMobile = false }) {
               <path
                 key={i}
                 d={createArcPath(start, end, outerRadius, center)}
-                fill={COLORS[i % COLORS.length]}
-                stroke={darkMode ? 'var(--Primary-Light, #FFFFFF0D)' : '#ffffff'}
+                fill={COLORS[i]}
+                stroke="#ffffff"
                 strokeWidth={1}
               />
             ))}
@@ -106,8 +111,8 @@ export default function TotalSales({ isMobile = false }) {
               cx={center} 
               cy={center} 
               r={innerRadius} 
-              fill={darkMode ? 'var(--Primary-Light, #FFFFFF0D)' : '#ffffff'} 
-              stroke={darkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.04)'} 
+              fill={darkMode ? 'var(--Primary-Light, #FFFFFF0D)' : '#ffffff'}
+              stroke={darkMode ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.04)'}
               strokeWidth={1} 
             />
           </svg>

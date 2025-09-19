@@ -20,9 +20,6 @@ const RightSidebar = ({ isVisible, isMobile = false, onClose }) => {
     return (
       <aside aria-hidden={!isVisible} className={`${isVisible ? 'w-80 opacity-100' : 'w-0 opacity-0'} transition-all duration-300 ease-in-out border-l p-0 overflow-hidden h-full`} style={desktopStyle}>
         <div className="w-80 p-6 h-full flex flex-col" style={{ minWidth: 0 }}>
-          <div className="flex items-center justify-between mb-4">
-            <h2 style={{ fontWeight: 600, color: darkMode ? '#fff' : '#111827' }}>Activity</h2>
-          </div>
 
           <div className="flex-1 overflow-y-auto space-y-6">
             <div>

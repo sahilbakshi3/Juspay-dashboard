@@ -122,10 +122,18 @@ const Sidebar = ({ isVisible, isMobile = false, onClose }) => {
         <div style={{ padding: isMobile ? 16 : 24 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <div style={{ width: isMobile ? 24 : 32, height: isMobile ? 24 : 32, backgroundColor: '#0b84ff', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <span style={{ color: '#fff', fontWeight: 700, fontSize: isMobile ? 12 : 14 }}>B</span>
-              </div>
-              <span style={{ fontWeight: 700, color: darkMode ? '#fff' : '#111827' }}>ByeWind</span>
+              {/* UPDATED LOGO SECTION WITH FULL CIRCLE AND NORMAL FONT WEIGHT */}
+              <img 
+                src="/logo.png" 
+                alt="ByeWind Logo" 
+                style={{ 
+                  width: isMobile ? 24 : 32, 
+                  height: isMobile ? 24 : 32, 
+                  borderRadius: '50%', // Full circle
+                  objectFit: 'cover'
+                }}
+              />
+              <span style={{ fontWeight: 400, color: darkMode ? '#fff' : '#111827' }}>ByeWind</span> {/* Normal font weight */}
             </div>
 
             {isMobile && onClose && (
@@ -165,7 +173,7 @@ const Sidebar = ({ isVisible, isMobile = false, onClose }) => {
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             <CollapsibleMenuItem label="Default" icon={ChartPie} subItems={[]} isExpanded={expandedSections.default} onToggle={() => toggleSection('default')} onClick={() => handleNavigation('/')} hasIcon darkMode={darkMode} isMobile={isMobile} isActive={isActive('/')} />
-            <CollapsibleMenuItem label="eCommerce" icon={ShoppingBag} subItems={[]} isExpanded={expandedSections.ecommerce} onToggle={() => toggleSection('ecommerce')} hasIcon darkMode={darkMode} isMobile={isMobile} isActive={false} />
+            <CollapsibleMenuItem label="eCommerce" icon={ShoppingBag} subItems={[]} isExpanded={expandedSections.ecommerce} onToggle={() => toggleSection('ecommerce')} hasIcon darkMode={darkMode} isMobile={isMobile} isActive={isActive('/orders')} />
             <CollapsibleMenuItem label="Projects" icon={FolderClosed} subItems={[]} isExpanded={expandedSections.projects} onToggle={() => toggleSection('projects')} hasIcon darkMode={darkMode} isMobile={isMobile} isActive={false} />
             <CollapsibleMenuItem label="Online Courses" icon={BookOpen} subItems={[]} isExpanded={expandedSections.onlineCourses} onToggle={() => toggleSection('onlineCourses')} hasIcon darkMode={darkMode} isMobile={isMobile} isActive={false} />
           </div>

@@ -205,6 +205,3 @@ const RevenueByLocation = ({ isMobile = false }) => {
 };
 
 export default RevenueByLocation;
-
-
-

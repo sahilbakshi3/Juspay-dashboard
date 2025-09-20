@@ -12,7 +12,7 @@ const pieData = [
 
 // Define colors to match the SVG segments
 const getColors = (darkMode) => [
-  '#C6C7F8', // Direct - matches first SVG path
+  darkMode ? '#C6C7F8' : '#000000', // Direct - purple in dark mode, black in light mode
   '#95A4FC', // Affiliate - matches second SVG path
   '#B1E3FF', // Sponsored - matches third SVG path  
   '#BAEDBD'  // E-mail - matches fourth SVG path
@@ -92,7 +92,7 @@ export default function TotalSales({ isMobile = false }) {
               fillRule="evenodd" 
               clipRule="evenodd" 
               d="M104.67 19.9323C100.925 15.7481 94.5122 15.406 90.347 19.1681C86.1818 22.9302 85.8411 29.372 89.5862 33.5562C95.8915 40.6008 99.7159 49.895 99.7159 60.1106C99.7159 75.22 91.3206 88.3596 78.9604 95.079C82.6329 96.7797 85.561 100.036 86.7151 104.261C87.6887 107.824 87.2269 111.443 85.6817 114.496C105.965 104.874 120 84.139 120 60.1106C120 44.6722 114.193 30.5722 104.67 19.9323Z" 
-              fill="#C6C7F8"
+              fill={darkMode ? "#C6C7F8" : "#000000"}
               style={{ transition: 'all 0.2s ease' }}
               onMouseEnter={(e) => {
                 e.target.style.filter = 'drop-shadow(0 4px 12px rgba(0,0,0,0.2))';

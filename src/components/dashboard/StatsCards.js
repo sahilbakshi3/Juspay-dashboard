@@ -16,16 +16,36 @@ const StatCard = ({ title, value, trend, change, isMobile }) => {
   else if (isGrowth) background = 'var(--Primary-Purple, #E5ECF6)';
   else background = darkMode ? 'var(--Primary-Light, #FFFFFF0D)' : '#ffffff';
 
-  // Text color:
-  // - For special (Customers/Growth) cards we want dark text so they read nicely even on dark page background (per your screenshot).
-  // - For other cards, follow darkMode/lightMode behavior.
-  const titleColor = isCustomers || isGrowth
-    ? '#111827' // dark text for the light accent cards
-    : (darkMode ? '#9CA3AF' : '#6B7280');
+  // Text color logic:
+  // - Light mode: all text is black
+  // - Dark mode: Customers and Growth keep black text (light backgrounds), Orders and Revenue use white text (dark backgrounds)
+  let titleColor, valueColor;
+  if (darkMode) {
+    if (isCustomers || isGrowth) {
+      titleColor = '#111827'; // black text for Customers/Growth in dark mode (light card backgrounds)
+      valueColor = '#111827';
+    } else {
+      titleColor = '#FFFFFF'; // white text for Orders/Revenue in dark mode (dark card backgrounds)
+      valueColor = '#FFFFFF';
+    }
+  } else {
+    titleColor = '#111827'; // black text for all cards in light mode
+    valueColor = '#111827';
+  }
 
-  const valueColor = isCustomers || isGrowth
-    ? '#111827'
-    : (darkMode ? '#FFFFFF' : '#111827');
+  // Arrow and percentage color logic:
+  // - In light mode: all arrows and percentages should be black
+  // - In dark mode: Customers and Growth arrows/percentages should be black, others white
+  let arrowAndPercentColor;
+  if (darkMode) {
+    if (isCustomers || isGrowth) {
+      arrowAndPercentColor = '#111827'; // black arrows and percentages for Customers/Growth in dark mode
+    } else {
+      arrowAndPercentColor = '#FFFFFF'; // white arrows and percentages for Orders/Revenue in dark mode
+    }
+  } else {
+    arrowAndPercentColor = '#111827'; // black arrows and percentages for all cards in light mode
+  }
 
   const cardStyle = {
     background,
@@ -72,12 +92,21 @@ const StatCard = ({ title, value, trend, change, isMobile }) => {
             <div
               className="flex items-center gap-1 font-medium flex-shrink-0"
               style={{
-                color: trend === 'up' ? '#16A34A' : '#EF4444',
+                color: arrowAndPercentColor,
                 fontSize: 12
               }}
             >
               <span className="whitespace-nowrap">{change}</span>
-              {trend === 'up' ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+              {trend === 'up' ? (
+                <TrendingUp className="w-3 h-3" />
+              ) : (
+                <TrendingDown 
+                  className="w-3 h-3" 
+                  style={{ 
+                    transform: title === 'Orders' ? 'scaleX(-1)' : 'none' 
+                  }} 
+                />
+              )}
             </div>
           )}
         </div>

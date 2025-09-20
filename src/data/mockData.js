@@ -7,6 +7,12 @@ import andiLane from '../assets/images/profiles/andi-lane.png';
 import kateMorrison from '../assets/images/profiles/kate-morrison.png';
 import korayOkumus from '../assets/images/profiles/koray-okumus.png';
 
+import profile1 from '../assets/images/profiles/profile1.png';
+import profile2 from '../assets/images/profiles/profile2.png';
+import profile3 from '../assets/images/profiles/profile3.png';
+import profile4 from '../assets/images/profiles/profile4.png';
+import profile5 from '../assets/images/profiles/profile5.png';
+
 export const contacts = [
   { name: 'Natali Craig', avatar: nataliCraig },
   { name: 'Drew Cano', avatar: drewCano },
@@ -17,11 +23,11 @@ export const contacts = [
 ];
 
 export const activities = [
-  { user: 'You', action: 'have a bug that needs...', time: 'Just now', avatar: nataliCraig },
-  { user: 'Released', action: 'a new version', time: '59 minutes ago', avatar: drewCano },
-  { user: 'Submitted', action: 'a bug', time: '12 hours ago', avatar: orlandoDiggs },
-  { user: 'Modified', action: 'a data in Page X', time: 'Today, 11:59 AM', avatar: andiLane },
-  { user: 'Deleted', action: 'a page in Project X', time: 'Feb 2, 2023', avatar: kateMorrison }
+  { user: 'You', action: 'have a bug that needs...', time: 'Just now', avatar: profile1 },
+  { user: 'Released', action: 'a new version', time: '59 minutes ago', avatar: profile2 },
+  { user: 'Submitted', action: 'a bug', time: '12 hours ago', avatar: profile3 },
+  { user: 'Modified', action: 'a data in Page X', time: 'Today, 11:59 AM', avatar: profile4 },
+  { user: 'Deleted', action: 'a page in Project X', time: 'Feb 2, 2023', avatar: profile5 }
 ];
 
 export const topSellingProducts = [

@@ -1,7 +1,39 @@
+// src/components/dashboard/RightSidebar.js
 import React, { useContext } from 'react';
 import { activities, contacts } from '../../data/mockData';
 import { Bug, User, Radio, X } from 'lucide-react';
 import { ThemeContext } from '../../context/ThemeContextProvider';
+
+/**
+ * IconWithBg
+ * - container size now matches activity avatars: 32x32 (w-8 h-8)
+ * - circular background to match avatar style
+ * - background: var(--Primary-Blue, #E3F5FF)
+ * - no badge
+ * - includes data-property attribute for testability
+ */
+const IconWithBg = ({ children, property = '' , style = {} }) => {
+  return (
+    <div
+      data-property={property}
+      aria-hidden="true"
+      style={{
+        width: 32,
+        height: 32,
+        minWidth: 32,
+        minHeight: 32,
+        display: 'inline-grid',
+        placeItems: 'center',
+        borderRadius: '9999px', // rounded-full
+        background: 'var(--Primary-Blue, #E3F5FF)',
+        flexShrink: 0,
+        ...style
+      }}
+    >
+      {children}
+    </div>
+  );
+};
 
 const RightSidebar = ({ isVisible, isMobile = false, onClose }) => {
   const { darkMode } = useContext(ThemeContext);
@@ -28,32 +60,49 @@ const RightSidebar = ({ isVisible, isMobile = false, onClose }) => {
             <div>
               <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 12, color: darkMode ? '#fff' : '#111827' }}>Notifications</h3>
               <div className="space-y-3">
+                {/* Notification item 1 */}
                 <div className="flex items-start space-x-3">
-                  <Bug className={`w-5 h-5 flex-shrink-0 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
+                  <IconWithBg property="BugBeetle">
+                    {/* inner icon size tuned for 32x32 container */}
+                    <Bug size={18} color={darkMode ? '#0b1220' : '#0b1220'} />
+                  </IconWithBg>
+
                   <div style={{ color: darkMode ? '#cfcfcf' : '#111827' }}>
                     <p style={{ color: darkMode ? '#fff' : '#111827' }}>You have a bug that needs...</p>
                     <p style={{ fontSize: 12, color: darkMode ? '#9CA3AF' : '#6b7280' }}>Just now</p>
                   </div>
                 </div>
 
+                {/* Notification item 2 */}
                 <div className="flex items-start space-x-3">
-                  <User className={`w-5 h-5 flex-shrink-0 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
+                  <IconWithBg property="UserRegistered">
+                    <User size={18} color={darkMode ? '#0b1220' : '#0b1220'} />
+                  </IconWithBg>
+
                   <div style={{ color: darkMode ? '#cfcfcf' : '#111827' }}>
                     <p style={{ color: darkMode ? '#fff' : '#111827' }}>New user registered</p>
                     <p style={{ fontSize: 12, color: darkMode ? '#9CA3AF' : '#6b7280' }}>59 minutes ago</p>
                   </div>
                 </div>
 
+                {/* Notification item 3 */}
                 <div className="flex items-start space-x-3">
-                  <Bug className={`w-5 h-5 flex-shrink-0 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
+                  <IconWithBg property="BugBeetle">
+                    <Bug size={18} color={darkMode ? '#0b1220' : '#0b1220'} />
+                  </IconWithBg>
+
                   <div style={{ color: darkMode ? '#cfcfcf' : '#111827' }}>
                     <p style={{ color: darkMode ? '#fff' : '#111827' }}>You have a bug that needs...</p>
                     <p style={{ fontSize: 12, color: darkMode ? '#9CA3AF' : '#6b7280' }}>12 hours ago</p>
                   </div>
                 </div>
 
+                {/* Notification item 4 */}
                 <div className="flex items-start space-x-3">
-                  <User className={`w-5 h-5 flex-shrink-0 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
+                  <IconWithBg property="UserRegistered">
+                    <User size={18} color={darkMode ? '#0b1220' : '#0b1220'} />
+                  </IconWithBg>
+
                   <div style={{ color: darkMode ? '#cfcfcf' : '#111827' }}>
                     <p style={{ color: darkMode ? '#fff' : '#111827' }}>New user registered</p>
                     <p style={{ fontSize: 12, color: darkMode ? '#9CA3AF' : '#6b7280' }}>Today, 11:59 AM</p>
@@ -175,14 +224,18 @@ const RightSidebar = ({ isVisible, isMobile = false, onClose }) => {
             <h3 style={{ fontSize: 16, fontWeight: 700, color: darkMode ? '#fff' : '#111827' }}>Notifications</h3>
             <div className="space-y-3">
               <div className="flex items-start space-x-3">
-                <Bug className={`w-5 h-5 flex-shrink-0 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
+                <IconWithBg property="BugBeetle">
+                  <Bug size={18} color={darkMode ? '#0b1220' : '#0b1220'} />
+                </IconWithBg>
                 <div>
                   <p style={{ color: darkMode ? '#fff' : '#111827' }}>You have a bug that needs...</p>
                   <p style={{ fontSize: 12, color: darkMode ? '#9CA3AF' : '#6b7280' }}>12 hours ago</p>
                 </div>
               </div>
               <div className="flex items-start space-x-3">
-                <User className={`w-5 h-5 flex-shrink-0 ${darkMode ? 'text-gray-500' : 'text-gray-400'}`} />
+                <IconWithBg property="UserRegistered">
+                  <User size={18} color={darkMode ? '#0b1220' : '#0b1220'} />
+                </IconWithBg>
                 <div>
                   <p style={{ color: darkMode ? '#fff' : '#111827' }}>New user registered</p>
                   <p style={{ fontSize: 12, color: darkMode ? '#9CA3AF' : '#6b7280' }}>59 minutes ago</p>

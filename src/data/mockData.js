@@ -38,11 +38,12 @@ export const topSellingProducts = [
 ];
 
 export const revenueByLocation = [
-  { city: 'New York', amount: 72000 },
-  { city: 'San Francisco', amount: 39000 },
-  { city: 'Sydney', amount: 25000 },
-  { city: 'Singapore', amount: 61000 },
+  { city: 'New York', amount: 72 },   // 72% complete
+  { city: 'San Francisco', amount: 39 },
+  { city: 'Sydney', amount: 25 },
+  { city: 'Singapore', amount: 61 },
 ];
+
 
 export const totalSalesData = [
   { type: 'Direct', amount: '$300.56', color: 'bg-gray-800' },

@@ -117,30 +117,22 @@ const RevenueByLocation = ({ isMobile = false }) => {
       {/* List section - matching Total Sales spacing */}
       <div className="space-y-3">
         {revenueByLocation.map((location) => {
-          const percentage = Math.max(0, Math.min(100, (location.amount / maxRevenue) * 100));
-          const displayAmount = formatShort(location.amount);
+          // amount is already a percentage out of 100
+          const percentage = Math.max(0, Math.min(100, location.amount));
+          const displayAmount = `${percentage}K`;
+
           return (
             <div key={location.city} className="space-y-2">
               <div className="flex items-center justify-between">
                 <div 
                   className={`font-medium ${isMobile ? 'text-sm' : 'text-base'}`}
-                  style={{ 
-                    color: darkMode ? '#E5E7EB' : '#374151',
-                    maxWidth: '60%',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap'
-                  }}
+                  style={{ color: darkMode ? '#E5E7EB' : '#374151' }}
                 >
                   {location.city}
                 </div>
                 <div 
                   className={`font-semibold ${isMobile ? 'text-sm' : 'text-base'}`}
-                  style={{ 
-                    color: darkMode ? '#F9FAFB' : '#111827',
-                    flexShrink: 0,
-                    marginLeft: '12px'
-                  }}
+                  style={{ color: darkMode ? '#F9FAFB' : '#111827' }}
                 >
                   {displayAmount}
                 </div>
@@ -148,10 +140,7 @@ const RevenueByLocation = ({ isMobile = false }) => {
 
               <div 
                 className="w-full bg-gray-200 rounded-full overflow-hidden"
-                style={{ 
-                  height: '6px',
-                  background: getDarkerBackground()
-                }}
+                style={{ height: '6px', background: getDarkerBackground() }}
               >
                 <div 
                   className="h-full rounded-full transition-all duration-300"
@@ -165,6 +154,7 @@ const RevenueByLocation = ({ isMobile = false }) => {
             </div>
           );
         })}
+
       </div>
     </div>
   );

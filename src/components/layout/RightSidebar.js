@@ -6,7 +6,7 @@ import { ThemeContext } from '../../context/ThemeContextProvider';
 
 /**
  * IconWithBg
- * - container size now matches activity avatars: 32x32 (w-8 h-8)
+ * - container size matches activity avatars: 32x32 (w-8 h-8)
  * - circular background to match avatar style
  * - background: var(--Primary-Blue, #E3F5FF)
  * - no badge
@@ -97,14 +97,15 @@ const RightSidebar = ({ isVisible, isMobile = false, onClose }) => {
                   </div>
                 </div>
 
-                {/* Notification item 4 */}
+                {/* Notification item 4 - REPLACED as requested */}
                 <div className="flex items-start space-x-3">
-                  <IconWithBg property="UserRegistered">
-                    <User size={18} color={darkMode ? '#0b1220' : '#0b1220'} />
+                  <IconWithBg property="Subscribed">
+                    {/* use the Radio icon as requested */}
+                    <Radio size={18} color={darkMode ? '#0b1220' : '#0b1220'} />
                   </IconWithBg>
 
                   <div style={{ color: darkMode ? '#cfcfcf' : '#111827' }}>
-                    <p style={{ color: darkMode ? '#fff' : '#111827' }}>New user registered</p>
+                    <p style={{ color: darkMode ? '#fff' : '#111827' }}>Andi Lane Subscribed to you</p>
                     <p style={{ fontSize: 12, color: darkMode ? '#9CA3AF' : '#6b7280' }}>Today, 11:59 AM</p>
                   </div>
                 </div>

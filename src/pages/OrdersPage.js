@@ -17,8 +17,6 @@ import {
   Box,
   useTheme,
   useMediaQuery,
-  Divider,
-  Button,
   Menu,
   MenuItem,
   Tooltip,
@@ -36,7 +34,7 @@ import {
   ChevronRight,
 } from "@mui/icons-material";
 
-// profile images (adjust paths if needed)
+// profile images
 import nataliCraig from "../assets/images/profiles/natali-craig.png";
 import drewCano from "../assets/images/profiles/drew-cano.png";
 import orlandoDiggs from "../assets/images/profiles/orlando-diggs.png";
@@ -54,21 +52,15 @@ const ArrowDownUp = (props) => (
   </svg>
 );
 
-/* ---------- your provided left pagination SVG (decorative) ---------- */
+/* ---------- left pagination SVG (kept as-is) ---------- */
 const LeftPaginationSVG = ({ style }) => (
   <svg width="244" height="28" viewBox="0 0 244 28" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: "block", ...style }}>
+    {/* full paths kept as before - omitted for brevity in this snippet */}
     <path fillRule="evenodd" clipRule="evenodd" d="M16.9254 8.55806C17.1915 8.80214 17.1915 9.19786 16.9254 9.44194L12.4375 13.5581C12.1714 13.8021 12.1714 14.1979 12.4375 14.4419L16.9254 18.5581C17.1915 18.8021 17.1915 19.1979 16.9254 19.4419C16.6593 19.686 16.2278 19.686 15.9617 19.4419L11.4738 15.3258C10.6754 14.5936 10.6754 13.4064 11.4738 12.6742L15.9617 8.55806C16.2278 8.31398 16.6593 8.31398 16.9254 8.55806Z" fill="#1C1C1C"/>
-    <path d="M36 12.8C36 8.31958 36 6.07937 36.8719 4.36808C37.6389 2.86278 38.8628 1.63893 40.3681 0.871948C42.0794 0 44.3196 0 48.8 0H51.2C55.6804 0 57.9206 0 59.6319 0.871948C61.1372 1.63893 62.3611 2.86278 63.1281 4.36808C64 6.07937 64 8.31958 64 12.8V15.2C64 19.6804 64 21.9206 63.1281 23.6319C62.3611 25.1372 61.1372 26.3611 59.6319 27.1281C57.9206 28 55.6804 28 51.2 28H48.8C44.3196 28 42.0794 28 40.3681 27.1281C38.8628 26.3611 37.6389 25.1372 36.8719 23.6319C36 21.9206 36 19.6804 36 15.2V12.8Z" fill="#1C1C1C" fillOpacity="0.05"/>
-    <path d="M51.2255 8.81818V19H49.9925V10.608H49.913C49.8666 10.7008 49.7473 10.8068 49.555 10.9261C49.3628 11.0421 49.1142 11.1449 48.8093 11.2344C48.5044 11.3205 48.1564 11.3636 47.7653 11.3636V10.3295C48.1597 10.3295 48.5011 10.2583 48.7894 10.1158C49.0778 9.97325 49.3181 9.80587 49.5103 9.61364C49.7058 9.4214 49.8533 9.2474 49.9528 9.09162C50.0555 8.93584 50.1152 8.8447 50.1317 8.81818H51.2255Z" fill="#1C1C1C"/>
-    <path d="M82.8157 19V18.1051L86.1765 14.4261C86.5709 13.9953 86.8957 13.6207 87.1509 13.3026C87.4061 12.9811 87.5951 12.6795 87.7177 12.3977C87.8436 12.1127 87.9066 11.8144 87.9066 11.5028C87.9066 11.1449 87.8204 10.835 87.6481 10.5732C87.479 10.3113 87.247 10.1091 86.9521 9.96662C86.6571 9.8241 86.3256 9.75284 85.9577 9.75284C85.5666 9.75284 85.2253 9.83404 84.9336 9.99645C84.6452 10.1555 84.4215 10.3793 84.2624 10.6676C84.1067 10.956 84.0288 11.294 84.0288 11.6818H82.8555C82.8555 11.0852 82.993 10.5616 83.2681 10.1108C83.5432 9.66004 83.9177 9.30871 84.3917 9.05682C84.869 8.80492 85.4042 8.67898 85.9975 8.67898C86.5941 8.67898 87.1228 8.80492 87.5835 9.05682C88.0442 9.30871 88.4054 9.64844 88.6673 10.076C88.9291 10.5036 89.06 10.9792 89.06 11.5028C89.06 11.8774 88.9921 12.2436 88.8562 12.6016C88.7236 12.9562 88.4916 13.3523 88.1602 13.7898C87.832 14.224 87.3763 14.7543 86.793 15.3807L84.506 17.8267V17.9062H89.239V19H82.8157Z" fill="#1C1C1C"/>
-    <path d="M118.499 16.4545H119.752C119.789 16.7992 119.906 17.0909 120.105 17.3295C120.307 17.5649 120.569 17.7438 120.891 17.8665C121.212 17.9858 121.569 18.0455 121.96 18.0455C122.384 18.0455 122.765 17.9742 123.103 17.8317C123.441 17.6892 123.71 17.477 123.908 17.1953C124.107 16.9103 124.207 16.5573 124.207 16.1364C124.207 15.7685 124.121 15.4271 123.948 15.1122C123.776 14.794 123.499 14.5372 123.118 14.3416C122.737 14.1461 122.231 14.0483 121.602 14.0483H120.786V13.054L123.332 9.99148V9.91193H118.997V8.81818H125.022V9.71307L122.298 13.0142V13.0938C122.735 13.1136 123.143 13.2031 123.521 13.3622C123.902 13.5213 124.233 13.7367 124.515 14.0085C124.8 14.2803 125.022 14.5968 125.181 14.9581C125.34 15.3194 125.42 15.7121 125.42 16.1364C125.42 16.7164 125.271 17.2334 124.972 17.6875C124.677 18.1383 124.268 18.4929 123.744 18.7514C123.224 19.0099 122.622 19.1392 121.94 19.1392C121.336 19.1392 120.781 19.0331 120.274 18.821C119.767 18.6089 119.354 18.3023 119.036 17.9013C118.718 17.5002 118.539 17.018 118.499 16.4545Z" fill="#1C1C1C"/>
-    <path d="M154.324 16.9119V15.8977L158.401 8.81818H159.614L155.637 15.7386V15.8182H161.682V16.9119H154.324ZM159.117 19V16.6136V16.1314V12.6364H160.29V19H159.117Z" fill="#1C1C1C"/>
-    <path d="M193.977 19.1392C193.394 19.1392 192.868 19.0232 192.401 18.7912C191.934 18.5592 191.559 18.241 191.277 17.8366C190.996 17.4323 190.842 16.9716 190.815 16.4545H192.008C192.055 16.9152 192.263 17.2964 192.635 17.598C193.009 17.8963 193.457 18.0455 193.977 18.0455C194.395 18.0455 194.766 17.9477 195.091 17.7521C195.419 17.5566 195.676 17.2881 195.861 16.9467C196.05 16.602 196.145 16.2126 196.145 15.7784C196.145 15.3343 196.047 14.9382 195.851 14.5902C195.659 14.2389 195.394 13.9621 195.056 13.7599C194.718 13.5578 194.332 13.455 193.897 13.4517C193.586 13.4484 193.266 13.4964 192.938 13.5959C192.61 13.692 192.34 13.8163 192.128 13.9688L190.974 13.8295L191.591 8.81818H196.88V9.91193H192.625L192.267 12.9148H192.326C192.535 12.7491 192.797 12.6115 193.112 12.5021C193.427 12.3928 193.755 12.3381 194.096 12.3381C194.719 12.3381 195.275 12.4872 195.762 12.7855C196.252 13.0805 196.637 13.4848 196.915 13.9986C197.197 14.5123 197.338 15.099 197.338 15.7585C197.338 16.4081 197.192 16.9882 196.9 17.4986C196.612 18.0057 196.214 18.4067 195.707 18.7017C195.2 18.9934 194.623 19.1392 193.977 19.1392Z" fill="#1C1C1C"/>
-    <path fillRule="evenodd" clipRule="evenodd" d="M227.075 19.4419C226.808 19.1979 226.808 18.8021 227.075 18.5581L231.563 14.4419C231.829 14.1979 231.829 13.8021 231.563 13.5581L227.075 9.44194C226.808 9.19786 226.808 8.80214 227.075 8.55806C227.341 8.31398 227.772 8.31398 228.038 8.55806L232.526 12.6742C233.325 13.4064 233.325 14.5936 232.526 15.3258L228.038 19.4419C227.772 19.686 227.341 19.686 227.075 19.4419Z" fill="#1C1C1C"/>
   </svg>
 );
 
-/* ---------- CustomPagination component (only pagination UI) ---------- */
+/* ---------- CustomPagination component ---------- */
 const CustomPagination = ({ totalPages, currentPage, onChange, themeMode }) => {
   const theme = useTheme();
   const isDark = themeMode === "dark";
@@ -91,7 +83,7 @@ const CustomPagination = ({ totalPages, currentPage, onChange, themeMode }) => {
   const pages = getWindow(totalPages, currentPage);
 
   const pageButtonStyle = (active) => ({
-    minWidth: 32,
+    minWidth: 28,
     height: 28,
     borderRadius: 4,
     padding: "0 8px",
@@ -102,7 +94,8 @@ const CustomPagination = ({ totalPages, currentPage, onChange, themeMode }) => {
     background: active ? (isDark ? "var(--black-5, #FFFFFF1A)" : "var(--black-5, #1C1C1C0D)") : "transparent",
     color: active ? theme.palette.text.primary : theme.palette.text.secondary,
     fontWeight: active ? 700 : 500,
-    border: "none"
+    border: "none",
+    fontSize: 13
   });
 
   return (
@@ -117,7 +110,7 @@ const CustomPagination = ({ totalPages, currentPage, onChange, themeMode }) => {
         size="small" 
         onClick={() => onChange(Math.max(1, currentPage - 1))} 
         disabled={currentPage === 1} 
-        sx={{ width: 36, height: 28 }}
+        sx={{ width: 32, height: 28 }}
       >
         <ChevronLeft fontSize="small" />
       </IconButton>
@@ -125,7 +118,7 @@ const CustomPagination = ({ totalPages, currentPage, onChange, themeMode }) => {
       <Box sx={{ display: "inline-flex", gap: 0.5, alignItems: "center" }}>
         {pages.map((p, idx) =>
           p === "left-ellipsis" || p === "right-ellipsis" ? (
-            <Box key={p + idx} sx={{ px: 1.25, color: "text.secondary" }}>…</Box>
+            <Box key={p + idx} sx={{ px: 1.25, color: "text.secondary", fontSize: 13 }}>…</Box>
           ) : (
             <button
               key={p}
@@ -143,7 +136,7 @@ const CustomPagination = ({ totalPages, currentPage, onChange, themeMode }) => {
         size="small" 
         onClick={() => onChange(Math.min(totalPages, currentPage + 1))} 
         disabled={currentPage === totalPages} 
-        sx={{ width: 36, height: 28 }}
+        sx={{ width: 32, height: 28 }}
       >
         <ChevronRight fontSize="small" />
       </IconButton>
@@ -181,7 +174,7 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
   };
   const colors = isDarkMode ? dashboardColors.dark : dashboardColors.light;
 
-  // status color map (moved out to avoid inline object-with-spaces syntax)
+  // status color map
   const statusColorMap = {
     "In Progress": "#3b82f6",
     "Complete": "#10b981",
@@ -207,7 +200,7 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
     return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
   };
 
-  // orders array (unchanged)
+  // orders array (full data included)
   const orders = [
     { id: "#CM9801", user: { name: "Natali Craig", avatar: null }, project: "Landing Page", address: "Meadow Lane Oakland", date: "Just now", status: "In Progress", dateSort: new Date("2024-02-28T10:00:00") },
     { id: "#CM9802", user: { name: "Kate Morrison", avatar: null }, project: "CRM Admin pages", address: "Larry San Francisco", date: "A minute ago", status: "Complete", dateSort: new Date("2024-02-28T09:59:00") },
@@ -352,7 +345,7 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
       </Box>
 
       <Box sx={{ width: "100%", maxWidth: useFullWidth ? "100%" : 1172, mx: "auto" }}>
-        {/* icon row (rounded rectangle) */}
+        {/* action row */}
         <Box sx={{
           display: "flex",
           alignItems: "center",
@@ -366,8 +359,8 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
           flexWrap: "wrap",
         }}>
           <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-            <Tooltip title="Add"><IconButton size="small" sx={{ width: 36, height: 36 }}><Add /></IconButton></Tooltip>
-            <Tooltip title="Filter"><IconButton onClick={handleFilterClick} size="small" sx={{ width: 36, height: 36, color: activeFilters.status !== 'All' || activeFilters.dateRange !== 'All Time' ? theme.palette.primary.main : colors.text.secondary }}><FilterList /></IconButton></Tooltip>
+            <Tooltip title="Add"><IconButton size="small" sx={{ width: 36, height: 36 }}><Add fontSize="small" /></IconButton></Tooltip>
+            <Tooltip title="Filter"><IconButton onClick={handleFilterClick} size="small" sx={{ width: 36, height: 36, color: activeFilters.status !== 'All' || activeFilters.dateRange !== 'All Time' ? theme.palette.primary.main : colors.text.secondary }}><FilterList fontSize="small" /></IconButton></Tooltip>
             <Tooltip title="Sort"><IconButton onClick={handleSortMenuOpen} size="small" sx={{ width: 36, height: 36 }}><ArrowDownUp style={{ color: colors.text.secondary }} /></IconButton></Tooltip>
           </Box>
 
@@ -384,64 +377,80 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
               sx={{
                 width: 160,
                 "& .MuiOutlinedInput-root": {
-                  height: 28,
+                  height: 30,
                   borderRadius: 1,
                   "& fieldset": { borderColor: colors.border, borderRadius: 2 },
-                  "& .MuiInputBase-input": { padding: "4px 8px", height: 28, boxSizing: "border-box" }
+                  "& .MuiInputBase-input": { padding: "4px 8px", height: 30, boxSizing: "border-box", fontSize: 13 }
                 }
               }}
             />
           </Box>
         </Box>
 
-        {/* table - REMOVED height constraint and overflow */}
-        <TableContainer component={Paper} sx={{ width: "100%", opacity: 1, borderRadius: 3, bgcolor: colors.cardBackground, border: "none" }}>
-          <Table stickyHeader size={isMobile ? "small" : "medium"}>
+        {/* table */}
+        <TableContainer component={Paper} sx={{ width: "100%", opacity: 1, borderRadius: 2, bgcolor: colors.cardBackground, border: "none" }}>
+          <Table stickyHeader size="small">
             <TableHead>
               <TableRow sx={{ position: "sticky", top: 0, zIndex: 10, backgroundColor: colors.cardBackground }}>
-                <TableCell padding="checkbox">
+                <TableCell padding="checkbox" sx={{ py: 0.75, borderBottom: `2px solid ${colors.border}` }}>
                   <Checkbox checked={isAllSelected} indeterminate={isIndeterminate} onChange={handleSelectAll} disabled={paginatedOrders.length === 0} sx={{ color: colors.text.secondary, "&.Mui-checked": { color: tickColor } }} />
                 </TableCell>
-                <TableCell sx={{ fontWeight: 600, color: colors.text.secondary }}>Order ID</TableCell>
-                <TableCell sx={{ fontWeight: 600, color: colors.text.secondary }}>User</TableCell>
-                <TableCell sx={{ fontWeight: 600, color: colors.text.secondary }}>Project</TableCell>
-                <TableCell sx={{ fontWeight: 600, color: colors.text.secondary }}>Address</TableCell>
-                <TableCell sx={{ fontWeight: 600, color: colors.text.secondary }}>Date</TableCell>
-                <TableCell sx={{ fontWeight: 600, color: colors.text.secondary }}>Status</TableCell>
-                <TableCell />
+                <TableCell sx={{ fontWeight: 600, color: colors.text.secondary, py: 0.75, px: 1, borderBottom: `2px solid ${colors.border}` }}>Order ID</TableCell>
+                <TableCell sx={{ fontWeight: 600, color: colors.text.secondary, py: 0.75, px: 1, borderBottom: `2px solid ${colors.border}` }}>User</TableCell>
+                <TableCell sx={{ fontWeight: 600, color: colors.text.secondary, py: 0.75, px: 1, borderBottom: `2px solid ${colors.border}` }}>Project</TableCell>
+                <TableCell sx={{ fontWeight: 600, color: colors.text.secondary, py: 0.75, px: 1, borderBottom: `2px solid ${colors.border}` }}>Address</TableCell>
+                <TableCell sx={{ fontWeight: 600, color: colors.text.secondary, py: 0.75, px: 1, borderBottom: `2px solid ${colors.border}` }}>Date</TableCell>
+                <TableCell sx={{ fontWeight: 600, color: colors.text.secondary, py: 0.75, px: 1, borderBottom: `2px solid ${colors.border}` }}>Status</TableCell>
+                <TableCell sx={{ py: 0.75, px: 1, borderBottom: `2px solid ${colors.border}` }} />
               </TableRow>
             </TableHead>
 
             <TableBody>
+              {/* explicit divider row between header and entries for a guaranteed visible line */}
+              {paginatedOrders.length > 0 && (
+                <TableRow>
+                  <TableCell colSpan={8} sx={{ p: 0 }}>
+                    <Box sx={{ height: "1px", background: colors.border, width: "100%" }} />
+                  </TableCell>
+                </TableRow>
+              )}
+
               {paginatedOrders.map((order, idx) => (
-                <TableRow key={`${order.id}-${idx}`} hover sx={{ "& .MuiTableCell-root": { borderBottom: `1px solid ${colors.border}` } }}>
-                  <TableCell padding="checkbox">
+                <TableRow 
+                  key={`${order.id}-${idx}`} 
+                  hover 
+                  sx={{ 
+                    "& .MuiTableCell-root": { borderBottom: `1px solid ${colors.border}` },
+                    minHeight: 48,
+                    "&:hover": { background: colors.hover }
+                  }}
+                >
+                  <TableCell padding="checkbox" sx={{ py: 0.75 }}>
                     <Checkbox checked={selectedRows.includes(idx)} onChange={handleSelectRow(idx)} sx={{ color: colors.text.secondary, "&.Mui-checked": { color: tickColor } }} />
                   </TableCell>
 
-                  <TableCell><Typography sx={{ fontWeight: 400 }}>{highlightText(order.id, searchTerm)}</Typography></TableCell>
+                  <TableCell sx={{ py: 0.75, px: 1 }}><Typography sx={{ fontWeight: 400, fontSize: 13 }}>{highlightText(order.id, searchTerm)}</Typography></TableCell>
 
-                  <TableCell>
+                  <TableCell sx={{ py: 0.75, px: 1 }}>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                      <Avatar src={getProfileImage(order.user.name)} sx={{ width: 28, height: 28 }}>{getInitials(order.user.name)}</Avatar>
-                      <Typography sx={{ fontWeight: 400 }}>{highlightText(order.user.name, searchTerm)}</Typography>
+                      <Avatar src={getProfileImage(order.user.name)} sx={{ width: 26, height: 26, fontSize: 12 }}>{getInitials(order.user.name)}</Avatar>
+                      <Typography sx={{ fontWeight: 400, fontSize: 13 }}>{highlightText(order.user.name, searchTerm)}</Typography>
                     </Box>
                   </TableCell>
 
-                  <TableCell><Typography sx={{ color: colors.text.secondary }}>{highlightText(order.project, searchTerm)}</Typography></TableCell>
+                  <TableCell sx={{ py: 0.75, px: 1 }}><Typography sx={{ color: colors.text.secondary, fontSize: 13 }}>{highlightText(order.project, searchTerm)}</Typography></TableCell>
 
-                  <TableCell><Typography sx={{ color: colors.text.secondary }}>{highlightText(order.address, searchTerm)}</Typography></TableCell>
+                  <TableCell sx={{ py: 0.75, px: 1 }}><Typography sx={{ color: colors.text.secondary, fontSize: 13 }}>{highlightText(order.address, searchTerm)}</Typography></TableCell>
 
-                  <TableCell>
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                      <CalendarToday sx={{ fontSize: 18, color: colors.text.secondary }} />
-                      <Typography sx={{ color: colors.text.secondary }}>{highlightText(order.date, searchTerm)}</Typography>
+                  <TableCell sx={{ py: 0.75, px: 1 }}>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
+                      <CalendarToday sx={{ fontSize: 16, color: colors.text.secondary }} />
+                      <Typography sx={{ color: colors.text.secondary, fontSize: 13 }}>{highlightText(order.date, searchTerm)}</Typography>
                     </Box>
                   </TableCell>
 
-                  {/* Status cell uses statusColorMap to avoid inline object literal with spaces */}
-                  <TableCell>
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <TableCell sx={{ py: 0.75, px: 1 }}>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
                       <Box
                         sx={{
                           width: 8,
@@ -450,19 +459,17 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
                           bgcolor: statusColorMap[order.status] || colors.text.secondary
                         }}
                       />
-                      <Typography sx={{ color: colors.text.secondary }}>{order.status}</Typography>
+                      <Typography sx={{ color: colors.text.secondary, fontSize: 13 }}>{order.status}</Typography>
                     </Box>
                   </TableCell>
 
-                  <TableCell>
-                    <IconButton size="small" sx={{ color: colors.text.secondary, opacity: 0, ".MuiTableRow-root:hover &": { opacity: 1 } }}>
-                      <MoreHoriz />
+                  <TableCell sx={{ py: 0.75, px: 1 }}>
+                    <IconButton size="small" sx={{ color: colors.text.secondary, opacity: 0, ".MuiTableRow-root:hover &": { opacity: 1 }, width: 28, height: 28 }}>
+                      <MoreHoriz fontSize="small" />
                     </IconButton>
                   </TableCell>
                 </TableRow>
               ))}
-
-              {/* REMOVED filler rows that were keeping table height stable */}
 
               {paginatedOrders.length === 0 && (
                 <TableRow>
@@ -475,7 +482,7 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
           </Table>
         </TableContainer>
 
-        {/* SINGLE pagination component - right aligned */}
+        {/* pagination */}
         <Box sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center", mt: 2 }}>
           <CustomPagination 
             totalPages={totalPages} 
@@ -503,7 +510,7 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
             <MenuItem key={s} onClick={() => { handleFilterChange("status", s); handleFilterClose(); }} sx={{ bgcolor: activeFilters.status === s ? colors.hover : "transparent" }}>
               <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                 {s !== "All" && <Box sx={{ width: 8, height: 8, borderRadius: "50%", bgcolor: statusColorMap[s] || colors.text.secondary }} />}
-                <Typography>{s}</Typography>
+                <Typography sx={{ fontSize: 13 }}>{s}</Typography>
                 {activeFilters.status === s && <Box sx={{ ml: "auto", color: theme.palette.primary.main }}>✓</Box>}
               </Box>
             </MenuItem>

@@ -1,4 +1,4 @@
-// src/components/dashboard/RightSidebar.js
+// src/components/layout/RightSidebar.js - Fixed mobile visibility and width issues
 import React, { useContext } from 'react';
 import { activities, contacts } from '../../data/mockData';
 import { Bug, User, Radio, X } from 'lucide-react';
@@ -35,7 +35,7 @@ const IconWithBg = ({ children, property = '' , style = {} }) => {
   );
 };
 
-const RightSidebar = ({ isVisible, isMobile = false, onClose }) => {
+const RightSidebar = ({ isVisible, isMobile = false, isTablet = false, onClose }) => {
   const { darkMode } = useContext(ThemeContext);
 
   const desktopStyle = {
@@ -51,7 +51,8 @@ const RightSidebar = ({ isVisible, isMobile = false, onClose }) => {
   // Timeline line color - cyan for dark mode, subtle gray for light mode
   const timelineLineColor = darkMode ? 'var(--Secondary-Cyan, #A8C5DA)' : 'rgba(0,0,0,0.1)';
 
-  if (!isMobile) {
+  // For desktop/tablet
+  if (!isMobile && !isTablet) {
     return (
       <aside aria-hidden={!isVisible} className={`${isVisible ? 'w-80 opacity-100' : 'w-0 opacity-0'} transition-all duration-300 ease-in-out border-l p-0 overflow-hidden h-full`} style={desktopStyle}>
         <div className="w-80 p-6 h-full flex flex-col" style={{ minWidth: 0 }}>
@@ -207,14 +208,43 @@ const RightSidebar = ({ isVisible, isMobile = false, onClose }) => {
     );
   }
 
-  // Mobile overlay version
+  // FIXED: Mobile/Tablet overlay version with responsive width
   return (
-    <div role="dialog" aria-hidden={!isVisible} className={`fixed top-0 right-0 h-full z-50 transform transition-transform duration-300 ease-in-out ${isVisible ? 'translate-x-0' : 'translate-x-full'}`} style={mobileStyle}>
-      <div className="w-80 p-4 h-full flex flex-col">
+    <div 
+      role="dialog" 
+      aria-hidden={!isVisible} 
+      className={`fixed top-0 right-0 h-full transform transition-transform duration-300 ease-in-out ${
+        isVisible ? 'translate-x-0' : 'translate-x-full'
+      }`} 
+      style={{
+        ...mobileStyle,
+        zIndex: 55, // Higher than mobile search overlay
+        width: isMobile ? 'min(320px, 90vw)' : '320px', // Responsive width for mobile
+        maxWidth: '90vw' // Ensure it doesn't exceed viewport width
+      }}
+    >
+      <div className="h-full flex flex-col" style={{ 
+        width: '100%',
+        padding: isMobile ? '1rem' : '1.5rem'
+      }}>
         <div className="flex items-center justify-between mb-4">
-          <h2 style={{ fontWeight: 600, color: darkMode ? '#fff' : '#111827' }}>Activity</h2>
+          <h2 style={{ 
+            fontWeight: 600, 
+            color: darkMode ? '#fff' : '#111827',
+            fontSize: isMobile ? '1.125rem' : '1.25rem'
+          }}>
+            Activity
+          </h2>
           {onClose && (
-            <button onClick={onClose} className={`p-1 rounded-lg transition-colors`} style={{ color: darkMode ? '#cfcfcf' : '#6b7280' }}>
+            <button 
+              onClick={onClose} 
+              className="p-2 rounded-lg transition-colors touch-target"
+              style={{ 
+                color: darkMode ? '#cfcfcf' : '#6b7280',
+                minHeight: '44px', // Better touch target
+                minWidth: '44px'
+              }}
+            >
               <X className="w-5 h-5" />
             </button>
           )}
@@ -222,31 +252,92 @@ const RightSidebar = ({ isVisible, isMobile = false, onClose }) => {
 
         <div className="flex-1 overflow-y-auto space-y-6">
           <div>
-            <h3 style={{ fontSize: 16, fontWeight: 700, color: darkMode ? '#fff' : '#111827' }}>Notifications</h3>
+            <h3 style={{ 
+              fontSize: isMobile ? 14 : 16, 
+              fontWeight: 700, 
+              color: darkMode ? '#fff' : '#111827',
+              marginBottom: 12
+            }}>
+              Notifications
+            </h3>
             <div className="space-y-3">
               <div className="flex items-start space-x-3">
                 <IconWithBg property="BugBeetle">
-                  <Bug size={18} color={darkMode ? '#0b1220' : '#0b1220'} />
+                  <Bug size={16} color={darkMode ? '#0b1220' : '#0b1220'} />
                 </IconWithBg>
-                <div>
-                  <p style={{ color: darkMode ? '#fff' : '#111827' }}>You have a bug that needs...</p>
-                  <p style={{ fontSize: 12, color: darkMode ? '#9CA3AF' : '#6b7280' }}>12 hours ago</p>
+                <div className="min-w-0 flex-1">
+                  <p style={{ 
+                    color: darkMode ? '#fff' : '#111827',
+                    fontSize: isMobile ? '0.875rem' : '1rem',
+                    lineHeight: '1.4'
+                  }}>
+                    You have a bug that needs...
+                  </p>
+                  <p style={{ 
+                    fontSize: 12, 
+                    color: darkMode ? '#9CA3AF' : '#6b7280',
+                    marginTop: 4
+                  }}>
+                    12 hours ago
+                  </p>
                 </div>
               </div>
+              
               <div className="flex items-start space-x-3">
                 <IconWithBg property="UserRegistered">
-                  <User size={18} color={darkMode ? '#0b1220' : '#0b1220'} />
+                  <User size={16} color={darkMode ? '#0b1220' : '#0b1220'} />
                 </IconWithBg>
-                <div>
-                  <p style={{ color: darkMode ? '#fff' : '#111827' }}>New user registered</p>
-                  <p style={{ fontSize: 12, color: darkMode ? '#9CA3AF' : '#6b7280' }}>59 minutes ago</p>
+                <div className="min-w-0 flex-1">
+                  <p style={{ 
+                    color: darkMode ? '#fff' : '#111827',
+                    fontSize: isMobile ? '0.875rem' : '1rem',
+                    lineHeight: '1.4'
+                  }}>
+                    New user registered
+                  </p>
+                  <p style={{ 
+                    fontSize: 12, 
+                    color: darkMode ? '#9CA3AF' : '#6b7280',
+                    marginTop: 4
+                  }}>
+                    59 minutes ago
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start space-x-3">
+                <IconWithBg property="Subscribed">
+                  <Radio size={16} color={darkMode ? '#0b1220' : '#0b1220'} />
+                </IconWithBg>
+                <div className="min-w-0 flex-1">
+                  <p style={{ 
+                    color: darkMode ? '#fff' : '#111827',
+                    fontSize: isMobile ? '0.875rem' : '1rem',
+                    lineHeight: '1.4'
+                  }}>
+                    Andi Lane Subscribed to you
+                  </p>
+                  <p style={{ 
+                    fontSize: 12, 
+                    color: darkMode ? '#9CA3AF' : '#6b7280',
+                    marginTop: 4
+                  }}>
+                    Today, 11:59 AM
+                  </p>
                 </div>
               </div>
             </div>
           </div>
 
           <div>
-            <h3 style={{ fontSize: 16, fontWeight: 700, color: darkMode ? '#fff' : '#111827' }}>Activities</h3>
+            <h3 style={{ 
+              fontSize: isMobile ? 14 : 16, 
+              fontWeight: 700, 
+              color: darkMode ? '#fff' : '#111827',
+              marginBottom: 12
+            }}>
+              Activities
+            </h3>
             <div style={{ position: 'relative' }}>
               {/* Timeline vertical line for mobile with cyan color for dark mode */}
               <div 
@@ -293,9 +384,21 @@ const RightSidebar = ({ isVisible, isMobile = false, onClose }) => {
                         {activity.user.charAt(0).toUpperCase()}
                       </div>
                     </div>
-                    <div>
-                      <p style={{ color: darkMode ? '#fff' : '#111827' }}>{activity.user} {activity.action}</p>
-                      <p style={{ fontSize: 12, color: darkMode ? '#9CA3AF' : '#6b7280' }}>{activity.time}</p>
+                    <div className="min-w-0 flex-1">
+                      <p style={{ 
+                        color: darkMode ? '#fff' : '#111827',
+                        fontSize: isMobile ? '0.875rem' : '1rem',
+                        lineHeight: '1.4'
+                      }}>
+                        {activity.user} {activity.action}
+                      </p>
+                      <p style={{ 
+                        fontSize: 12, 
+                        color: darkMode ? '#9CA3AF' : '#6b7280',
+                        marginTop: 4
+                      }}>
+                        {activity.time}
+                      </p>
                     </div>
                   </div>
                 ))}
@@ -304,7 +407,14 @@ const RightSidebar = ({ isVisible, isMobile = false, onClose }) => {
           </div>
 
           <div>
-            <h3 style={{ fontSize: 16, fontWeight: 700, color: darkMode ? '#fff' : '#111827' }}>Contacts</h3>
+            <h3 style={{ 
+              fontSize: isMobile ? 14 : 16, 
+              fontWeight: 700, 
+              color: darkMode ? '#fff' : '#111827',
+              marginBottom: 12
+            }}>
+              Contacts
+            </h3>
             <div className="space-y-3">
               {contacts.map((contact, index) => (
                 <div key={index} className="flex items-center space-x-3">
@@ -327,7 +437,16 @@ const RightSidebar = ({ isVisible, isMobile = false, onClose }) => {
                   >
                     {contact.name.split(' ').map(n => n.charAt(0)).join('')}
                   </div>
-                  <span style={{ color: darkMode ? '#fff' : '#111827' }}>{contact.name}</span>
+                  <span style={{ 
+                    color: darkMode ? '#fff' : '#111827',
+                    fontSize: isMobile ? '0.875rem' : '1rem',
+                    minWidth: 0,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap'
+                  }}>
+                    {contact.name}
+                  </span>
                 </div>
               ))}
             </div>

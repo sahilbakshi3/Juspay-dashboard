@@ -1,4 +1,4 @@
-// src/pages/OrdersPage.js
+// src/pages/OrdersPage.js - Fixed mobile search bar alignment
 import React, { useState, useMemo, useEffect } from "react";
 import {
   Avatar,
@@ -345,42 +345,83 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
       </Box>
 
       <Box sx={{ width: "100%", maxWidth: useFullWidth ? "100%" : 1172, mx: "auto" }}>
-        {/* action row */}
+        {/* FIXED: action row with better mobile layout */}
         <Box sx={{
           display: "flex",
-          alignItems: "center",
-          gap: 1,
-          height: 44,
-          px: 1.5,
+          flexDirection: isMobile ? "column" : "row",
+          alignItems: isMobile ? "stretch" : "center",
+          gap: isMobile ? 2 : 1,
+          p: 1.5,
           mb: 2,
           borderRadius: 2,
           border: `1px solid ${colors.border}`,
           background: isDarkMode ? "var(--Primary-Light, #FFFFFF0D)" : "var(--Primary-Light, #F7F9FB)",
-          flexWrap: "wrap",
         }}>
+          {/* Action buttons row */}
           <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-            <Tooltip title="Add"><IconButton size="small" sx={{ width: 36, height: 36 }}><Add fontSize="small" /></IconButton></Tooltip>
-            <Tooltip title="Filter"><IconButton onClick={handleFilterClick} size="small" sx={{ width: 36, height: 36, color: activeFilters.status !== 'All' || activeFilters.dateRange !== 'All Time' ? theme.palette.primary.main : colors.text.secondary }}><FilterList fontSize="small" /></IconButton></Tooltip>
-            <Tooltip title="Sort"><IconButton onClick={handleSortMenuOpen} size="small" sx={{ width: 36, height: 36 }}><ArrowDownUp style={{ color: colors.text.secondary }} /></IconButton></Tooltip>
+            <Tooltip title="Add">
+              <IconButton size="small" sx={{ width: 36, height: 36 }}>
+                <Add fontSize="small" />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Filter">
+              <IconButton 
+                onClick={handleFilterClick} 
+                size="small" 
+                sx={{ 
+                  width: 36, 
+                  height: 36, 
+                  color: activeFilters.status !== 'All' || activeFilters.dateRange !== 'All Time' 
+                    ? theme.palette.primary.main 
+                    : colors.text.secondary 
+                }}
+              >
+                <FilterList fontSize="small" />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Sort">
+              <IconButton onClick={handleSortMenuOpen} size="small" sx={{ width: 36, height: 36 }}>
+                <ArrowDownUp style={{ color: colors.text.secondary }} />
+              </IconButton>
+            </Tooltip>
           </Box>
 
-          <Box sx={{ ml: "auto" }}>
+          {/* Search field - full width on mobile, auto width on desktop */}
+          <Box sx={{ 
+            width: isMobile ? "100%" : "auto",
+            ml: isMobile ? 0 : "auto" 
+          }}>
             <TextField
               placeholder="Search"
               value={searchTerm}
               onChange={handleSearchChange}
               size="small"
               InputProps={{
-                startAdornment: (<InputAdornment position="start"><Search sx={{ color: colors.text.secondary }} /></InputAdornment>),
-                endAdornment: searchTerm ? (<InputAdornment position="end"><IconButton size="small" onClick={handleClearSearch}><Clear fontSize="small" sx={{ color: colors.text.secondary }} /></IconButton></InputAdornment>) : null
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Search sx={{ color: colors.text.secondary }} />
+                  </InputAdornment>
+                ),
+                endAdornment: searchTerm ? (
+                  <InputAdornment position="end">
+                    <IconButton size="small" onClick={handleClearSearch}>
+                      <Clear fontSize="small" sx={{ color: colors.text.secondary }} />
+                    </IconButton>
+                  </InputAdornment>
+                ) : null
               }}
               sx={{
-                width: 160,
+                width: isMobile ? "100%" : 160,
                 "& .MuiOutlinedInput-root": {
                   height: 30,
                   borderRadius: 1,
                   "& fieldset": { borderColor: colors.border, borderRadius: 2 },
-                  "& .MuiInputBase-input": { padding: "4px 8px", height: 30, boxSizing: "border-box", fontSize: 13 }
+                  "& .MuiInputBase-input": { 
+                    padding: "4px 8px", 
+                    height: 30, 
+                    boxSizing: "border-box", 
+                    fontSize: 13 
+                  }
                 }
               }}
             />

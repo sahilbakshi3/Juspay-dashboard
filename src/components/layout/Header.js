@@ -1,3 +1,4 @@
+// src/components/layout/Header.js - Fixed mobile overlay positioning
 import React, { useContext, useState, useRef, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { Bell, Search, Notebook, SunMedium, History, Star, X, Check, Trash2, Menu, PanelLeftOpen, PanelRightOpen } from 'lucide-react';
@@ -153,6 +154,7 @@ const Header = ({
       if (e.key === 'Escape') {
         clearSearch();
         setSearchValue('');
+        setShowMobileSearch(false); // Also close mobile search on escape
         const searchInput = document.querySelector('input[placeholder*="Search"]');
         if (searchInput) {
           searchInput.blur();
@@ -184,6 +186,9 @@ const Header = ({
 
   // Smart sidebar toggle logic - when one opens, close the other on smaller screens
   const handleLeftSidebarToggle = () => {
+    // Close mobile search if open
+    setShowMobileSearch(false);
+    
     if (!leftSidebarVisible && rightSidebarVisible && (isMobile || isTablet)) {
       // If left sidebar is being opened and right is open, close right first
       toggleRightSidebar();
@@ -194,6 +199,9 @@ const Header = ({
   };
 
   const handleRightSidebarToggle = () => {
+    // Close mobile search if open
+    setShowMobileSearch(false);
+    
     if (!rightSidebarVisible && leftSidebarVisible && (isMobile || isTablet)) {
       // If right sidebar is being opened and left is open, close left first
       toggleLeftSidebar();
@@ -251,14 +259,18 @@ const Header = ({
   const LeftSidebarIcon = getLeftSidebarIcon();
   const RightSidebarIcon = getRightSidebarIcon();
 
+  // Get header height for mobile search positioning
+  const headerHeight = isMobile ? '64px' : '72px';
+
   return (
     <>
       <header
-        className="border-b px-3 sm:px-4 lg:px-6 py-3 sm:py-4 transition-colors duration-200 relative z-40"
+        className="border-b px-3 sm:px-4 lg:px-6 py-3 sm:py-4 transition-colors duration-200 relative"
         style={{
           backgroundColor: isDarkMode ? '#000000' : undefined,
           borderColor: isDarkMode ? 'rgba(255,255,255,0.04)' : undefined,
-          color: isDarkMode ? '#FFFFFF' : undefined
+          color: isDarkMode ? '#FFFFFF' : undefined,
+          zIndex: 30 // Lower than overlays
         }}
       >
         <div className="flex items-center justify-between">
@@ -419,10 +431,11 @@ const Header = ({
               {showNotifications && (
                 <div
                   ref={notificationRef}
-                  className={`absolute right-0 mt-2 w-80 sm:w-96 rounded-lg shadow-lg border z-50 max-h-80 sm:max-h-96 overflow-hidden`}
+                  className={`absolute right-0 mt-2 w-80 sm:w-96 rounded-lg shadow-lg border max-h-80 sm:max-h-96 overflow-hidden`}
                   style={{
                     backgroundColor: isDarkMode ? '#0a0a0a' : '#ffffff',
-                    borderColor: isDarkMode ? 'rgba(255,255,255,0.04)' : undefined
+                    borderColor: isDarkMode ? 'rgba(255,255,255,0.04)' : undefined,
+                    zIndex: 60 // Higher than mobile overlays
                   }}
                 >
                   <div className={`p-4 border-b`} style={{ borderColor: isDarkMode ? 'rgba(255,255,255,0.04)' : undefined }}>
@@ -508,9 +521,17 @@ const Header = ({
         </div>
       </header>
 
-      {/* Mobile Search Overlay */}
+      {/* Mobile Search Overlay - FIXED positioning */}
       {showMobileSearch && (isMobile || isTablet) && (
-        <div className="fixed inset-x-0 top-0 z-50 border-b p-4" style={{ backgroundColor: isDarkMode ? '#000000' : '#ffffff', borderColor: isDarkMode ? 'rgba(255,255,255,0.04)' : undefined }}>
+        <div 
+          className="fixed inset-x-0 border-b p-4" 
+          style={{ 
+            backgroundColor: isDarkMode ? '#000000' : '#ffffff', 
+            borderColor: isDarkMode ? 'rgba(255,255,255,0.04)' : undefined,
+            top: headerHeight, // Position below header
+            zIndex: 50 // Higher than header, lower than notifications
+          }}
+        >
           <form onSubmit={handleSearchSubmit} className="flex items-center space-x-2">
             <div className="flex-1 relative">
               <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-400'}`} />
@@ -538,13 +559,17 @@ const Header = ({
         </div>
       )}
 
-      {/* Tooltips */}
-      <PortalTooltip anchorRef={leftToggleRef} visible={hoverTooltip === 'left'} text={`${leftSidebarVisible ? 'Hide' : 'Show'} left sidebar`} isDarkMode={isDarkMode} />
-      <PortalTooltip anchorRef={starButtonRef} visible={hoverTooltip === 'star'} text={isFavorite ? 'Remove from favorites' : 'Add to favorites'} isDarkMode={isDarkMode} />
-      <PortalTooltip anchorRef={themeButtonRef} visible={hoverTooltip === 'theme'} text={`Switch to ${isDarkMode ? 'light' : 'dark'} mode`} isDarkMode={isDarkMode} />
-      <PortalTooltip anchorRef={refreshButtonRef} visible={hoverTooltip === 'refresh'} text="Refresh Dashboard" isDarkMode={isDarkMode} />
-      <PortalTooltip anchorRef={bellButtonRef} visible={hoverTooltip === 'bell'} text="Notifications" isDarkMode={isDarkMode} />
-      <PortalTooltip anchorRef={rightToggleRef} visible={hoverTooltip === 'right'} text={`${rightSidebarVisible ? 'Hide' : 'Show'} right sidebar`} isDarkMode={isDarkMode} />
+      {/* Tooltips - Hidden on mobile */}
+      {!isMobile && (
+        <>
+          <PortalTooltip anchorRef={leftToggleRef} visible={hoverTooltip === 'left'} text={`${leftSidebarVisible ? 'Hide' : 'Show'} left sidebar`} isDarkMode={isDarkMode} />
+          <PortalTooltip anchorRef={starButtonRef} visible={hoverTooltip === 'star'} text={isFavorite ? 'Remove from favorites' : 'Add to favorites'} isDarkMode={isDarkMode} />
+          <PortalTooltip anchorRef={themeButtonRef} visible={hoverTooltip === 'theme'} text={`Switch to ${isDarkMode ? 'light' : 'dark'} mode`} isDarkMode={isDarkMode} />
+          <PortalTooltip anchorRef={refreshButtonRef} visible={hoverTooltip === 'refresh'} text="Refresh Dashboard" isDarkMode={isDarkMode} />
+          <PortalTooltip anchorRef={bellButtonRef} visible={hoverTooltip === 'bell'} text="Notifications" isDarkMode={isDarkMode} />
+          <PortalTooltip anchorRef={rightToggleRef} visible={hoverTooltip === 'right'} text={`${rightSidebarVisible ? 'Hide' : 'Show'} right sidebar`} isDarkMode={isDarkMode} />
+        </>
+      )}
     </>
   );
 };

@@ -47,13 +47,31 @@ const Layout = ({ children }) => {
   }, []);
 
   const toggleLeftSidebar = () => {
-    if (isMobile || isTablet) setLeftSidebarOverlay(!leftSidebarOverlay);
-    else setLeftSidebarVisible(!leftSidebarVisible);
+    if (isMobile || isTablet) {
+      // Close right sidebar if it's open on mobile/tablet
+      if (rightSidebarOverlay) {
+        setRightSidebarOverlay(false);
+        setTimeout(() => setLeftSidebarOverlay(!leftSidebarOverlay), 150);
+      } else {
+        setLeftSidebarOverlay(!leftSidebarOverlay);
+      }
+    } else {
+      setLeftSidebarVisible(!leftSidebarVisible);
+    }
   };
 
   const toggleRightSidebar = () => {
-    if (isMobile || isTablet) setRightSidebarOverlay(!rightSidebarOverlay);
-    else setRightSidebarVisible(!rightSidebarVisible);
+    if (isMobile || isTablet) {
+      // Close left sidebar if it's open on mobile/tablet
+      if (leftSidebarOverlay) {
+        setLeftSidebarOverlay(false);
+        setTimeout(() => setRightSidebarOverlay(!rightSidebarOverlay), 150);
+      } else {
+        setRightSidebarOverlay(!rightSidebarOverlay);
+      }
+    } else {
+      setRightSidebarVisible(!rightSidebarVisible);
+    }
   };
 
   const closeOverlays = () => {
@@ -62,9 +80,14 @@ const Layout = ({ children }) => {
   };
 
   useEffect(() => {
-    if (leftSidebarOverlay || rightSidebarOverlay) document.body.style.overflow = 'hidden';
-    else document.body.style.overflow = 'unset';
-    return () => { document.body.style.overflow = 'unset'; };
+    if (leftSidebarOverlay || rightSidebarOverlay) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => { 
+      document.body.style.overflow = 'unset'; 
+    };
   }, [leftSidebarOverlay, rightSidebarOverlay]);
 
   return (
@@ -72,15 +95,27 @@ const Layout = ({ children }) => {
       className="flex h-screen transition-colors duration-200 overflow-hidden"
       style={{ backgroundColor: darkMode ? '#000000' : '#ffffff' }}
     >
+      {/* Backdrop for overlays with proper z-index */}
       {(leftSidebarOverlay || rightSidebarOverlay) && (
         <div
-          className="fixed inset-0 z-40 lg:hidden"
+          className="fixed inset-0 z-40"
           onClick={closeOverlays}
-          style={{ backgroundColor: darkMode ? 'rgba(0,0,0,0.6)' : 'rgba(0,0,0,0.5)' }}
+          style={{ 
+            backgroundColor: darkMode ? 'rgba(0,0,0,0.6)' : 'rgba(0,0,0,0.5)'
+          }}
         />
       )}
 
-      <div className={`${isMobile || isTablet ? (leftSidebarOverlay ? 'fixed left-0 top-0 h-full z-50 transform translate-x-0' : 'fixed left-0 top-0 h-full z-50 transform -translate-x-full') : leftSidebarVisible ? 'relative' : 'relative'}`}>
+      {/* Left Sidebar */}
+      <div className={`${
+        isMobile || isTablet 
+          ? leftSidebarOverlay 
+            ? 'fixed left-0 top-0 h-full z-50 transform translate-x-0' 
+            : 'fixed left-0 top-0 h-full z-50 transform -translate-x-full'
+          : leftSidebarVisible 
+            ? 'relative' 
+            : 'relative'
+      }`}>
         <Sidebar
           isVisible={isMobile || isTablet ? leftSidebarOverlay : leftSidebarVisible}
           isMobile={isMobile}
@@ -89,6 +124,7 @@ const Layout = ({ children }) => {
         />
       </div>
 
+      {/* Main Content Area */}
       <div className={`flex-1 flex flex-col overflow-hidden min-w-0 ${isMobile ? 'w-full' : ''}`}>
         <Header
           leftSidebarVisible={isMobile || isTablet ? leftSidebarOverlay : leftSidebarVisible}
@@ -100,13 +136,28 @@ const Layout = ({ children }) => {
         />
 
         <main className="flex-1 overflow-x-hidden overflow-y-auto">
-          <div className={`${isMobile ? 'px-4 py-4' : isTablet ? 'px-6 py-6' : 'px-6 py-8'} w-full max-w-full`}>
+          <div className={`${
+            isMobile 
+              ? 'px-4 py-4' 
+              : isTablet 
+                ? 'px-6 py-6' 
+                : 'px-6 py-8'
+          } w-full max-w-full`}>
             {children}
           </div>
         </main>
       </div>
 
-      <div className={`${isMobile || isTablet ? (rightSidebarOverlay ? 'fixed right-0 top-0 h-full z-50 transform translate-x-0' : 'fixed right-0 top-0 h-full z-50 transform translate-x-full') : rightSidebarVisible ? 'relative' : 'relative'}`}>
+      {/* Right Sidebar */}
+      <div className={`${
+        isMobile || isTablet 
+          ? rightSidebarOverlay 
+            ? 'fixed right-0 top-0 h-full z-50 transform translate-x-0' 
+            : 'fixed right-0 top-0 h-full z-50 transform translate-x-full'
+          : rightSidebarVisible 
+            ? 'relative' 
+            : 'relative'
+      }`}>
         <RightSidebar
           isVisible={isMobile || isTablet ? rightSidebarOverlay : rightSidebarVisible}
           isMobile={isMobile}
@@ -115,25 +166,76 @@ const Layout = ({ children }) => {
         />
       </div>
 
+      {/* Mobile Bottom Navigation - Only visible when no overlays are open */}
       {isMobile && !leftSidebarOverlay && !rightSidebarOverlay && (
-        <div className={`fixed bottom-4 left-1/2 transform -translate-x-1/2 z-30 border rounded-full px-4 py-2 shadow-lg flex items-center space-x-4`} style={{ backgroundColor: darkMode ? '#000000' : '#ffffff', borderColor: darkMode ? 'rgba(255,255,255,0.04)' : '#e5e7eb' }}>
-          <button onClick={toggleLeftSidebar} className={`p-2 rounded-full transition-colors`} aria-label="Open navigation menu" style={{ color: darkMode ? '#cfcfcf' : '#6b7280' }}>
+        <div 
+          className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-30 border rounded-full px-4 py-2 shadow-lg flex items-center space-x-4" 
+          style={{ 
+            backgroundColor: darkMode ? '#000000' : '#ffffff', 
+            borderColor: darkMode ? 'rgba(255,255,255,0.04)' : '#e5e7eb'
+          }}
+        >
+          <button 
+            onClick={toggleLeftSidebar} 
+            className="p-2 rounded-full transition-colors touch-target"
+            aria-label="Open navigation menu" 
+            style={{ 
+              color: darkMode ? '#cfcfcf' : '#6b7280',
+              minHeight: '44px',
+              minWidth: '44px'
+            }}
+          >
             <Menu className="w-5 h-5" />
           </button>
-          <div style={{ width: 1, height: 24, backgroundColor: darkMode ? 'rgba(255,255,255,0.06)' : '#e5e7eb' }} />
-          <button onClick={toggleRightSidebar} className={`p-2 rounded-full transition-colors`} aria-label="Open activity panel" style={{ color: darkMode ? '#cfcfcf' : '#6b7280' }}>
-            <div style={{ width: 20, height: 20, borderRadius: 4, border: `2px solid ${darkMode ? 'rgba(255,255,255,0.12)' : '#6b7280'}` }}>
-              <div style={{ width: '100%', height: 3, backgroundColor: darkMode ? 'rgba(255,255,255,0.12)' : '#6b7280', marginTop: 4 }} />
-              <div style={{ width: '66%', height: 3, backgroundColor: darkMode ? 'rgba(255,255,255,0.12)' : '#6b7280', marginTop: 2 }} />
+          <div style={{ 
+            width: 1, 
+            height: 24, 
+            backgroundColor: darkMode ? 'rgba(255,255,255,0.06)' : '#e5e7eb' 
+          }} />
+          <button 
+            onClick={toggleRightSidebar} 
+            className="p-2 rounded-full transition-colors touch-target"
+            aria-label="Open activity panel" 
+            style={{ 
+              color: darkMode ? '#cfcfcf' : '#6b7280',
+              minHeight: '44px',
+              minWidth: '44px'
+            }}
+          >
+            <div style={{ 
+              width: 20, 
+              height: 20, 
+              borderRadius: 4, 
+              border: `2px solid ${darkMode ? 'rgba(255,255,255,0.12)' : '#6b7280'}` 
+            }}>
+              <div style={{ 
+                width: '100%', 
+                height: 3, 
+                backgroundColor: darkMode ? 'rgba(255,255,255,0.12)' : '#6b7280', 
+                marginTop: 4 
+              }} />
+              <div style={{ 
+                width: '66%', 
+                height: 3, 
+                backgroundColor: darkMode ? 'rgba(255,255,255,0.12)' : '#6b7280', 
+                marginTop: 2 
+              }} />
             </div>
           </button>
         </div>
       )}
 
+      {/* Accessibility Features */}
       <div className="sr-only">
-        <button onClick={toggleLeftSidebar} className="focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:p-2 focus:bg-blue-600 focus:text-white focus:rounded">Toggle Navigation (Alt + N)</button>
+        <button 
+          onClick={toggleLeftSidebar} 
+          className="focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:p-2 focus:bg-blue-600 focus:text-white focus:rounded"
+        >
+          Toggle Navigation (Alt + N)
+        </button>
       </div>
 
+      {/* Keyboard shortcuts */}
       <script dangerouslySetInnerHTML={{
         __html: `
           document.addEventListener('keydown', function(e) {
@@ -152,7 +254,12 @@ const Layout = ({ children }) => {
         `
       }} />
 
-      <button data-testid="close-overlays" onClick={closeOverlays} className="sr-only" tabIndex={-1} />
+      <button 
+        data-testid="close-overlays" 
+        onClick={closeOverlays} 
+        className="sr-only" 
+        tabIndex={-1} 
+      />
     </div>
   );
 };

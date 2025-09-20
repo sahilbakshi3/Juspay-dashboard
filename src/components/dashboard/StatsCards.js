@@ -6,52 +6,62 @@ import { ThemeContext } from '../../context/ThemeContextProvider';
 const StatCard = ({ title, value, trend, change, isMobile }) => {
   const { darkMode } = useContext(ThemeContext);
 
-  // Determine special cards
+  // Determine card type
   const isCustomers = title === 'Customers';
   const isGrowth = title === 'Growth';
+  const isOrders = title === 'Orders';
+  const isRevenue = title === 'Revenue';
 
-  // Background: special for Customers and Growth only (always light)
+  // Backgrounds
   let background;
-  if (isCustomers) background = 'var(--Primary-Blue, #E3F5FF)';
-  else if (isGrowth) background = 'var(--Primary-Purple, #E5ECF6)';
-  else background = darkMode ? 'var(--Primary-Light, #FFFFFF0D)' : '#ffffff';
+  if (isCustomers) {
+    background = 'var(--Primary-Blue, #E3F5FF)';
+  } else if (isGrowth) {
+    background = 'var(--Primary-Purple, #E5ECF6)';
+  } else if (isOrders || isRevenue) {
+    background = darkMode
+      ? 'var(--Primary-Light, #FFFFFF0D)'
+      : 'var(--Primary-Light, #F7F9FB)';
+  } else {
+    background = darkMode
+      ? 'var(--Primary-Light, #FFFFFF0D)'
+      : '#ffffff';
+  }
 
-  // Text color logic:
-  // - Light mode: all text is black
-  // - Dark mode: Customers and Growth keep black text (light backgrounds), Orders and Revenue use white text (dark backgrounds)
+  // Text color logic
   let titleColor, valueColor;
   if (darkMode) {
     if (isCustomers || isGrowth) {
-      titleColor = '#111827'; // black text for Customers/Growth in dark mode (light card backgrounds)
+      titleColor = '#111827'; // black text on light special cards
       valueColor = '#111827';
     } else {
-      titleColor = '#FFFFFF'; // white text for Orders/Revenue in dark mode (dark card backgrounds)
+      titleColor = '#FFFFFF'; // white text on dark backgrounds
       valueColor = '#FFFFFF';
     }
   } else {
-    titleColor = '#111827'; // black text for all cards in light mode
+    titleColor = '#111827'; // black text in light mode
     valueColor = '#111827';
   }
 
-  // Arrow and percentage color logic:
-  // - In light mode: all arrows and percentages should be black
-  // - In dark mode: Customers and Growth arrows/percentages should be black, others white
+  // Arrow/percentage color
   let arrowAndPercentColor;
   if (darkMode) {
     if (isCustomers || isGrowth) {
-      arrowAndPercentColor = '#111827'; // black arrows and percentages for Customers/Growth in dark mode
+      arrowAndPercentColor = '#111827'; // black on light special cards
     } else {
-      arrowAndPercentColor = '#FFFFFF'; // white arrows and percentages for Orders/Revenue in dark mode
+      arrowAndPercentColor = '#FFFFFF'; // white on dark cards
     }
   } else {
-    arrowAndPercentColor = '#111827'; // black arrows and percentages for all cards in light mode
+    arrowAndPercentColor = '#111827'; // black in light mode
   }
 
   const cardStyle = {
     background,
-    border: darkMode ? '1px solid rgba(255,255,255,0.04)' : '1px solid rgba(0,0,0,0.06)',
+    border: darkMode
+      ? '1px solid rgba(255,255,255,0.04)'
+      : '1px solid rgba(0,0,0,0.06)',
     borderRadius: 16,
-    padding: 24,               // consistent 24px padding
+    padding: 24,
     height: isMobile ? 100 : 112,
     display: 'flex',
     flexDirection: 'column',
@@ -66,7 +76,7 @@ const StatCard = ({ title, value, trend, change, isMobile }) => {
           className="font-semibold truncate"
           style={{
             fontSize: isMobile ? 14 : 16,
-            color: titleColor
+            color: titleColor,
           }}
         >
           {title}
@@ -81,7 +91,7 @@ const StatCard = ({ title, value, trend, change, isMobile }) => {
               style={{
                 fontSize: isMobile ? 20 : 24,
                 whiteSpace: 'nowrap',
-                color: valueColor
+                color: valueColor,
               }}
             >
               {value}
@@ -93,18 +103,16 @@ const StatCard = ({ title, value, trend, change, isMobile }) => {
               className="flex items-center gap-1 font-medium flex-shrink-0"
               style={{
                 color: arrowAndPercentColor,
-                fontSize: 12
+                fontSize: 12,
               }}
             >
               <span className="whitespace-nowrap">{change}</span>
               {trend === 'up' ? (
                 <TrendingUp className="w-3 h-3" />
               ) : (
-                <TrendingDown 
-                  className="w-3 h-3" 
-                  style={{ 
-                    transform: title === 'Orders' ? 'scaleX(-1)' : 'none' 
-                  }} 
+                <TrendingDown
+                  className="w-3 h-3"
+                  style={{ transform: title === 'Orders' ? 'scaleX(-1)' : 'none' }}
                 />
               )}
             </div>
@@ -116,19 +124,37 @@ const StatCard = ({ title, value, trend, change, isMobile }) => {
 };
 
 const StatCards = ({ isMobile = false }) => {
-  const { darkMode } = useContext(ThemeContext);
-  
   return (
-    <div 
-      className="w-full h-full"
-      // No background color set here - the parent card container will handle it
-    >
-      {/* gap-4 = 16px */}
-      <div className={`grid grid-cols-2 gap-4 h-full`}>
-        <StatCard title="Customers" value="3,781" trend="up" change="+11.01%" isMobile={isMobile} />
-        <StatCard title="Orders" value="1,209" trend="down" change="-0.03%" isMobile={isMobile} />
-        <StatCard title="Revenue" value="$695" trend="up" change="+15.03%" isMobile={isMobile} />
-        <StatCard title="Growth" value="30.1%" trend="up" change="+6.08%" isMobile={isMobile} />
+    <div className="w-full h-full">
+      <div className="grid grid-cols-2 gap-4 h-full">
+        <StatCard
+          title="Customers"
+          value="3,781"
+          trend="up"
+          change="+11.01%"
+          isMobile={isMobile}
+        />
+        <StatCard
+          title="Orders"
+          value="1,209"
+          trend="down"
+          change="-0.03%"
+          isMobile={isMobile}
+        />
+        <StatCard
+          title="Revenue"
+          value="$695"
+          trend="up"
+          change="+15.03%"
+          isMobile={isMobile}
+        />
+        <StatCard
+          title="Growth"
+          value="30.1%"
+          trend="up"
+          change="+6.08%"
+          isMobile={isMobile}
+        />
       </div>
     </div>
   );

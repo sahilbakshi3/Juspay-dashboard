@@ -10,7 +10,7 @@
 
 ## 🌟 Live Demo
 
-🚀 **[View Live Dashboard](https://juspay-dashboard-two.vercel.app/)** *(Replace with actual deployment URL)*
+🚀 **[View Live Dashboard](https://juspay-dashboard-two.vercel.app/)**
 
 ![Dashboard Preview](./public/preview.png) <!-- Add a screenshot of your dashboard here -->
 

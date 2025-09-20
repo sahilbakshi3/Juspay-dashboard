@@ -1,4 +1,4 @@
-// Fixed Modern Donut Chart TotalSales.js - Proper rounded segments
+// TotalSales.js with Figma SVG pie chart
 import React, { useContext, useRef, useEffect, useState } from 'react';
 import { ThemeContext } from '../../context/ThemeContextProvider';
 import { createPortal } from 'react-dom';
@@ -10,46 +10,13 @@ const pieData = [
   { type: 'E-mail', amount: 48.96 }
 ];
 
-// Define colors with consistent Direct color for both modes
+// Define colors to match the SVG segments
 const getColors = (darkMode) => [
-  darkMode ? '#C6C7F8' : '#1F2937', // Direct - brand color in dark mode, dark gray in light mode
-  '#BBF7D0', // Affiliate - light green
-  '#BAE6FD', // Sponsored - light blue
-  '#A5B4FC'  // E-mail - light purple
+  '#C6C7F8', // Direct - matches first SVG path
+  '#95A4FC', // Affiliate - matches second SVG path
+  '#B1E3FF', // Sponsored - matches third SVG path  
+  '#BAEDBD'  // E-mail - matches fourth SVG path
 ];
-
-// Get center circle color to match card background
-const getCenterColor = (darkMode) => {
-  return darkMode ? '#1F2937' : '#FFFFFF'; // Match card background colors
-};
-
-// Create proper donut segment path with rounded ends
-function createRoundedDonutPath(startAngle, endAngle, outerRadius, innerRadius, center) {
-  const rad = Math.PI / 180;
-  
-  // Calculate arc points
-  const startOuterX = center + outerRadius * Math.cos(rad * (startAngle - 90));
-  const startOuterY = center + outerRadius * Math.sin(rad * (startAngle - 90));
-  const endOuterX = center + outerRadius * Math.cos(rad * (endAngle - 90));
-  const endOuterY = center + outerRadius * Math.sin(rad * (endAngle - 90));
-  
-  const startInnerX = center + innerRadius * Math.cos(rad * (startAngle - 90));
-  const startInnerY = center + innerRadius * Math.sin(rad * (startAngle - 90));
-  const endInnerX = center + innerRadius * Math.cos(rad * (endAngle - 90));
-  const endInnerY = center + innerRadius * Math.sin(rad * (endAngle - 90));
-  
-  const largeArcFlag = endAngle - startAngle <= 180 ? 0 : 1;
-  
-  // Create path with rounded ends
-  return `
-    M ${startInnerX} ${startInnerY}
-    L ${startOuterX} ${startOuterY}
-    A ${outerRadius} ${outerRadius} 0 ${largeArcFlag} 1 ${endOuterX} ${endOuterY}
-    L ${endInnerX} ${endInnerY}
-    A ${innerRadius} ${innerRadius} 0 ${largeArcFlag} 0 ${startInnerX} ${startInnerY}
-    Z
-  `;
-}
 
 export default function TotalSales({ isMobile = false }) {
   const { darkMode } = useContext(ThemeContext);
@@ -74,37 +41,7 @@ export default function TotalSales({ isMobile = false }) {
   }, []);
 
   const COLORS = getColors(darkMode);
-  const centerColor = getCenterColor(darkMode);
-  const baseWidth = containerDimensions.width || 240;
-  const chartSize = Math.min(180, Math.max(140, baseWidth - 60));
-  const center = chartSize / 2;
-  const outerRadius = Math.max(55, Math.min(75, chartSize / 2 - 15));
-  const innerRadius = Math.max(35, Math.min(45, outerRadius - 20));
   const totalAmount = pieData.reduce((s, p) => s + p.amount, 0);
-
-  // Add small gaps between segments (3 degrees each)
-  const gapDegrees = 3;
-  const totalGaps = pieData.length * gapDegrees;
-  const availableDegrees = 360 - totalGaps;
-
-  let currentAngle = 0;
-  const segments = pieData.map((item, index) => {
-    const segmentDegrees = (item.amount / totalAmount) * availableDegrees;
-    const startAngle = currentAngle;
-    const endAngle = currentAngle + segmentDegrees;
-    
-    const path = createRoundedDonutPath(startAngle, endAngle, outerRadius, innerRadius, center);
-    
-    currentAngle = endAngle + gapDegrees; // Add gap after each segment
-    
-    return {
-      ...item,
-      path,
-      startAngle,
-      endAngle,
-      color: COLORS[index]
-    };
-  });
 
   const onSegmentEnter = (e, item) => setTooltip({ 
     visible: true, 
@@ -126,6 +63,10 @@ export default function TotalSales({ isMobile = false }) {
     data: null 
   });
 
+  // Calculate responsive size for the SVG
+  const baseWidth = containerDimensions.width || 240;
+  const chartSize = Math.min(180, Math.max(140, baseWidth - 60));
+
   return (
     <div ref={containerRef} className="w-full h-full flex flex-col">
       <h3 
@@ -137,47 +78,100 @@ export default function TotalSales({ isMobile = false }) {
 
       <div className="flex justify-center mb-6 flex-1">
         <div style={{ width: chartSize, height: chartSize, position: 'relative' }}>
-          <svg width={chartSize} height={chartSize} viewBox={`0 0 ${chartSize} ${chartSize}`}>
-            {/* Donut segments with rounded corners */}
-            {segments.map((segment, i) => (
-              <path
-                key={i}
-                d={segment.path}
-                fill={segment.color}
-                style={{
-                  cursor: 'pointer',
-                  filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.1))',
-                  transition: 'all 0.2s ease'
-                }}
-                onMouseEnter={(e) => {
-                  e.target.style.filter = 'drop-shadow(0 4px 12px rgba(0,0,0,0.2))';
-                  e.target.style.transform = 'scale(1.02)';
-                  e.target.style.transformOrigin = `${center}px ${center}px`;
-                  onSegmentEnter(e, { 
-                    label: segment.type, 
-                    amount: segment.amount 
-                  });
-                }}
-                onMouseMove={onSegmentMove}
-                onMouseLeave={(e) => {
-                  e.target.style.filter = 'drop-shadow(0 2px 8px rgba(0,0,0,0.1))';
-                  e.target.style.transform = 'scale(1)';
-                  onSegmentLeave();
-                }}
-              />
-            ))}
+          {/* Figma SVG Pie Chart */}
+          <svg 
+            width={chartSize} 
+            height={chartSize} 
+            viewBox="0 0 120 120" 
+            fill="none" 
+            xmlns="http://www.w3.org/2000/svg"
+            style={{ cursor: 'pointer' }}
+          >
+            {/* Direct segment */}
+            <path 
+              fillRule="evenodd" 
+              clipRule="evenodd" 
+              d="M104.67 19.9323C100.925 15.7481 94.5122 15.406 90.347 19.1681C86.1818 22.9302 85.8411 29.372 89.5862 33.5562C95.8915 40.6008 99.7159 49.895 99.7159 60.1106C99.7159 75.22 91.3206 88.3596 78.9604 95.079C82.6329 96.7797 85.561 100.036 86.7151 104.261C87.6887 107.824 87.2269 111.443 85.6817 114.496C105.965 104.874 120 84.139 120 60.1106C120 44.6722 114.193 30.5722 104.67 19.9323Z" 
+              fill="#C6C7F8"
+              style={{ transition: 'all 0.2s ease' }}
+              onMouseEnter={(e) => {
+                e.target.style.filter = 'drop-shadow(0 4px 12px rgba(0,0,0,0.2))';
+                onSegmentEnter(e, { 
+                  label: pieData[0].type, 
+                  amount: pieData[0].amount 
+                });
+              }}
+              onMouseMove={onSegmentMove}
+              onMouseLeave={(e) => {
+                e.target.style.filter = 'none';
+                onSegmentLeave();
+              }}
+            />
             
-            {/* Center circle to match background */}
-            <circle 
-              cx={center} 
-              cy={center} 
-              r={innerRadius + 2}
-              fill={centerColor}
-              stroke="none"
+            {/* Affiliate segment */}
+            <path 
+              d="M36.9918 27.4926C43.3945 23.0062 51.1699 20.3765 59.5871 20.3765C68.0043 20.3765 75.7798 23.0062 82.1825 27.4926C82.3342 27.5989 82.4877 27.7005 82.643 27.7973C82.3329 23.5486 83.9128 19.2063 87.3104 16.1376C89.73 13.9521 92.6913 12.756 95.7028 12.5229C95.1532 11.8765 94.5134 11.2892 93.7869 10.7801C84.0906 3.98588 72.287 0 59.5871 0C46.8872 0 35.0837 3.98588 25.3873 10.7801C20.7932 13.9992 19.6667 20.35 22.8712 24.9651C26.0757 29.5801 32.3977 30.7117 36.9918 27.4926Z" 
+              fill="#95A4FC"
+              style={{ transition: 'all 0.2s ease' }}
+              onMouseEnter={(e) => {
+                e.target.style.filter = 'drop-shadow(0 4px 12px rgba(0,0,0,0.2))';
+                onSegmentEnter(e, { 
+                  label: pieData[1].type, 
+                  amount: pieData[1].amount 
+                });
+              }}
+              onMouseMove={onSegmentMove}
+              onMouseLeave={(e) => {
+                e.target.style.filter = 'none';
+                onSegmentLeave();
+              }}
+            />
+            
+            {/* Sponsored segment */}
+            <path 
+              fillRule="evenodd" 
+              clipRule="evenodd" 
+              d="M17.0121 18.3464C16.367 18.7927 15.7635 19.3216 15.2168 19.9324C10.6473 25.0377 6.93145 30.94 4.30211 37.4135C2.18604 42.6234 4.67487 48.57 9.86107 50.6957C15.0473 52.8215 20.9669 50.3213 23.083 45.1114C24.816 40.8447 27.2708 36.941 30.3004 33.5562C30.3521 33.4984 30.4031 33.4401 30.4533 33.3814C26.2306 33.1582 22.1506 31.0505 19.5441 27.2966C17.6541 24.5746 16.8402 21.4214 17.0121 18.3464Z" 
+              fill="#B1E3FF"
+              style={{ transition: 'all 0.2s ease' }}
+              onMouseEnter={(e) => {
+                e.target.style.filter = 'drop-shadow(0 4px 12px rgba(0,0,0,0.2))';
+                onSegmentEnter(e, { 
+                  label: pieData[2].type, 
+                  amount: pieData[2].amount 
+                });
+              }}
+              onMouseMove={onSegmentMove}
+              onMouseLeave={(e) => {
+                e.target.style.filter = 'none';
+                onSegmentLeave();
+              }}
+            />
+            
+            {/* E-mail segment */}
+            <path 
+              fillRule="evenodd" 
+              clipRule="evenodd" 
+              d="M1.81254 47.2351C3.26614 50.4036 5.87327 53.0469 9.34258 54.4689C13.1587 56.0331 17.2585 55.8082 20.7197 54.1838C20.4333 56.1121 20.2841 58.0908 20.2841 60.1106C20.2841 72.964 26.3595 84.392 35.7831 91.6547C36.2843 91.894 36.7726 92.1779 37.2428 92.5073C43.6455 96.9937 51.4209 99.6235 59.8382 99.6235C63.4875 99.6235 67.0059 99.1297 70.3383 98.2109C75.7398 96.7216 81.3205 99.913 82.803 105.339C84.2856 110.765 81.1086 116.371 75.7071 117.861C70.6418 119.257 65.3183 120 59.8382 120C56.1352 120 52.5085 119.661 48.988 119.013C49.0629 119.102 49.1388 119.19 49.2158 119.277C21.2354 114.241 0 89.6672 0 60.1106C0 56.7798 0.270663 53.505 0.793098 50.3091C0.973374 49.2062 1.32363 48.1741 1.81254 47.2351Z" 
+              fill="#BAEDBD"
+              style={{ transition: 'all 0.2s ease' }}
+              onMouseEnter={(e) => {
+                e.target.style.filter = 'drop-shadow(0 4px 12px rgba(0,0,0,0.2))';
+                onSegmentEnter(e, { 
+                  label: pieData[3].type, 
+                  amount: pieData[3].amount 
+                });
+              }}
+              onMouseMove={onSegmentMove}
+              onMouseLeave={(e) => {
+                e.target.style.filter = 'none';
+                onSegmentLeave();
+              }}
             />
           </svg>
         </div>
 
+        {/* Tooltip */}
         {tooltip.visible && tooltip.data && createPortal(
           <div style={{
             position: 'fixed',
@@ -202,6 +196,7 @@ export default function TotalSales({ isMobile = false }) {
         )}
       </div>
 
+      {/* Legend */}
       <div className="space-y-3">
         {pieData.map((item, i) => (
           <div key={item.type} className="flex items-center justify-between">

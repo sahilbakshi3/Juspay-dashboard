@@ -1,52 +1,7 @@
 // src/components/dashboard/RevenueChart.js
-import React, { useContext, useRef, useState, useMemo } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import { ThemeContext } from '../../context/ThemeContextProvider';
 import { createPortal } from 'react-dom';
-
-// helper fns (same as in your original)
-function smoothPathFromPoints(pts) {
-  if (!pts || pts.length === 0) return '';
-  if (pts.length === 1) return `M ${pts[0][0]},${pts[0][1]}`;
-  if (pts.length === 2) return `M ${pts[0][0]},${pts[0][1]} L ${pts[1][0]},${pts[1][1]}`;
-  let d = `M ${pts[0][0]},${pts[0][1]}`;
-  for (let i = 0; i < pts.length - 1; i++) {
-    const p0 = pts[i === 0 ? i : i - 1];
-    const p1 = pts[i];
-    const p2 = pts[i + 1];
-    const p3 = pts[i + 2 >= pts.length ? pts.length - 1 : i + 2];
-    const control1X = p1[0] + (p2[0] - p0[0]) / 6;
-    const control1Y = p1[1] + (p2[1] - p0[1]) / 6;
-    const control2X = p2[0] - (p3[0] - p1[0]) / 6;
-    const control2Y = p2[1] - (p3[1] - p1[1]) / 6;
-    d += ` C ${control1X},${control1Y} ${control2X},${control2Y} ${p2[0]},${p2[1]}`;
-  }
-  return d;
-}
-
-function buildPoints(dataArr, chartWidth = 100, chartHeight = 100, yMax = 80, yMin = 0) {
-  const n = dataArr.length;
-  const step = chartWidth / (n - 1);
-  return dataArr.map((v, i) => [i * step, chartHeight - ((v - yMin) / (yMax - yMin)) * chartHeight]);
-}
-
-function segmentPath(pts, startIdx, endIdx) {
-  startIdx = Math.max(0, startIdx);
-  endIdx = Math.min(pts.length - 1, endIdx);
-  if (startIdx >= endIdx) return '';
-  let d = `M ${pts[startIdx][0]},${pts[startIdx][1]}`;
-  for (let i = startIdx; i < endIdx; i++) {
-    const p0 = pts[i === 0 ? i : i - 1];
-    const p1 = pts[i];
-    const p2 = pts[i + 1];
-    const p3 = pts[i + 2 >= pts.length ? pts.length - 1 : i + 2];
-    const control1X = p1[0] + (p2[0] - p0[0]) / 6;
-    const control1Y = p1[1] + (p2[1] - p0[1]) / 6;
-    const control2X = p2[0] - (p3[0] - p1[0]) / 6;
-    const control2Y = p2[1] - (p3[1] - p1[1]) / 6;
-    d += ` C ${control1X},${control1Y} ${control2X},${control2Y} ${p2[0]},${p2[1]}`;
-  }
-  return d;
-}
 
 function lerp(a, b, t) { return a + (b - a) * t; }
 
@@ -57,8 +12,6 @@ const RevenueChart = ({ isMobile = false }) => {
   const previousWeek = [51, 50, 57, 68, 60, 54, 34];
   const currentWeek = [44, 55, 62, 37, 66, 58, 58];
   const [tooltip, setTooltip] = useState({ visible: false, clientX: 0, clientY: 0, data: null });
-
-  const CHART_W = 100, CHART_H = 100, Y_MAX = 80, Y_MIN = 0;
   
   // Calculate totals for legend
   const currentWeekTotal = currentWeek.reduce((sum, val) => sum + val, 0) * 1000; // Convert to actual values
@@ -84,12 +37,12 @@ const RevenueChart = ({ isMobile = false }) => {
 
   const handleMouseMove = (e) => {
     const rect = e.currentTarget.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * CHART_W;
+    const x = ((e.clientX - rect.left) / rect.width);
     const n = labels.length - 1;
-    let idx = Math.floor((x / CHART_W) * n);
+    let idx = Math.floor(x * n);
     idx = Math.max(0, Math.min(n - 1, idx));
-    const leftX = (idx / n) * CHART_W;
-    const rightX = ((idx + 1) / n) * CHART_W;
+    const leftX = idx / n;
+    const rightX = (idx + 1) / n;
     const t = rightX !== leftX ? (x - leftX) / (rightX - leftX) : 0;
     const prevVal = lerp(previousWeek[idx], previousWeek[idx + 1], t).toFixed(1);
     const currVal = lerp(currentWeek[idx], currentWeek[idx + 1], t).toFixed(1);
@@ -131,22 +84,6 @@ const RevenueChart = ({ isMobile = false }) => {
       document.body
     );
   };
-
-  const prevPts = useMemo(() => buildPoints(previousWeek, CHART_W, CHART_H, Y_MAX, Y_MIN), []);
-  const currPts = useMemo(() => buildPoints(currentWeek, CHART_W, CHART_H, Y_MAX, Y_MIN), []);
-  const splitIndex = 4;
-  const currentPath = useMemo(() => smoothPathFromPoints(currPts), [currPts]);
-  const prevSolidPath = useMemo(() => {
-    const lastIdx = prevPts.length - 1;
-    if (splitIndex <= 0) return '';
-    if (splitIndex >= lastIdx) return smoothPathFromPoints(prevPts);
-    return segmentPath(prevPts, 0, splitIndex);
-  }, [prevPts]);
-  const prevDottedPath = useMemo(() => {
-    const lastIdx = prevPts.length - 1;
-    if (splitIndex < 0 || splitIndex >= lastIdx) return '';
-    return segmentPath(prevPts, splitIndex, lastIdx);
-  }, [prevPts]);
 
   return (
     <div 
@@ -269,35 +206,84 @@ const RevenueChart = ({ isMobile = false }) => {
             />
           ))}
 
-          {/* SVG Chart */}
-          <svg 
-            className="w-full h-full" 
-            viewBox="0 0 100 100" 
-            preserveAspectRatio="none" 
+          {/* SVG Chart with Custom Frame */}
+          <div 
+            className="w-full h-full relative" 
             onMouseMove={handleMouseMove} 
             onMouseLeave={handleMouseLeave} 
             style={{ touchAction: 'none' }}
           >
-            {/* Current week line with enhanced glow */}
-            <path 
-              d={currentPath} 
-              fill="none" 
-              stroke={theme.currentWeekColor} 
-              strokeWidth={darkMode ? "3" : "2.5"}
-              vectorEffect="non-scaling-stroke"
-              style={{ 
-                filter: darkMode 
-                  ? 'drop-shadow(0 0 4px rgba(198, 199, 248, 0.8)) drop-shadow(0 0 12px rgba(198, 199, 248, 0.6)) drop-shadow(0 0 20px rgba(198, 199, 248, 0.4)) drop-shadow(0 0 32px rgba(198, 199, 248, 0.2))'
-                  : 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))'
-              }}
-            />
-            {/* Previous week solid line with enhanced glow */}
-            {prevSolidPath && (
+            {/* Custom SVG Frame */}
+            <svg 
+              className="absolute inset-0 w-full h-full" 
+              viewBox="0 0 542 111" 
+              preserveAspectRatio="none"
+            >
+              <defs>
+                <radialGradient id="paint0_radial_47926_1015" cx="0" cy="0" r="1" gradientTransform="matrix(3.03302 57.8733 -238.989 13.1178 246.747 15.4025)" gradientUnits="userSpaceOnUse">
+                  <stop/>
+                  <stop offset="1" stopColor="#D9D9D9" stopOpacity="0"/>
+                </radialGradient>
+              </defs>
+              
+              <mask id="mask0_47926_1015" style={{maskType:'alpha'}} maskUnits="userSpaceOnUse" x="2" y="2" width="538" height="109">
+                <rect x="2.08508" y="2.46936" width="537.851" height="107.603" fill="url(#paint0_radial_47926_1015)"/>
+              </mask>
+              
+              <g mask="url(#mask0_47926_1015)">
+                <path 
+                  opacity="0.2" 
+                  d="M189.277 91.4418C96.5415 100.122 44.6724 83.6347 2.23401 62.653V202.674H539.787V22.6416C358.507 8.97914 297.207 81.3396 189.277 91.4418Z" 
+                  fill={theme.currentWeekColor}
+                />
+                <path 
+                  opacity="0.4" 
+                  d="M215.556 52.0526C105.781 13.6573 24.9031 74.0627 2.23401 94.778V202.674H539.787V2.46936C424.293 47.4027 413.116 121.152 215.556 52.0526Z" 
+                  fill={theme.previousWeekColor}
+                />
+              </g>
+              
+              {/* Main current week line */}
               <path 
-                d={prevSolidPath} 
-                fill="none" 
+                d="M2.23401 62.653C44.6724 83.6346 96.5415 100.122 189.277 91.4417C243.142 86.4 285.393 65.8511 336.74 48.2278" 
+                stroke={theme.currentWeekColor} 
+                strokeWidth="3" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
+                fill="none"
+                vectorEffect="non-scaling-stroke"
+                style={{ 
+                  filter: darkMode 
+                    ? 'drop-shadow(0 0 4px rgba(198, 199, 248, 0.8)) drop-shadow(0 0 12px rgba(198, 199, 248, 0.6)) drop-shadow(0 0 20px rgba(198, 199, 248, 0.4)) drop-shadow(0 0 32px rgba(198, 199, 248, 0.2))'
+                    : 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))'
+                }}
+              />
+              
+              {/* Dashed continuation line */}
+              <path 
+                d="M539.787 22.6415C449.568 15.842 389.066 30.3489 337.744 47.8841" 
+                stroke={theme.currentWeekColor} 
+                strokeWidth="3" 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                strokeDasharray="3 10"
+                fill="none"
+                vectorEffect="non-scaling-stroke"
+                style={{ 
+                  filter: darkMode 
+                    ? 'drop-shadow(0 0 4px rgba(198, 199, 248, 0.8)) drop-shadow(0 0 12px rgba(198, 199, 248, 0.6)) drop-shadow(0 0 20px rgba(198, 199, 248, 0.4)) drop-shadow(0 0 32px rgba(198, 199, 248, 0.2))'
+                    : 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))'
+                }}
+              />
+              
+              {/* Previous week line */}
+              <path 
+                d="M2.23401 94.778C24.9031 74.0627 105.781 13.6573 215.556 52.0526C413.116 121.152 424.293 47.4027 539.787 2.46936" 
                 stroke={theme.previousWeekColor} 
-                strokeWidth="2.5" 
+                strokeWidth="3" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
+                fill="none"
                 vectorEffect="non-scaling-stroke"
                 style={{ 
                   filter: darkMode 
@@ -305,24 +291,24 @@ const RevenueChart = ({ isMobile = false }) => {
                     : 'none'
                 }}
               />
-            )}
-            {/* Previous week dotted line with enhanced glow */}
-            {prevDottedPath && (
+              
+              {/* Additional current week segment */}
               <path 
-                d={prevDottedPath} 
-                fill="none" 
-                stroke={theme.previousWeekColor} 
-                strokeWidth="2.5" 
-                strokeDasharray="4 4" 
+                d="M189.277 91.2978C242.228 86.3417 283.955 66.4007 334.132 48.9841" 
+                stroke={theme.currentWeekColor} 
+                strokeWidth="3" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
+                fill="none"
                 vectorEffect="non-scaling-stroke"
                 style={{ 
                   filter: darkMode 
-                    ? 'drop-shadow(0 0 4px rgba(168, 197, 218, 0.8)) drop-shadow(0 0 12px rgba(168, 197, 218, 0.6)) drop-shadow(0 0 20px rgba(168, 197, 218, 0.4)) drop-shadow(0 0 32px rgba(168, 197, 218, 0.2))'
-                    : 'none'
+                    ? 'drop-shadow(0 0 4px rgba(198, 199, 248, 0.8)) drop-shadow(0 0 12px rgba(198, 199, 248, 0.6)) drop-shadow(0 0 20px rgba(198, 199, 248, 0.4)) drop-shadow(0 0 32px rgba(198, 199, 248, 0.2))'
+                    : 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))'
                 }}
               />
-            )}
-          </svg>
+            </svg>
+          </div>
 
           {/* X-axis labels */}
           <div 

@@ -1,6 +1,6 @@
 import React, { useContext, useState, useRef, useEffect } from 'react';
 import ReactDOM from 'react-dom';
-import { Bell, Search, Notebook, SunMedium, History, Star, X, Check, Trash2, Menu } from 'lucide-react';
+import { Bell, Search, Notebook, SunMedium, History, Star, X, Check, Trash2, Menu, PanelLeftOpen, PanelRightOpen } from 'lucide-react';
 import { ThemeContext } from '../../context/ThemeContextProvider';
 import { useToast } from '../../context/ToastContext';
 import { useSearch } from '../../context/SearchContext';
@@ -182,6 +182,27 @@ const Header = ({
     if (newFavoriteState) showFavoriteAddedToast(); else showFavoriteRemovedToast();
   };
 
+  // Smart sidebar toggle logic - when one opens, close the other on smaller screens
+  const handleLeftSidebarToggle = () => {
+    if (!leftSidebarVisible && rightSidebarVisible && (isMobile || isTablet)) {
+      // If left sidebar is being opened and right is open, close right first
+      toggleRightSidebar();
+      setTimeout(() => toggleLeftSidebar(), 150); // Small delay for smoother animation
+    } else {
+      toggleLeftSidebar();
+    }
+  };
+
+  const handleRightSidebarToggle = () => {
+    if (!rightSidebarVisible && leftSidebarVisible && (isMobile || isTablet)) {
+      // If right sidebar is being opened and left is open, close left first
+      toggleLeftSidebar();
+      setTimeout(() => toggleRightSidebar(), 150); // Small delay for smoother animation
+    } else {
+      toggleRightSidebar();
+    }
+  };
+
   const toggleNotifications = () => setShowNotifications(v => !v);
   const markAsRead = (id) => setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
   const markAllAsRead = () => setNotifications(prev => prev.map(n => ({ ...n, read: true })));
@@ -217,6 +238,19 @@ const Header = ({
   const onEnter = (key) => () => setHoverTooltip(key);
   const onLeave = () => setHoverTooltip(null);
 
+  // Keep original icons - Notebook for both sidebars, Menu for mobile left sidebar
+  const getLeftSidebarIcon = () => {
+    if (isMobile) return Menu;
+    return Notebook;
+  };
+
+  const getRightSidebarIcon = () => {
+    return Notebook;
+  };
+
+  const LeftSidebarIcon = getLeftSidebarIcon();
+  const RightSidebarIcon = getRightSidebarIcon();
+
   return (
     <>
       <header
@@ -228,32 +262,24 @@ const Header = ({
         }}
       >
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2 sm:space-x-4 min-w-0 flex-1">
-            <div className="flex items-center space-x-1 sm:space-x-2">
-              {isMobile && (
-                <button
-                  onClick={toggleLeftSidebar}
-                  ref={leftToggleRef}
-                  onMouseEnter={onEnter('left')}
-                  onMouseLeave={onLeave}
-                  className={`p-2 rounded-lg transition-all duration-200 sm:hidden ${leftSidebarVisible ? (isDarkMode ? 'text-blue-400 bg-gray-700' : 'text-blue-600 bg-blue-50') : (isDarkMode ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-700' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100')}`}
-                >
-                  <Menu className="w-5 h-5" />
-                </button>
-              )}
+          {/* Left Section */}
+          <div className="flex items-center space-x-2 sm:space-x-3 min-w-0 flex-1">
+            <div className="flex items-center space-x-1 sm:space-x-2 flex-shrink-0">
+              {/* Left Sidebar Toggle - Always visible */}
+              <button
+                onClick={handleLeftSidebarToggle}
+                ref={leftToggleRef}
+                onMouseEnter={onEnter('left')}
+                onMouseLeave={onLeave}
+                className={`p-2 rounded-lg transition-all duration-200 relative ${leftSidebarVisible ? (isDarkMode ? 'text-white hover:text-gray-200' : 'text-gray-700 hover:text-gray-800') : (isDarkMode ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-700' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100')}`}
+                style={{
+                  backgroundColor: leftSidebarVisible ? (isDarkMode ? 'rgba(168, 197, 218, 0.3)' : '#e5e7eb') : undefined
+                }}
+              >
+                <LeftSidebarIcon className="w-5 h-5" />
+              </button>
 
-              {!isMobile && (
-                <button
-                  onClick={toggleLeftSidebar}
-                  ref={leftToggleRef}
-                  onMouseEnter={onEnter('left')}
-                  onMouseLeave={onLeave}
-                  className={`p-2 rounded-lg transition-all duration-200 relative ${leftSidebarVisible ? (isDarkMode ? 'text-blue-400 bg-gray-700 hover:text-blue-300' : 'text-blue-600 bg-blue-50 hover:text-blue-700') : (isDarkMode ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-700' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100')}`}
-                >
-                  <Notebook className="w-5 h-5" />
-                </button>
-              )}
-
+              {/* Favorite Button - Hide on mobile to save space */}
               {!isMobile && (
                 <button
                   onClick={handleFavoriteToggle}
@@ -265,27 +291,66 @@ const Header = ({
                   <Star className={`w-5 h-5 transition-all duration-200 ${isFavorite ? 'fill-yellow-500' : 'fill-none'}`} />
                 </button>
               )}
+            </div>
 
-              {!isMobile && !isTablet && (
-                <div className="flex items-center space-x-2">
-                  <span style={{ color: isDarkMode ? '#cfcfcf' : '#6b7280' }}>Dashboards</span>
-                  <span style={{ color: isDarkMode ? '#9CA3AF' : '#9CA3AF' }}>/</span>
-                  <span style={{ fontWeight: 600, color: isDarkMode ? '#FFFFFF' : '#111827' }}>Default</span>
-                </div>
-              )}
+            {/* Breadcrumb Section - Responsive Design */}
+            <div className="flex items-center space-x-1 sm:space-x-2 min-w-0 overflow-hidden">
+              {/* Hide on mobile and small tablet, show on larger screens */}
+              <div className="hidden lg:flex items-center space-x-2 min-w-0">
+                <span 
+                  className="text-sm truncate"
+                  style={{ color: isDarkMode ? '#cfcfcf' : '#6b7280' }}
+                >
+                  Dashboards
+                </span>
+                <span 
+                  className="text-sm flex-shrink-0"
+                  style={{ color: isDarkMode ? '#9CA3AF' : '#9CA3AF' }}
+                >
+                  /
+                </span>
+                <span 
+                  className="text-sm font-semibold truncate"
+                  style={{ color: isDarkMode ? '#FFFFFF' : '#111827' }}
+                >
+                  Default
+                </span>
+              </div>
+
+              {/* Show condensed version on tablet */}
+              <div className="hidden md:flex lg:hidden items-center space-x-1 min-w-0">
+                <span 
+                  className="text-sm font-semibold truncate"
+                  style={{ color: isDarkMode ? '#FFFFFF' : '#111827' }}
+                >
+                  Default
+                </span>
+              </div>
+
+              {/* Show minimal version on mobile */}
+              <div className="flex md:hidden items-center min-w-0">
+                <span 
+                  className="text-sm font-semibold truncate"
+                  style={{ color: isDarkMode ? '#FFFFFF' : '#111827' }}
+                >
+                  Dashboard
+                </span>
+              </div>
             </div>
           </div>
 
-          <div className="flex items-center space-x-1 sm:space-x-2 lg:space-x-4">
-            {!isMobile && (
-              <div className="relative hidden sm:block">
+          {/* Right Section - Compact layout for mobile */}
+          <div className="flex items-center space-x-1 sm:space-x-2 lg:space-x-3 flex-shrink-0">
+            {/* Desktop Search - Hide on mobile and tablet to save space */}
+            {!isMobile && !isTablet && (
+              <div className="relative hidden xl:block">
                 <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-400'}`} />
                 <input
                   type="text"
                   placeholder="Search"
                   value={searchQuery}
                   onChange={(e) => updateSearch(e.target.value)}
-                  className={`pl-9 pr-12 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors w-32 sm:w-40 lg:w-64`}
+                  className={`pl-9 pr-12 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors w-48 xl:w-64`}
                   style={{
                     backgroundColor: isDarkMode ? '#0a0a0a' : undefined,
                     borderColor: isDarkMode ? 'rgba(255,255,255,0.04)' : undefined,
@@ -299,12 +364,17 @@ const Header = ({
               </div>
             )}
 
-            {isMobile && (
-              <button onClick={toggleMobileSearch} className={`p-2 rounded-lg transition-all duration-200 sm:hidden ${showMobileSearch ? (isDarkMode ? 'text-blue-400 bg-gray-700' : 'text-blue-600 bg-blue-50') : (isDarkMode ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-700' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100')}`}>
+            {/* Mobile/Tablet Search Button */}
+            {(isMobile || isTablet) && (
+              <button 
+                onClick={toggleMobileSearch} 
+                className={`p-2 rounded-lg transition-all duration-200 ${showMobileSearch ? (isDarkMode ? 'text-blue-400 bg-gray-700' : 'text-blue-600 bg-blue-50') : (isDarkMode ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-700' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100')}`}
+              >
                 <Search className="w-5 h-5" />
               </button>
             )}
 
+            {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
               ref={themeButtonRef}
@@ -312,9 +382,10 @@ const Header = ({
               onMouseLeave={onLeave}
               className={`p-2 rounded-lg transition-all duration-200 relative ${isDarkMode ? 'text-yellow-400 hover:text-yellow-300 hover:bg-gray-700' : 'text-gray-500 hover:text-orange-500 hover:bg-gray-100'}`}
             >
-              <SunMedium className="w-5 h-5 sm:w-6 sm:h-6" />
+              <SunMedium className="w-5 h-5" />
             </button>
 
+            {/* Refresh Button - Hide on mobile to save space */}
             {!isMobile && (
               <button
                 onClick={handleRefresh}
@@ -327,6 +398,7 @@ const Header = ({
               </button>
             )}
 
+            {/* Notifications */}
             <div className="relative">
               <button
                 ref={bellButtonRef}
@@ -343,6 +415,7 @@ const Header = ({
                 )}
               </button>
 
+              {/* Notification Dropdown */}
               {showNotifications && (
                 <div
                   ref={notificationRef}
@@ -418,22 +491,25 @@ const Header = ({
               )}
             </div>
 
-            {!isMobile && !isTablet && (
-              <button
-                onClick={toggleRightSidebar}
-                ref={rightToggleRef}
-                onMouseEnter={onEnter('right')}
-                onMouseLeave={onLeave}
-                className={`p-2 rounded-lg transition-all duration-200 relative ${rightSidebarVisible ? (isDarkMode ? 'text-blue-400 bg-gray-700 hover:text-blue-300' : 'text-blue-600 bg-blue-50 hover:text-blue-700') : (isDarkMode ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-700' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100')}`}
-              >
-                <Notebook className="w-5 h-5" />
-              </button>
-            )}
+            {/* Right Sidebar Toggle - Always visible */}
+            <button
+              onClick={handleRightSidebarToggle}
+              ref={rightToggleRef}
+              onMouseEnter={onEnter('right')}
+              onMouseLeave={onLeave}
+              className={`p-2 rounded-lg transition-all duration-200 relative ${rightSidebarVisible ? (isDarkMode ? 'text-white hover:text-gray-200' : 'text-gray-700 hover:text-gray-800') : (isDarkMode ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-700' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100')}`}
+              style={{
+                backgroundColor: rightSidebarVisible ? (isDarkMode ? 'rgba(168, 197, 218, 0.3)' : '#e5e7eb') : undefined
+              }}
+            >
+              <RightSidebarIcon className="w-5 h-5" />
+            </button>
           </div>
         </div>
       </header>
 
-      {showMobileSearch && isMobile && (
+      {/* Mobile Search Overlay */}
+      {showMobileSearch && (isMobile || isTablet) && (
         <div className="fixed inset-x-0 top-0 z-50 border-b p-4" style={{ backgroundColor: isDarkMode ? '#000000' : '#ffffff', borderColor: isDarkMode ? 'rgba(255,255,255,0.04)' : undefined }}>
           <form onSubmit={handleSearchSubmit} className="flex items-center space-x-2">
             <div className="flex-1 relative">
@@ -462,6 +538,7 @@ const Header = ({
         </div>
       )}
 
+      {/* Tooltips */}
       <PortalTooltip anchorRef={leftToggleRef} visible={hoverTooltip === 'left'} text={`${leftSidebarVisible ? 'Hide' : 'Show'} left sidebar`} isDarkMode={isDarkMode} />
       <PortalTooltip anchorRef={starButtonRef} visible={hoverTooltip === 'star'} text={isFavorite ? 'Remove from favorites' : 'Add to favorites'} isDarkMode={isDarkMode} />
       <PortalTooltip anchorRef={themeButtonRef} visible={hoverTooltip === 'theme'} text={`Switch to ${isDarkMode ? 'light' : 'dark'} mode`} isDarkMode={isDarkMode} />

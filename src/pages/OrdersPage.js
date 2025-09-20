@@ -394,8 +394,8 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
           </Box>
         </Box>
 
-        {/* table */}
-        <TableContainer component={Paper} sx={{ width: "100%", height: 440, opacity: 1, borderRadius: 3, overflow: "auto", bgcolor: colors.cardBackground, border: "none" }}>
+        {/* table - REMOVED height constraint and overflow */}
+        <TableContainer component={Paper} sx={{ width: "100%", opacity: 1, borderRadius: 3, bgcolor: colors.cardBackground, border: "none" }}>
           <Table stickyHeader size={isMobile ? "small" : "medium"}>
             <TableHead>
               <TableRow sx={{ position: "sticky", top: 0, zIndex: 10, backgroundColor: colors.cardBackground }}>
@@ -462,12 +462,7 @@ const OrdersPage = ({ isMobile: propIsMobile, isTablet: propIsTablet }) => {
                 </TableRow>
               ))}
 
-              {/* filler rows to keep table height stable */}
-              {Array.from({ length: Math.max(0, itemsPerPage - paginatedOrders.length) }).map((_, i) => (
-                <TableRow key={`empty-${i}`} sx={{ height: isMobile ? 48 : 64 }}>
-                  <TableCell colSpan={8} />
-                </TableRow>
-              ))}
+              {/* REMOVED filler rows that were keeping table height stable */}
 
               {paginatedOrders.length === 0 && (
                 <TableRow>

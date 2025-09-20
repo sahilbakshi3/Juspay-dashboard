@@ -1,64 +1,20 @@
-// Fixed RevenueByLocation.js - Consistent card styling
+// RevenueByLocation.js - Image-only approach (no Nivo Geo)
 import React, { useContext, useRef, useEffect, useState } from 'react';
-import { scaleQuantize } from 'd3-scale';
 import { revenueByLocation } from '../../data/mockData';
 import { ThemeContext } from '../../context/ThemeContextProvider';
+import worldMapImage from '../../assets/images/world-map.png';
 
 const RevenueByLocation = ({ isMobile = false }) => {
   const { darkMode } = useContext(ThemeContext);
   const containerRef = useRef(null);
-  const [containerDimensions, setContainerDimensions] = useState({ width: 0, height: 0 });
-  const [mapAssets, setMapAssets] = useState(null);
-  const [mapLoading, setMapLoading] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
+  // Preload the image
   useEffect(() => {
-    const handleResize = () => {
-      if (!containerRef.current) return;
-      setContainerDimensions({
-        width: containerRef.current.offsetWidth,
-        height: containerRef.current.offsetHeight,
-      });
-    };
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    const ro = new ResizeObserver(handleResize);
-    if (containerRef.current) ro.observe(containerRef.current);
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      ro.disconnect();
-    };
-  }, []);
-
-  useEffect(() => {
-    let cancelled = false;
-    if (mapAssets !== null || mapLoading) return;
-
-    setMapLoading(true);
-    (async () => {
-      try {
-        const [{ default: countries }, { default: mapData }, nivoModule] = await Promise.all([
-          import('../../data/world_countries.json').catch(() => ({ default: null })),
-          import('../../data/mapData.js').catch(() => ({ default: null })),
-          import('@nivo/geo').catch(() => null),
-        ]);
-
-        if (!countries || !mapData || !nivoModule) {
-          if (!cancelled) setMapAssets(null);
-          return;
-        }
-
-        const { ResponsiveChoropleth } = nivoModule;
-        if (!cancelled) setMapAssets({ countries, mapData, ResponsiveChoropleth });
-      } catch (err) {
-        if (!cancelled) setMapAssets(null);
-      } finally {
-        if (!cancelled) setMapLoading(false);
-      }
-    })();
-
-    return () => {
-      cancelled = true;
-    };
+    const img = new Image();
+    img.onload = () => setImageLoaded(true);
+    img.onerror = () => setImageLoaded(false);
+    img.src = worldMapImage;
   }, []);
 
   const formatShort = (val) => {
@@ -69,35 +25,78 @@ const RevenueByLocation = ({ isMobile = false }) => {
 
   const maxRevenue = Math.max(...revenueByLocation.map((l) => l.amount), 1);
 
-  // Updated color scale with darker cyan colors
-  const getColorScale = () =>
-    scaleQuantize()
-      .domain([0, maxRevenue])
-      .range(darkMode 
-        ? ['#374151', '#7A98B3', '#5F8AA8', '#4A7B9D'] // Darker cyan variations for dark mode
-        : ['#F3F4F6', '#8FA8BD', '#7A98B3', '#5F8AA8'] // Darker cyan variations for light mode
-      );
-
-  const canRenderMap = !!mapAssets && containerDimensions.width > 0;
-
-  // Helper function to get a darker shade of the background color
   const getDarkerBackground = () => {
     if (darkMode) {
-      // For dark mode, make the background slightly lighter than pure black
-      return 'rgba(255, 255, 255, 0.08)'; // Slightly lighter than the card background
+      return 'rgba(255, 255, 255, 0.08)';
     } else {
-      // For light mode, use a darker shade of the light background
-      return 'rgba(0, 0, 0, 0.08)'; // Slightly darker than white
+      return 'rgba(0, 0, 0, 0.08)';
     }
+  };
+
+  // Render the world map image
+  const renderMapContent = () => {
+    if (imageLoaded) {
+      return (
+        <div 
+          className="w-full h-full rounded-lg overflow-hidden"
+          style={{
+            background: darkMode ? 'rgba(255,255,255,0.02)' : '#f8fafc',
+            border: darkMode ? '1px solid rgba(255,255,255,0.02)' : '1px solid rgba(0,0,0,0.02)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+        >
+          <img 
+            src={worldMapImage} 
+            alt="World Revenue Map"
+            className="max-w-full max-h-full object-contain"
+            style={{
+              filter: darkMode ? 'brightness(0.85) contrast(1.1)' : 'brightness(1) contrast(1)',
+              opacity: darkMode ? 0.9 : 1
+            }}
+            onError={() => setImageLoaded(false)}
+          />
+          
+          {/* Optional subtle overlay for better visibility in dark mode */}
+          {darkMode && (
+            <div 
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                background: 'linear-gradient(45deg, rgba(0,0,0,0.1) 0%, transparent 50%, rgba(0,0,0,0.1) 100%)',
+                mixBlendMode: 'overlay'
+              }}
+            />
+          )}
+        </div>
+      );
+    }
+
+    // Fallback when image is not available
+    return (
+      <div
+        style={{
+          width: '100%',
+          height: '100%',
+          borderRadius: '8px',
+          background: darkMode ? 'rgba(255,255,255,0.02)' : '#f8fafc',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: darkMode ? '#9CA3AF' : '#6B7280',
+          fontSize: '13px',
+          border: darkMode ? '1px solid rgba(255,255,255,0.02)' : '1px solid rgba(0,0,0,0.02)',
+        }}
+      >
+        Map not available
+      </div>
+    );
   };
 
   return (
     <div 
       ref={containerRef} 
       className="w-full h-full flex flex-col"
-      style={{
-        minHeight: '300px', // Consistent minimum height
-      }}
     >
       <h3
         className={`font-semibold mb-4 ${isMobile ? 'text-base' : 'text-lg'}`}
@@ -108,53 +107,15 @@ const RevenueByLocation = ({ isMobile = false }) => {
         Revenue by Location
       </h3>
 
-      {/* Map area - consistent height */}
-      <div className="mb-6" style={{ height: isMobile ? '140px' : '160px', width: '100%' }}>
-        {canRenderMap ? (
-          (() => {
-            const Choropleth = mapAssets.ResponsiveChoropleth;
-            const domainMax = Math.max(...mapAssets.mapData.map((d) => d.value), 1);
-            return (
-              <Choropleth
-                data={mapAssets.mapData}
-                features={mapAssets.countries.features}
-                margin={{ top: 0, right: 0, bottom: 0, left: 0 }}
-                colors={getColorScale()}
-                domain={[0, domainMax]}
-                unknownColor={darkMode ? '#374151' : '#F3F4F6'}
-                valueFormat=".2s"
-                projectionScale={containerDimensions.width < 280 ? 30 : containerDimensions.width < 420 ? 40 : 55}
-                projectionTranslation={[0.5, 0.55]}
-                projectionRotation={[0, 0, 0]}
-                enableGraticule={false}
-                borderWidth={0.5}
-                borderColor={darkMode ? '#4B5563' : '#D1D5DB'}
-                isInteractive={false}
-              />
-            );
-          })()
-        ) : (
-          <div
-            style={{
-              width: '100%',
-              height: '100%',
-              borderRadius: '8px',
-              background: darkMode ? 'rgba(255,255,255,0.02)' : '#f8fafc',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: darkMode ? '#9CA3AF' : '#6B7280',
-              fontSize: '13px',
-              border: darkMode ? '1px solid rgba(255,255,255,0.02)' : '1px solid rgba(0,0,0,0.02)',
-            }}
-          >
-            {mapLoading ? 'Loading map...' : 'Map not available'}
-          </div>
-        )}
+      {/* Map area - matching Total Sales proportions */}
+      <div className="flex justify-center mb-6 flex-1">
+        <div style={{ width: '100%', maxWidth: isMobile ? '140px' : '180px', aspectRatio: '1', position: 'relative' }}>
+          {renderMapContent()}
+        </div>
       </div>
 
-      {/* List - consistent spacing */}
-      <div className="flex-1 space-y-4">
+      {/* List section - matching Total Sales spacing */}
+      <div className="space-y-3">
         {revenueByLocation.map((location) => {
           const percentage = Math.max(0, Math.min(100, (location.amount / maxRevenue) * 100));
           const displayAmount = formatShort(location.amount);
@@ -175,7 +136,11 @@ const RevenueByLocation = ({ isMobile = false }) => {
                 </div>
                 <div 
                   className={`font-semibold ${isMobile ? 'text-sm' : 'text-base'}`}
-                  style={{ color: darkMode ? '#F9FAFB' : '#0F172A' }}
+                  style={{ 
+                    color: darkMode ? '#F9FAFB' : '#111827',
+                    flexShrink: 0,
+                    marginLeft: '12px'
+                  }}
                 >
                   {displayAmount}
                 </div>
@@ -192,7 +157,8 @@ const RevenueByLocation = ({ isMobile = false }) => {
                   className="h-full rounded-full transition-all duration-300"
                   style={{ 
                     width: `${percentage}%`,
-                    background: 'var(--Secondary-Cyan, #A8C5DA)'
+                    background: 'var(--Secondary-Cyan, #A8C5DA)',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
                   }}
                 />
               </div>

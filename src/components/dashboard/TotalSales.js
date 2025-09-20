@@ -1,4 +1,4 @@
-// TotalSales.js with Figma SVG pie chart
+// TotalSales.js with SVG badge tooltip
 import React, { useContext, useRef, useEffect, useState } from 'react';
 import { ThemeContext } from '../../context/ThemeContextProvider';
 import { createPortal } from 'react-dom';
@@ -171,26 +171,48 @@ export default function TotalSales({ isMobile = false }) {
           </svg>
         </div>
 
-        {/* Tooltip */}
+        {/* SVG Badge Tooltip */}
         {tooltip.visible && tooltip.data && createPortal(
           <div style={{
             position: 'fixed',
             left: tooltip.clientX + 12,
             top: tooltip.clientY - 35,
             pointerEvents: 'none',
-            background: darkMode ? '#374151' : '#fff',
-            color: darkMode ? '#fff' : '#222',
-            border: darkMode ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.1)',
-            borderRadius: '8px',
-            padding: '8px 12px',
-            fontSize: '13px',
-            boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
             zIndex: 99999,
-            whiteSpace: 'nowrap'
           }}>
-            <div style={{ fontWeight: 600 }}>{tooltip.data.label}</div>
-            <div style={{ opacity: 0.8 }}>Amount: ${tooltip.data.amount.toFixed(2)}</div>
-            <div style={{ opacity: 0.8 }}>Percent: {((tooltip.data.amount / totalAmount) * 100).toFixed(1)}%</div>
+            <svg width="51" height="26" viewBox="0 0 51 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <foreignObject x="-40" y="-40" width="131" height="106">
+                <div xmlns="http://www.w3.org/1999/xhtml" style={{
+                  backdropFilter: 'blur(20px)',
+                  clipPath: 'url(#bgblur_tooltip_clip_path)',
+                  height: '100%',
+                  width: '100%'
+                }}></div>
+              </foreignObject>
+              <g>
+                <path 
+                  d="M0 12.8C0 8.31958 0 6.07937 0.871948 4.36808C1.63893 2.86278 2.86278 1.63893 4.36808 0.871948C6.07937 0 8.31958 0 12.8 0H38.2C42.6804 0 44.9206 0 46.6319 0.871948C48.1372 1.63893 49.3611 2.86278 50.1281 4.36808C51 6.07937 51 8.31958 51 12.8V13.2C51 17.6804 51 19.9206 50.1281 21.6319C49.3611 23.1372 48.1372 24.3611 46.6319 25.1281C44.9206 26 42.6804 26 38.2 26H12.8C8.31958 26 6.07937 26 4.36808 25.1281C2.86278 24.3611 1.63893 23.1372 0.871948 21.6319C0 19.9206 0 17.6804 0 13.2V12.8Z" 
+                  fill="#1C1C1C" 
+                  fillOpacity="0.8"
+                />
+                <text 
+                  x="25.5" 
+                  y="16" 
+                  textAnchor="middle" 
+                  fill="white" 
+                  fontSize="10" 
+                  fontWeight="600"
+                  fontFamily="system-ui, -apple-system, sans-serif"
+                >
+                  ${tooltip.data.amount.toFixed(2)}
+                </text>
+              </g>
+              <defs>
+                <clipPath id="bgblur_tooltip_clip_path" transform="translate(40 40)">
+                  <path d="M0 12.8C0 8.31958 0 6.07937 0.871948 4.36808C1.63893 2.86278 2.86278 1.63893 4.36808 0.871948C6.07937 0 8.31958 0 12.8 0H38.2C42.6804 0 44.9206 0 46.6319 0.871948C48.1372 1.63893 49.3611 2.86278 50.1281 4.36808C51 6.07937 51 8.31958 51 12.8V13.2C51 17.6804 51 19.9206 50.1281 21.6319C49.3611 23.1372 48.1372 24.3611 46.6319 25.1281C44.9206 26 42.6804 26 38.2 26H12.8C8.31958 26 6.07937 26 4.36808 25.1281C2.86278 24.3611 1.63893 23.1372 0.871948 21.6319C0 19.9206 0 17.6804 0 13.2V12.8Z"/>
+                </clipPath>
+              </defs>
+            </svg>
           </div>,
           document.body
         )}

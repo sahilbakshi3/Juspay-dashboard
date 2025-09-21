@@ -12,6 +12,10 @@
 
 🚀 **[View Live Dashboard](https://juspay-dashboard-two.vercel.app/)**
 
+## 📹 Video Walkthrough
+
+▶ [Watch the Walkthrough Video](https://drive.google.com/file/d/1UT9Y_nZGzz885yimmXihhH9-Hqew_szd/view?usp=sharing)
+
 ![Dashboard Preview](./public/preview.png) <!-- Add a screenshot of your dashboard here -->
 
 ## ✨ Key Features

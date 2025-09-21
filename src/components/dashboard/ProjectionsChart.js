@@ -1,18 +1,10 @@
 import React, { useContext, useRef, useEffect, useState } from 'react';
 import { ThemeContext } from '../../context/ThemeContextProvider';
-import { createPortal } from 'react-dom';
 
 const ProjectionsChart = () => {
   const { darkMode } = useContext(ThemeContext);
   const chartRef = useRef(null);
   const [chartDimensions, setChartDimensions] = useState({ width: 0, height: 0 });
-
-  const [tooltip, setTooltip] = useState({
-    visible: false,
-    clientX: 0,
-    clientY: 0,
-    data: null
-  });
 
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
   const yAxisValues = ['30M', '20M', '10M', '0'];
@@ -66,41 +58,6 @@ const ProjectionsChart = () => {
         incomplete: 'rgba(0, 0, 0, 0.08)' // Incomplete portion - original light mode color
       };
     }
-  };
-
-  const renderTooltip = () => {
-    if (!(tooltip.visible && tooltip.data)) return null;
-
-    const { projection, actual } = tooltip.data;
-    const diff = projection !== 0
-      ? (((projection - actual) / projection) * 100).toFixed(1)
-      : 'N/A';
-
-    return createPortal(
-      <div
-        style={{
-          position: 'fixed',
-          left: tooltip.clientX + 10,
-          top: tooltip.clientY - 30,
-          pointerEvents: 'none',
-          background: darkMode ? 'var(--Primary-Light, #FFFFFF0D)' : '#fff',
-          color: darkMode ? '#fff' : '#222',
-          border: darkMode ? '1px solid rgba(255,255,255,0.04)' : '1px solid #ccc',
-          borderRadius: '4px',
-          padding: '7px 13px',
-          fontSize: '0.95em',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
-          zIndex: 99999,
-          transition: 'opacity 0.18s',
-          minWidth: 108,
-        }}
-      >
-        <div>Projected: {projection}M</div>
-        <div>Actual: {actual}M</div>
-        <div>Diff: {diff}%</div>
-      </div>,
-      document.body
-    );
   };
 
   const barColors = getBarColors();
@@ -179,24 +136,6 @@ const ProjectionsChart = () => {
                 <div
                   key={data.month}
                   className="flex items-end h-full flex-1 min-w-0"
-                  onMouseEnter={e => {
-                    setTooltip({
-                      visible: true,
-                      clientX: e.clientX,
-                      clientY: e.clientY,
-                      data
-                    });
-                  }}
-                  onMouseMove={e => {
-                    setTooltip(tooltip => ({
-                      ...tooltip,
-                      clientX: e.clientX,
-                      clientY: e.clientY
-                    }));
-                  }}
-                  onMouseLeave={() =>
-                    setTooltip({ visible: false, clientX: 0, clientY: 0, data: null })
-                  }
                   style={{ zIndex: 10, position: 'relative' }} // Higher z-index for bars
                 >
                   <div className={`flex flex-col mx-auto ${barWidth} min-w-[16px] max-w-[40px]`}>
@@ -228,8 +167,6 @@ const ProjectionsChart = () => {
                 </div>
               );
             })}
-            {/* Tooltip */}
-            {renderTooltip()}
           </div>
 
           {/* X-axis labels */}

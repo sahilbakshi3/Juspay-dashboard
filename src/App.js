@@ -1,24 +1,296 @@
-// src/App.js - Updated with SearchProvider and New Routes
-import React, { useContext, useState, useCallback, useEffect } from 'react';
+// src/App.js - Simplified but effective lazy loading implementation
+import React, { useContext, useState, useCallback, useEffect, Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 
-// Layout Components
-import Sidebar from './components/layout/Sidebar';
+// Critical components - Load immediately (above the fold)
 import Header from './components/layout/Header';
-import RightSidebar from './components/layout/RightSidebar';
 
-// Context Providers
+// Context Providers - Load immediately
 import ThemeContextProvider, { ThemeContext } from "./context/ThemeContextProvider";
 import { ToastProvider } from './context/ToastContext';
 import { SearchProvider } from './context/SearchContext';
 
-// Pages
-import DashboardPage from './pages/DashboardPage';
-import OrdersPage from './pages/OrdersPage';
-import PageNotFound from './pages/PageNotFound';
+// Lazy load components with better error handling
+const Sidebar = lazy(() => 
+  import('./components/layout/Sidebar').catch(() => ({
+    default: () => <div className="w-64 h-full bg-gray-100 dark:bg-gray-900 animate-pulse" />
+  }))
+);
+
+const RightSidebar = lazy(() => 
+  import('./components/layout/RightSidebar').catch(() => ({
+    default: () => <div className="w-80 h-full bg-gray-100 dark:bg-gray-900 animate-pulse" />
+  }))
+);
+
+const DashboardPage = lazy(() => 
+  import('./pages/DashboardPage').catch(() => ({
+    default: () => (
+      <div className="p-6">
+        <div className="text-center">
+          <h2>Error loading dashboard</h2>
+          <button onClick={() => window.location.reload()}>Reload</button>
+        </div>
+      </div>
+    )
+  }))
+);
+
+const OrdersPage = lazy(() => 
+  import('./pages/OrdersPage').catch(() => ({
+    default: () => (
+      <div className="p-6">
+        <div className="text-center">
+          <h2>Error loading orders</h2>
+          <button onClick={() => window.location.reload()}>Reload</button>
+        </div>
+      </div>
+    )
+  }))
+);
+
+const PageNotFound = lazy(() => 
+  import('./pages/PageNotFound').catch(() => ({
+    default: () => (
+      <div className="p-6 text-center">
+        <h2 className="text-2xl font-bold">Page Not Found</h2>
+        <p>The page you're looking for doesn't exist.</p>
+      </div>
+    )
+  }))
+);
+
+// Loading Components
+const LoadingSpinner = ({ message = 'Loading...' }) => {
+  const { darkMode } = useContext(ThemeContext);
+  
+  return (
+    <div className="flex items-center justify-center p-8">
+      <div className="flex flex-col items-center space-y-4">
+        <div 
+          className="w-8 h-8 border-4 border-solid rounded-full animate-spin"
+          style={{
+            borderColor: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
+            borderTopColor: darkMode ? '#90caf9' : '#1976d2',
+          }}
+        />
+        <p 
+          className="text-sm"
+          style={{ color: darkMode ? '#FFFFFF' : '#111827' }}
+        >
+          {message}
+        </p>
+      </div>
+    </div>
+  );
+};
+
+const SidebarSkeleton = () => {
+  const { darkMode } = useContext(ThemeContext);
+  
+  return (
+    <div 
+      className="w-64 h-full flex flex-col space-y-4 p-4"
+      style={{
+        backgroundColor: darkMode ? '#0a0a0a' : '#ffffff',
+        borderRight: `1px solid ${darkMode ? 'rgba(255,255,255,0.06)' : '#e0e0e0'}`,
+        transition: 'background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)',
+      }}
+    >
+      {/* Logo skeleton */}
+      <div className="flex items-center space-x-3 mb-6">
+        <div className="w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+        <div className="h-6 w-24 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+      </div>
+      
+      {/* Navigation skeleton */}
+      {[1, 2, 3, 4, 5].map((item) => (
+        <div key={item} className="flex items-center space-x-3 p-2">
+          <div className="w-5 h-5 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+          <div className="h-4 w-20 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+        </div>
+      ))}
+      
+      {/* User section skeleton */}
+      <div className="mt-auto pt-4 border-t border-gray-200 dark:border-gray-700">
+        <div className="flex items-center space-x-3">
+          <div className="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse"></div>
+          <div className="flex flex-col space-y-1">
+            <div className="h-4 w-16 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+            <div className="h-3 w-12 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const RightSidebarSkeleton = () => {
+  const { darkMode } = useContext(ThemeContext);
+  
+  return (
+    <div 
+      className="w-80 h-full flex flex-col space-y-4 p-4"
+      style={{
+        backgroundColor: darkMode ? '#0a0a0a' : '#ffffff',
+        borderLeft: `1px solid ${darkMode ? 'rgba(255,255,255,0.06)' : '#e0e0e0'}`,
+        transition: 'background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)',
+      }}
+    >
+      {/* Header skeleton */}
+      <div className="h-6 w-32 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-4"></div>
+      
+      {/* Cards skeleton */}
+      {[1, 2, 3].map((item) => (
+        <div key={item} className="p-4 rounded-lg border border-gray-200 dark:border-gray-700">
+          <div className="h-4 w-24 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-2"></div>
+          <div className="h-16 w-full bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+const PageSkeleton = () => {
+  const { darkMode } = useContext(ThemeContext);
+  
+  return (
+    <div className="p-6 space-y-6">
+      {/* Header skeleton */}
+      <div className="flex justify-between items-center">
+        <div className="h-8 w-48 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+        <div className="h-10 w-32 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+      </div>
+      
+      {/* Stats cards skeleton */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {[1, 2, 3, 4].map((item) => (
+          <div 
+            key={item} 
+            className="p-6 rounded-xl border border-gray-200 dark:border-gray-700"
+            style={{
+              backgroundColor: darkMode ? '#0a0a0a' : '#ffffff',
+              transition: 'background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)',
+            }}
+          >
+            <div className="h-4 w-20 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-2"></div>
+            <div className="h-8 w-16 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-1"></div>
+            <div className="h-3 w-12 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+          </div>
+        ))}
+      </div>
+      
+      {/* Main content skeleton */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          <div 
+            className="p-6 rounded-xl border border-gray-200 dark:border-gray-700"
+            style={{
+              backgroundColor: darkMode ? '#0a0a0a' : '#ffffff',
+              transition: 'background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)',
+            }}
+          >
+            <div className="h-6 w-32 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-4"></div>
+            <div className="h-64 w-full bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+          </div>
+        </div>
+        
+        <div className="space-y-4">
+          <div 
+            className="p-6 rounded-xl border border-gray-200 dark:border-gray-700"
+            style={{
+              backgroundColor: darkMode ? '#0a0a0a' : '#ffffff',
+              transition: 'background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)',
+            }}
+          >
+            <div className="h-5 w-24 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-4"></div>
+            <div className="space-y-3">
+              {[1, 2, 3].map((item) => (
+                <div key={item} className="flex items-center space-x-3">
+                  <div className="w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse"></div>
+                  <div className="flex-1">
+                    <div className="h-4 w-full bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-1"></div>
+                    <div className="h-3 w-20 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Simple Error Boundary
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error('ErrorBoundary caught an error:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return this.props.fallback || (
+        <div className="p-8 text-center">
+          <h2 className="text-xl font-semibold text-red-600 mb-2">Something went wrong</h2>
+          <button 
+            onClick={() => this.setState({ hasError: false })}
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          >
+            Try again
+          </button>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
+// Progressive loading hook
+const useProgressiveLoading = () => {
+  const [loadedComponents, setLoadedComponents] = useState({
+    sidebar: false,
+    rightSidebar: false,
+    mainContent: false,
+  });
+
+  useEffect(() => {
+    // Load components progressively with staggered timing
+    const timer1 = setTimeout(() => {
+      setLoadedComponents(prev => ({ ...prev, sidebar: true }));
+    }, 100);
+
+    const timer2 = setTimeout(() => {
+      setLoadedComponents(prev => ({ ...prev, rightSidebar: true }));
+    }, 200);
+
+    const timer3 = setTimeout(() => {
+      setLoadedComponents(prev => ({ ...prev, mainContent: true }));
+    }, 300);
+
+    return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+      clearTimeout(timer3);
+    };
+  }, []);
+
+  return loadedComponents;
+};
 
 const AppContent = () => {
   const { darkMode } = useContext(ThemeContext);
+  const loadedComponents = useProgressiveLoading();
 
   // Responsive state
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
@@ -54,6 +326,19 @@ const AppContent = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // Preload components on user interaction
+  useEffect(() => {
+    // Preload components after initial render
+    const preloadTimer = setTimeout(() => {
+      import('./components/layout/Sidebar');
+      import('./components/layout/RightSidebar');
+      import('./pages/DashboardPage');
+      import('./pages/OrdersPage');
+    }, 1000);
+
+    return () => clearTimeout(preloadTimer);
+  }, []);
+
   // Toggle functions
   const toggleLeftSidebar = () => setLeftSidebarVisible(prev => !prev);
   const toggleRightSidebar = () => setRightSidebarVisible(prev => !prev);
@@ -69,53 +354,75 @@ const AppContent = () => {
     if (windowWidth < 1280) setRightSidebarVisible(false);
   };
 
-  // App-level styles for dark/light
+  // App-level styles
   const appBg = darkMode ? '#000000' : '#ffffff';
-  const contentSurface = darkMode ? '#0a0a0a' : '#ffffff';
   const textColor = darkMode ? '#FFFFFF' : '#111827';
 
+  const fastTransitionStyle = {
+    transition: 'background-color 150ms cubic-bezier(0.4, 0, 0.2, 1), color 150ms cubic-bezier(0.4, 0, 0.2, 1)',
+  };
+
   return (
-    <div style={{ background: appBg, color: textColor, minHeight: '100vh' }}>
+    <div style={{ 
+      background: appBg, 
+      color: textColor, 
+      minHeight: '100vh',
+      ...fastTransitionStyle 
+    }}>
       <div
-        className="min-h-screen flex transition-colors duration-300 relative overflow-hidden"
+        className="min-h-screen flex relative overflow-hidden"
         style={{
           background: appBg,
           color: textColor,
+          transition: 'background-color 150ms cubic-bezier(0.4, 0, 0.2, 1), color 150ms cubic-bezier(0.4, 0, 0.2, 1)',
         }}
       >
-        {/* Mobile/Tablet Overlay (shown when sidebars are visible on small screens) */}
+        {/* Mobile/Tablet Overlay */}
         {((leftSidebarVisible && windowWidth < 1024) || (rightSidebarVisible && windowWidth < 1280)) && (
           <div
             onClick={handleOverlayClick}
             role="button"
             aria-label="Close overlays"
             tabIndex={0}
-            className="fixed inset-0 z-30 transition-opacity duration-300"
+            className="fixed inset-0 z-30"
             style={{
-              backgroundColor: 'rgba(0,0,0,0.6)'
+              backgroundColor: 'rgba(0,0,0,0.6)',
+              transition: 'opacity 150ms cubic-bezier(0.4, 0, 0.2, 1)',
             }}
           />
         )}
 
-        {/* Left Sidebar - Responsive positioning */}
+        {/* Left Sidebar with Progressive Loading */}
         <div
           className={`
             ${windowWidth < 1024 ? 'fixed' : 'relative'}
             inset-y-0 left-0 z-40
-            transform transition-transform duration-300 ease-in-out
+            transform 
             ${leftSidebarVisible ? 'translate-x-0' : '-translate-x-full'}
             ${windowWidth >= 1024 ? (leftSidebarVisible ? 'block' : 'hidden') : ''}
           `}
+          style={{
+            transition: 'transform 200ms cubic-bezier(0.4, 0, 0.2, 1)',
+          }}
         >
-          <Sidebar
-            isVisible={leftSidebarVisible}
-            isMobile={windowWidth < 1024}
-            onClose={() => setLeftSidebarVisible(false)}
-          />
+          <ErrorBoundary fallback={<SidebarSkeleton />}>
+            {loadedComponents.sidebar ? (
+              <Suspense fallback={<SidebarSkeleton />}>
+                <Sidebar
+                  isVisible={leftSidebarVisible}
+                  isMobile={windowWidth < 1024}
+                  onClose={() => setLeftSidebarVisible(false)}
+                />
+              </Suspense>
+            ) : (
+              <SidebarSkeleton />
+            )}
+          </ErrorBoundary>
         </div>
 
         {/* Main Content */}
         <div className="flex-1 flex flex-col overflow-hidden min-w-0">
+          {/* Header loads immediately */}
           <Header
             leftSidebarVisible={leftSidebarVisible}
             rightSidebarVisible={rightSidebarVisible}
@@ -126,97 +433,99 @@ const AppContent = () => {
             isTablet={windowWidth < 1280}
           />
 
-          <main className="flex-1 overflow-x-hidden overflow-y-auto">
-            <div className="p-3 sm:p-4 lg:p-6" style={{ background: 'transparent' }}>
-              <Switch>
-                {/* Main Dashboard Route */}
-                <Route
-                  exact
-                  path="/"
-                  render={() => (
-                    <DashboardPage
-                      refreshKey={dashboardRefreshKey}
-                      isMobile={windowWidth < 768}
-                      isTablet={windowWidth < 1024}
-                    />
-                  )}
-                />
-                
-                {/* Overview Route */}
-                <Route
-                  path="/overview"
-                  render={() => (
-                    <OrdersPage
-                      isMobile={windowWidth < 768}
-                      isTablet={windowWidth < 1024}
-                    />
-                  )}
-                />
-                
-                {/* Projects Route */}
-                <Route
-                  path="/projects"
-                  render={() => (
-                    <DashboardPage
-                      refreshKey={dashboardRefreshKey}
-                      isMobile={windowWidth < 768}
-                      isTablet={windowWidth < 1024}
-                    />
-                  )}
-                />
+          <main 
+            className="flex-1 overflow-x-hidden overflow-y-auto"
+            style={fastTransitionStyle}
+          >
+            <div 
+              className="p-3 sm:p-4 lg:p-6" 
+              style={{ 
+                background: 'transparent',
+                ...fastTransitionStyle 
+              }}
+            >
+              <ErrorBoundary fallback={<PageSkeleton />}>
+                {loadedComponents.mainContent ? (
+                  <Suspense fallback={<PageSkeleton />}>
+                    <Switch>
+                      <Route
+                        exact
+                        path="/"
+                        render={() => (
+                          <DashboardPage
+                            refreshKey={dashboardRefreshKey}
+                            isMobile={windowWidth < 768}
+                            isTablet={windowWidth < 1024}
+                          />
+                        )}
+                      />
+                      
+                      <Route
+                        path="/overview"
+                        render={() => (
+                          <OrdersPage
+                            isMobile={windowWidth < 768}
+                            isTablet={windowWidth < 1024}
+                          />
+                        )}
+                      />
+                      
+                      <Route
+                        path="/projects"
+                        render={() => (
+                          <DashboardPage
+                            refreshKey={dashboardRefreshKey}
+                            isMobile={windowWidth < 768}
+                            isTablet={windowWidth < 1024}
+                          />
+                        )}
+                      />
 
-                {/* User Profile Routes - All show "Page Not Found" */}
-                <Route 
-                  path="/profile/overview" 
-                  render={() => <PageNotFound />} 
-                />
-                <Route 
-                  path="/profile/projects" 
-                  render={() => <PageNotFound />} 
-                />
-                <Route 
-                  path="/profile/campaigns" 
-                  render={() => <PageNotFound />} 
-                />
-                <Route 
-                  path="/profile/documents" 
-                  render={() => <PageNotFound />} 
-                />
-                <Route 
-                  path="/profile/followers" 
-                  render={() => <PageNotFound />} 
-                />
-                
-                {/* Other "Page Not Found" routes */}
-                <Route 
-                  path="/recently" 
-                  render={() => <PageNotFound />} 
-                />
-                
-                {/* Fallback for any unmatched routes */}
-                <Route 
-                  render={() => <PageNotFound />} 
-                />
-              </Switch>
+                      {/* Profile Routes */}
+                      <Route path="/profile/overview" render={() => <PageNotFound />} />
+                      <Route path="/profile/projects" render={() => <PageNotFound />} />
+                      <Route path="/profile/campaigns" render={() => <PageNotFound />} />
+                      <Route path="/profile/documents" render={() => <PageNotFound />} />
+                      <Route path="/profile/followers" render={() => <PageNotFound />} />
+                      
+                      <Route path="/recently" render={() => <PageNotFound />} />
+                      <Route render={() => <PageNotFound />} />
+                    </Switch>
+                  </Suspense>
+                ) : (
+                  <PageSkeleton />
+                )}
+              </ErrorBoundary>
             </div>
           </main>
         </div>
 
-        {/* Right Sidebar - Responsive positioning */}
+        {/* Right Sidebar with Progressive Loading */}
         <div
           className={`
             ${windowWidth < 1280 ? 'fixed' : 'relative'}
             inset-y-0 right-0 z-40
-            transform transition-transform duration-300 ease-in-out
+            transform
             ${rightSidebarVisible ? 'translate-x-0' : 'translate-x-full'}
             ${windowWidth >= 1280 ? (rightSidebarVisible ? 'block' : 'hidden') : ''}
           `}
+          style={{
+            transition: 'transform 200ms cubic-bezier(0.4, 0, 0.2, 1)',
+          }}
         >
-          <RightSidebar
-            isVisible={rightSidebarVisible}
-            isMobile={windowWidth < 1024}
-            onClose={() => setRightSidebarVisible(false)}
-          />
+          <ErrorBoundary fallback={<RightSidebarSkeleton />}>
+            {loadedComponents.rightSidebar ? (
+              <Suspense fallback={<RightSidebarSkeleton />}>
+                <RightSidebar
+                  isVisible={rightSidebarVisible}
+                  isMobile={windowWidth < 1024}
+                  onClose={() => setRightSidebarVisible(false)}
+                />
+              </Suspense>
+            ) : (
+              <RightSidebarSkeleton />
+            )}
+          </ErrorBoundary>
         </div>
       </div>
     </div>
@@ -224,6 +533,45 @@ const AppContent = () => {
 };
 
 const App = () => {
+  useEffect(() => {
+    // Performance optimization styles
+    const styleSheet = document.createElement('style');
+    styleSheet.textContent = `
+      :root {
+        --theme-transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1), 
+                           color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+                           border-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      
+      * {
+        transition: var(--theme-transition) !important;
+      }
+      
+      /* Loading animations */
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      
+      .fade-in {
+        animation: fadeIn 300ms ease-out;
+      }
+      
+      /* Performance optimizations */
+      .transform {
+        will-change: transform;
+        backface-visibility: hidden;
+      }
+    `;
+    document.head.appendChild(styleSheet);
+
+    return () => {
+      if (document.head.contains(styleSheet)) {
+        document.head.removeChild(styleSheet);
+      }
+    };
+  }, []);
+
   return (
     <SearchProvider>
       <ThemeContextProvider>

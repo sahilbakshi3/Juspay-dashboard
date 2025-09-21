@@ -1,4 +1,4 @@
-// src/context/ThemeContextProvider.js
+// src/context/ThemeContextProvider.js - Optimized for faster transitions
 import React, { createContext, useState, useEffect, useMemo, useContext } from 'react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
@@ -42,11 +42,30 @@ const ThemeContextProvider = ({ children }) => {
     setDarkMode(prev => !prev);
   };
 
-  // Create MUI theme based on darkMode (dark = black)
+  // Create MUI theme based on darkMode (dark = black) - Optimized transitions
   const muiTheme = useMemo(() => {
     const isDark = darkMode === true;
 
     return createTheme({
+      // Add fast transition configuration globally
+      transitions: {
+        duration: {
+          shortest: 150,
+          shorter: 200,
+          short: 250,
+          standard: 150, // Reduced from default 300ms
+          complex: 200,  // Reduced from default 375ms
+          enteringScreen: 200, // Reduced from default 225ms
+          leavingScreen: 150,  // Reduced from default 195ms
+        },
+        easing: {
+          easeInOut: 'cubic-bezier(0.4, 0, 0.2, 1)', // Smoother easing
+          easeOut: 'cubic-bezier(0.0, 0, 0.2, 1)',
+          easeIn: 'cubic-bezier(0.4, 0, 1, 1)',
+          sharp: 'cubic-bezier(0.4, 0, 0.6, 1)',
+        },
+      },
+      
       palette: {
         mode: isDark ? 'dark' : 'light',
         primary: {
@@ -59,7 +78,6 @@ const ThemeContextProvider = ({ children }) => {
           // full black page background
           default: isDark ? '#000000' : '#fafafa',
           // slightly off-black for cards / surfaces so elements have a subtle separation
-          // change to '#000000' if you want absolutely no contrast between body and cards
           paper: isDark ? '#0a0a0a' : '#ffffff',
         },
         text: {
@@ -69,41 +87,51 @@ const ThemeContextProvider = ({ children }) => {
         divider: isDark ? 'rgba(255,255,255,0.06)' : '#e0e0e0',
       },
 
-      // component overrides so MUI built-in components respect the black backgrounds
+      // component overrides with optimized transitions
       components: {
         MuiCssBaseline: {
           styleOverrides: {
             body: {
-              backgroundColor: isDark ? '#000000' : undefined,
+              backgroundColor: isDark ? '#000000' : '#fafafa',
+              // Add smooth transition for body background
+              transition: 'background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)',
+            },
+            // Optimize all elements transition
+            '*': {
+              transition: 'background-color 150ms cubic-bezier(0.4, 0, 0.2, 1), color 150ms cubic-bezier(0.4, 0, 0.2, 1), border-color 150ms cubic-bezier(0.4, 0, 0.2, 1) !important',
             },
           },
         },
         MuiPaper: {
           styleOverrides: {
             root: {
-              backgroundColor: isDark ? '#0a0a0a' : undefined,
+              backgroundColor: isDark ? '#0a0a0a' : '#ffffff',
+              transition: 'background-color 150ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1)',
             },
           },
         },
         MuiCard: {
           styleOverrides: {
             root: {
-              backgroundColor: isDark ? '#0a0a0a' : undefined,
+              backgroundColor: isDark ? '#0a0a0a' : '#ffffff',
+              transition: 'background-color 150ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1)',
             },
           },
         },
         MuiDrawer: {
           styleOverrides: {
             paper: {
-              backgroundColor: isDark ? '#0a0a0a' : undefined,
+              backgroundColor: isDark ? '#0a0a0a' : '#ffffff',
+              transition: 'background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)',
             },
           },
         },
         MuiPopover: {
           styleOverrides: {
             paper: {
-              backgroundColor: isDark ? '#0a0a0a' : undefined,
+              backgroundColor: isDark ? '#0a0a0a' : '#ffffff',
               boxShadow: isDark ? '0 6px 24px rgba(0,0,0,0.6)' : undefined,
+              transition: 'background-color 150ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1)',
             },
           },
         },
@@ -114,13 +142,14 @@ const ThemeContextProvider = ({ children }) => {
               color: isDark ? '#FFFFFF' : undefined,
               boxShadow: isDark ? '0 4px 14px rgba(0,0,0,0.6)' : undefined,
               fontSize: '0.75rem',
+              transition: 'background-color 150ms cubic-bezier(0.4, 0, 0.2, 1), color 150ms cubic-bezier(0.4, 0, 0.2, 1)',
             },
             arrow: {
               color: isDark ? '#111111' : undefined,
+              transition: 'color 150ms cubic-bezier(0.4, 0, 0.2, 1)',
             },
           },
           defaultProps: {
-            // Tooltips render in a portal by default, but ensure high zIndex so they sit above sidebars
             PopperProps: {
               modifiers: [
                 {
@@ -138,7 +167,23 @@ const ThemeContextProvider = ({ children }) => {
         MuiBackdrop: {
           styleOverrides: {
             root: {
-              backgroundColor: isDark ? 'rgba(0,0,0,0.6)' : undefined,
+              backgroundColor: isDark ? 'rgba(0,0,0,0.6)' : 'rgba(0,0,0,0.5)',
+              transition: 'background-color 150ms cubic-bezier(0.4, 0, 0.2, 1)',
+            },
+          },
+        },
+        // Optimize button transitions
+        MuiButton: {
+          styleOverrides: {
+            root: {
+              transition: 'background-color 150ms cubic-bezier(0.4, 0, 0.2, 1), color 150ms cubic-bezier(0.4, 0, 0.2, 1), border-color 150ms cubic-bezier(0.4, 0, 0.2, 1)',
+            },
+          },
+        },
+        MuiIconButton: {
+          styleOverrides: {
+            root: {
+              transition: 'background-color 150ms cubic-bezier(0.4, 0, 0.2, 1), color 150ms cubic-bezier(0.4, 0, 0.2, 1)',
             },
           },
         },

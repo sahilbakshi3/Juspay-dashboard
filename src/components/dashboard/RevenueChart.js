@@ -1,9 +1,6 @@
 // src/components/dashboard/RevenueChart.js
-import React, { useContext, useRef, useState } from 'react';
+import React, { useContext, useRef } from 'react';
 import { ThemeContext } from '../../context/ThemeContextProvider';
-import { createPortal } from 'react-dom';
-
-function lerp(a, b, t) { return a + (b - a) * t; }
 
 const RevenueChart = ({ isMobile = false }) => {
   const { darkMode } = useContext(ThemeContext);
@@ -11,7 +8,6 @@ const RevenueChart = ({ isMobile = false }) => {
   const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
   const previousWeek = [51, 50, 57, 68, 60, 54, 34];
   const currentWeek = [44, 55, 62, 37, 66, 58, 58];
-  const [tooltip, setTooltip] = useState({ visible: false, clientX: 0, clientY: 0, data: null });
   
   // Calculate totals for legend
   const currentWeekTotal = currentWeek.reduce((sum, val) => sum + val, 0) * 1000; // Convert to actual values
@@ -30,59 +26,7 @@ const RevenueChart = ({ isMobile = false }) => {
     gridLine: darkMode ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.12)', // Darker grid lines
     currentWeekColor: darkMode ? 'var(--Primary-Brand, #C6C7F8)' : '#1F2937', // Primary Brand in dark mode, dark in light mode
     previousWeekColor: '#A8C5DA', // Cyan color works in both modes
-    tooltipBg: darkMode ? 'rgba(17,24,39,0.95)' : 'rgba(255,255,255,0.95)',
-    tooltipBorder: darkMode ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)',
     partition: 'var(--black-20, #1C1C1C33)' // Partition line color
-  };
-
-  const handleMouseMove = (e) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width);
-    const n = labels.length - 1;
-    let idx = Math.floor(x * n);
-    idx = Math.max(0, Math.min(n - 1, idx));
-    const leftX = idx / n;
-    const rightX = (idx + 1) / n;
-    const t = rightX !== leftX ? (x - leftX) / (rightX - leftX) : 0;
-    const prevVal = lerp(previousWeek[idx], previousWeek[idx + 1], t).toFixed(1);
-    const currVal = lerp(currentWeek[idx], currentWeek[idx + 1], t).toFixed(1);
-    const pct = prevVal !== "0.0" ? (((currVal - prevVal) / prevVal) * 100).toFixed(1) : 'N/A';
-    const displayLabel = t < 0.5 ? labels[idx] : labels[idx + 1];
-    setTooltip({ visible: true, clientX: e.clientX, clientY: e.clientY, data: { label: displayLabel, previous: prevVal, current: currVal, pct } });
-  };
-
-  const handleMouseLeave = () => setTooltip({ visible: false, clientX: 0, clientY: 0, data: null });
-
-  const renderTooltip = () => {
-    if (!(tooltip.visible && tooltip.data)) return null;
-    const { previous, current, pct, label } = tooltip.data;
-    return createPortal(
-      <div style={{
-        position: 'fixed',
-        left: tooltip.clientX + 12,
-        top: tooltip.clientY - 45,
-        pointerEvents: 'none',
-        background: theme.tooltipBg,
-        color: theme.text,
-        border: `1px solid ${theme.tooltipBorder}`,
-        borderRadius: 8,
-        padding: '8px 12px',
-        fontSize: isMobile ? '12px' : '13px',
-        boxShadow: darkMode 
-          ? '0 8px 24px rgba(0,0,0,0.4), 0 4px 8px rgba(0,0,0,0.2)' 
-          : '0 8px 24px rgba(0,0,0,0.15), 0 4px 8px rgba(0,0,0,0.1)',
-        zIndex: 99999,
-        whiteSpace: 'nowrap',
-        backdropFilter: 'blur(8px)',
-        lineHeight: 1.4
-      }}>
-        <div style={{ fontWeight: 600, marginBottom: '2px' }}>{label}</div>
-        <div style={{ color: theme.textSecondary }}>Previous: {previous}M</div>
-        <div style={{ color: theme.textSecondary }}>Current: {current}M</div>
-        <div style={{ color: theme.textSecondary }}>Change: {pct}%</div>
-      </div>,
-      document.body
-    );
   };
 
   return (
@@ -209,8 +153,6 @@ const RevenueChart = ({ isMobile = false }) => {
           {/* SVG Chart with Custom Frame */}
           <div 
             className="w-full h-full relative" 
-            onMouseMove={handleMouseMove} 
-            onMouseLeave={handleMouseLeave} 
             style={{ touchAction: 'none' }}
           >
             {/* Custom SVG Frame */}
@@ -325,8 +267,6 @@ const RevenueChart = ({ isMobile = false }) => {
               </span>
             ))}
           </div>
-
-          {renderTooltip()}
         </div>
       </div>
     </div>

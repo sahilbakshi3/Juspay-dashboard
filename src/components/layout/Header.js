@@ -141,6 +141,15 @@ const Header = ({
     if (showMobileSearch && searchInputRef.current) searchInputRef.current.focus();
   }, [showMobileSearch]);
 
+  // Check for refresh toast flag on component mount
+  useEffect(() => {
+    const shouldShowToast = localStorage.getItem('showRefreshToast');
+    if (shouldShowToast === 'true') {
+      localStorage.removeItem('showRefreshToast');
+      showRefreshToast();
+    }
+  }, [showRefreshToast]);
+
   // Add keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -167,15 +176,15 @@ const Header = ({
   }, [clearSearch]);
 
   const handleRefresh = () => {
-    if (onRefreshDashboard) {
-      const refreshIcon = document.querySelector('.refresh-icon');
-      if (refreshIcon) {
-        refreshIcon.style.transform = 'rotate(360deg)';
-        setTimeout(() => { refreshIcon.style.transform = 'rotate(0deg)'; }, 300);
-      }
-      onRefreshDashboard();
-      showRefreshToast();
+    const refreshIcon = document.querySelector('.refresh-icon');
+    if (refreshIcon) {
+      refreshIcon.style.transform = 'rotate(360deg)';
     }
+    // Set flag in localStorage to show toast after reload
+    localStorage.setItem('showRefreshToast', 'true');
+    setTimeout(() => {
+      window.location.reload();
+    }, 150);
   };
 
   const handleFavoriteToggle = () => {
@@ -565,7 +574,7 @@ const Header = ({
           <PortalTooltip anchorRef={leftToggleRef} visible={hoverTooltip === 'left'} text={`${leftSidebarVisible ? 'Hide' : 'Show'} left sidebar`} isDarkMode={isDarkMode} />
           <PortalTooltip anchorRef={starButtonRef} visible={hoverTooltip === 'star'} text={isFavorite ? 'Remove from favorites' : 'Add to favorites'} isDarkMode={isDarkMode} />
           <PortalTooltip anchorRef={themeButtonRef} visible={hoverTooltip === 'theme'} text={`Switch to ${isDarkMode ? 'light' : 'dark'} mode`} isDarkMode={isDarkMode} />
-          <PortalTooltip anchorRef={refreshButtonRef} visible={hoverTooltip === 'refresh'} text="Refresh Dashboard" isDarkMode={isDarkMode} />
+          <PortalTooltip anchorRef={refreshButtonRef} visible={hoverTooltip === 'refresh'} text="Refresh Page" isDarkMode={isDarkMode} />
           <PortalTooltip anchorRef={bellButtonRef} visible={hoverTooltip === 'bell'} text="Notifications" isDarkMode={isDarkMode} />
           <PortalTooltip anchorRef={rightToggleRef} visible={hoverTooltip === 'right'} text={`${rightSidebarVisible ? 'Hide' : 'Show'} right sidebar`} isDarkMode={isDarkMode} />
         </>
